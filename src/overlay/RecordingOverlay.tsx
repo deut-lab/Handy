@@ -129,7 +129,7 @@ const RecordingOverlay: React.FC = () => {
   return (
     <div
       dir={direction}
-      className={`recording-overlay recording-overlay-${theme} recording-overlay-buttons-${buttonStyle} recording-overlay-opacity-${opacity} ${
+      className={`recording-overlay recording-overlay-${theme} recording-overlay-buttons-${buttonStyle} recording-overlay-opacity-${opacity} recording-overlay-state-${state} ${
         isVisible ? "fade-in" : ""
       }`}
     >

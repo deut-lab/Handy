@@ -17,6 +17,7 @@ export { AudioFeedback } from "./AudioFeedback";
 export { AutoStopSilence } from "./AutoStopSilence";
 export { ShowOverlay } from "./ShowOverlay";
 export { OverlayTheme } from "./OverlayTheme";
+export { TrayIconStyle } from "./TrayIconStyle";
 export { GlobalShortcutInput } from "./GlobalShortcutInput";
 export { HandyKeysShortcutInput } from "./HandyKeysShortcutInput";
 export { ShortcutInput } from "./ShortcutInput";

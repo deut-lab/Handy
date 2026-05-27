@@ -13,6 +13,18 @@
   --overlay-alpha: 0.84;
 }
 
+.recording-overlay-state-transcribing,
+.recording-overlay-state-processing {
+  grid-template-columns: 18px minmax(0, 1fr);
+  column-gap: 7px;
+  padding-right: 10px;
+}
+
+.recording-overlay-state-transcribing .overlay-right,
+.recording-overlay-state-processing .overlay-right {
+  display: none;
+}
+
 .recording-overlay-opacity-solid {
   --overlay-alpha: 0.96;
 }
@@ -67,6 +79,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 0;
 }
 
 .overlay-right {
@@ -119,6 +132,9 @@
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   animation: transcribing-pulse 1.5s infinite ease-in-out;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .recording-overlay-calm .transcribing-text {

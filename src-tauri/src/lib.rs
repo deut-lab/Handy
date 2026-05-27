@@ -176,11 +176,12 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     #[cfg(unix)]
     signal_handle::setup_signal_handler(app_handle.clone(), signals);
 
+    let settings = settings::get_settings(app_handle);
+
     // Apply macOS Accessory policy if starting hidden and tray is available.
     // If the tray icon is disabled, keep the dock icon so the user can reopen.
     #[cfg(target_os = "macos")]
     {
-        let settings = settings::get_settings(app_handle);
         if settings.start_hidden && settings.show_tray_icon {
             let _ = app_handle.set_activation_policy(tauri::ActivationPolicy::Accessory);
         }
@@ -189,7 +190,11 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     let initial_theme = tray::get_current_theme(app_handle);
 
     // Choose the appropriate initial icon based on theme
-    let initial_icon_path = tray::get_icon_path(initial_theme, tray::TrayIconState::Idle);
+    let initial_icon_path = tray::get_icon_path(
+        initial_theme,
+        tray::TrayIconState::Idle,
+        settings.tray_icon_style,
+    );
 
     let tray = TrayIconBuilder::new()
         .icon(
@@ -339,6 +344,7 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_overlay_icon_set_setting,
             shortcut::change_overlay_button_style_setting,
             shortcut::change_overlay_opacity_setting,
+            shortcut::change_tray_icon_style_setting,
             shortcut::change_debug_mode_setting,
             shortcut::change_word_correction_threshold_setting,
             shortcut::change_extra_recording_buffer_setting,

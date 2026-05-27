@@ -120,6 +120,8 @@ const settingUpdaters: {
     commands.changeOverlayButtonStyleSetting(value as string),
   overlay_opacity: (value) =>
     commands.changeOverlayOpacitySetting(value as string),
+  tray_icon_style: (value) =>
+    commands.changeTrayIconStyleSetting(value as string),
   debug_mode: (value) => commands.changeDebugModeSetting(value as boolean),
   custom_words: (value) => commands.updateCustomWords(value as string[]),
   word_correction_threshold: (value) =>

@@ -145,6 +145,15 @@ pub enum OverlayOpacity {
     Light,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum TrayIconStyle {
+    Original,
+    #[default]
+    States,
+    Logo,
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
 #[serde(rename_all = "snake_case")]
 pub enum ModelUnloadTimeout {
@@ -434,6 +443,8 @@ pub struct AppSettings {
     pub overlay_button_style: OverlayButtonStyle,
     #[serde(default)]
     pub overlay_opacity: OverlayOpacity,
+    #[serde(default)]
+    pub tray_icon_style: TrayIconStyle,
     #[serde(default = "default_debug_mode")]
     pub debug_mode: bool,
     #[serde(default = "default_log_level")]
@@ -862,6 +873,7 @@ pub fn get_default_settings() -> AppSettings {
         overlay_icon_set: OverlayIconSet::default(),
         overlay_button_style: OverlayButtonStyle::default(),
         overlay_opacity: OverlayOpacity::default(),
+        tray_icon_style: TrayIconStyle::default(),
         debug_mode: false,
         log_level: default_log_level(),
         custom_words: Vec::new(),
@@ -1058,6 +1070,12 @@ mod tests {
     }
 
     #[test]
+    fn default_tray_icon_style_uses_state_icons() {
+        let settings = get_default_settings();
+        assert_eq!(settings.tray_icon_style, TrayIconStyle::States);
+    }
+
+    #[test]
     fn overlay_visual_settings_use_stable_store_names() {
         assert_eq!(
             serde_json::to_string(&OverlayTheme::Gray).unwrap(),
@@ -1090,6 +1108,18 @@ mod tests {
         assert_eq!(
             serde_json::to_string(&OverlayOpacity::Light).unwrap(),
             "\"light\""
+        );
+        assert_eq!(
+            serde_json::to_string(&TrayIconStyle::Original).unwrap(),
+            "\"original\""
+        );
+        assert_eq!(
+            serde_json::to_string(&TrayIconStyle::States).unwrap(),
+            "\"states\""
+        );
+        assert_eq!(
+            serde_json::to_string(&TrayIconStyle::Logo).unwrap(),
+            "\"logo\""
         );
     }
 

@@ -412,6 +412,15 @@
             "simple": "פשוטים"
           }
         }
+      },
+      "trayIconStyle": {
+        "title": "Tray icons",
+        "description": "Choose whether the system tray uses original icons, state icons, or one fixed logo.",
+        "options": {
+          "original": "Original",
+          "states": "States",
+          "logo": "Always logo"
+        }
       }
     },
     "postProcessing": {

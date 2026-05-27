@@ -2,6 +2,7 @@ use crate::managers::history::{HistoryEntry, HistoryManager};
 use crate::managers::model::ModelManager;
 use crate::managers::transcription::TranscriptionManager;
 use crate::settings;
+use crate::settings::TrayIconStyle;
 use crate::tray_i18n::get_tray_translations;
 use log::{error, info, warn};
 use std::sync::Arc;
@@ -45,28 +46,59 @@ pub fn get_current_theme(app: &AppHandle) -> AppTheme {
 }
 
 /// Gets the appropriate icon path for the given theme and state
-pub fn get_icon_path(theme: AppTheme, state: TrayIconState) -> &'static str {
-    match (theme, state) {
-        // Dark theme uses light icons
-        (AppTheme::Dark, TrayIconState::Idle) => "resources/tray_idle.png",
-        (AppTheme::Dark, TrayIconState::Recording) => "resources/tray_recording.png",
-        (AppTheme::Dark, TrayIconState::Transcribing) => "resources/tray_transcribing.png",
-        // Light theme uses dark icons
-        (AppTheme::Light, TrayIconState::Idle) => "resources/tray_idle_dark.png",
-        (AppTheme::Light, TrayIconState::Recording) => "resources/tray_recording_dark.png",
-        (AppTheme::Light, TrayIconState::Transcribing) => "resources/tray_transcribing_dark.png",
-        // Colored theme uses pink icons (for Linux)
-        (AppTheme::Colored, TrayIconState::Idle) => "resources/handy.png",
-        (AppTheme::Colored, TrayIconState::Recording) => "resources/recording.png",
-        (AppTheme::Colored, TrayIconState::Transcribing) => "resources/transcribing.png",
+pub fn get_icon_path(theme: AppTheme, state: TrayIconState, style: TrayIconStyle) -> &'static str {
+    match style {
+        TrayIconStyle::Original => match (theme, state) {
+            // Dark theme uses light icons
+            (AppTheme::Dark, TrayIconState::Idle) => "resources/tray_idle.png",
+            (AppTheme::Dark, TrayIconState::Recording) => "resources/tray_recording.png",
+            (AppTheme::Dark, TrayIconState::Transcribing) => "resources/tray_transcribing.png",
+            // Light theme uses dark icons
+            (AppTheme::Light, TrayIconState::Idle) => "resources/tray_idle_dark.png",
+            (AppTheme::Light, TrayIconState::Recording) => "resources/tray_recording_dark.png",
+            (AppTheme::Light, TrayIconState::Transcribing) => {
+                "resources/tray_transcribing_dark.png"
+            }
+            // Colored theme uses pink icons (for Linux)
+            (AppTheme::Colored, TrayIconState::Idle) => "resources/handy.png",
+            (AppTheme::Colored, TrayIconState::Recording) => "resources/recording.png",
+            (AppTheme::Colored, TrayIconState::Transcribing) => "resources/transcribing.png",
+        },
+        TrayIconStyle::States => match (theme, state) {
+            (AppTheme::Dark, TrayIconState::Idle) => "resources/tray_state_idle.png",
+            (AppTheme::Dark, TrayIconState::Recording) => "resources/tray_state_recording.png",
+            (AppTheme::Dark, TrayIconState::Transcribing) => {
+                "resources/tray_state_transcribing.png"
+            }
+            (AppTheme::Light, TrayIconState::Idle) => "resources/tray_state_idle_dark.png",
+            (AppTheme::Light, TrayIconState::Recording) => {
+                "resources/tray_state_recording_dark.png"
+            }
+            (AppTheme::Light, TrayIconState::Transcribing) => {
+                "resources/tray_state_transcribing_dark.png"
+            }
+            (AppTheme::Colored, TrayIconState::Idle) => "resources/tray_state_idle_color.png",
+            (AppTheme::Colored, TrayIconState::Recording) => {
+                "resources/tray_state_recording_color.png"
+            }
+            (AppTheme::Colored, TrayIconState::Transcribing) => {
+                "resources/tray_state_transcribing_color.png"
+            }
+        },
+        TrayIconStyle::Logo => match theme {
+            AppTheme::Dark => "resources/tray_state_idle.png",
+            AppTheme::Light => "resources/tray_state_idle_dark.png",
+            AppTheme::Colored => "resources/tray_state_idle_color.png",
+        },
     }
 }
 
 pub fn change_tray_icon(app: &AppHandle, icon: TrayIconState) {
     let tray = app.state::<TrayIcon>();
     let theme = get_current_theme(app);
+    let settings = settings::get_settings(app);
 
-    let icon_path = get_icon_path(theme, icon.clone());
+    let icon_path = get_icon_path(theme, icon.clone(), settings.tray_icon_style);
 
     let _ = tray.set_icon(Some(
         Image::from_path(
@@ -272,8 +304,9 @@ pub fn copy_last_transcript(app: &AppHandle) {
 
 #[cfg(test)]
 mod tests {
-    use super::last_transcript_text;
+    use super::{get_icon_path, last_transcript_text, AppTheme, TrayIconState};
     use crate::managers::history::HistoryEntry;
+    use crate::settings::TrayIconStyle;
 
     fn build_entry(transcription: &str, post_processed: Option<&str>) -> HistoryEntry {
         HistoryEntry {
@@ -299,5 +332,73 @@ mod tests {
     fn falls_back_to_raw_transcription() {
         let entry = build_entry("raw", None);
         assert_eq!(last_transcript_text(&entry), "raw");
+    }
+
+    #[test]
+    fn original_tray_icons_keep_author_paths() {
+        assert_eq!(
+            get_icon_path(
+                AppTheme::Dark,
+                TrayIconState::Recording,
+                TrayIconStyle::Original
+            ),
+            "resources/tray_recording.png"
+        );
+        assert_eq!(
+            get_icon_path(
+                AppTheme::Light,
+                TrayIconState::Transcribing,
+                TrayIconStyle::Original
+            ),
+            "resources/tray_transcribing_dark.png"
+        );
+    }
+
+    #[test]
+    fn state_tray_icons_use_neutral_paths() {
+        assert_eq!(
+            get_icon_path(AppTheme::Dark, TrayIconState::Idle, TrayIconStyle::States),
+            "resources/tray_state_idle.png"
+        );
+        assert_eq!(
+            get_icon_path(
+                AppTheme::Light,
+                TrayIconState::Recording,
+                TrayIconStyle::States
+            ),
+            "resources/tray_state_recording_dark.png"
+        );
+        assert_eq!(
+            get_icon_path(
+                AppTheme::Dark,
+                TrayIconState::Transcribing,
+                TrayIconStyle::States
+            ),
+            "resources/tray_state_transcribing.png"
+        );
+    }
+
+    #[test]
+    fn logo_tray_icons_do_not_change_by_state() {
+        assert_eq!(
+            get_icon_path(AppTheme::Dark, TrayIconState::Idle, TrayIconStyle::Logo),
+            "resources/tray_state_idle.png"
+        );
+        assert_eq!(
+            get_icon_path(
+                AppTheme::Dark,
+                TrayIconState::Recording,
+                TrayIconStyle::Logo
+            ),
+            "resources/tray_state_idle.png"
+        );
+        assert_eq!(
+            get_icon_path(
+                AppTheme::Light,
+                TrayIconState::Transcribing,
+                TrayIconStyle::Logo
+            ),
+            "resources/tray_state_idle_dark.png"
+        );
     }
 }

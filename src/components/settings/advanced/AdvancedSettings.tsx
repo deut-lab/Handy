@@ -22,6 +22,7 @@ import { AccelerationSelector } from "../AccelerationSelector";
 import { LazyStreamClose } from "../LazyStreamClose";
 import { AutoStopSilence } from "../AutoStopSilence";
 import { OverlayTheme } from "../OverlayTheme";
+import { TrayIconStyle } from "../TrayIconStyle";
 
 export const AdvancedSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -41,6 +42,7 @@ export const AdvancedSettings: React.FC = () => {
       <SettingsGroup title={t("settings.advanced.groups.interface")}>
         <ShowOverlay descriptionMode="tooltip" grouped={true} />
         <OverlayTheme descriptionMode="tooltip" grouped={true} />
+        <TrayIconStyle descriptionMode="tooltip" grouped={true} />
       </SettingsGroup>
 
       <SettingsGroup title={t("settings.advanced.groups.output")}>

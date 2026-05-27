@@ -24,7 +24,7 @@ use crate::settings::APPLE_INTELLIGENCE_DEFAULT_MODEL_ID;
 use crate::settings::{
     self, get_settings, AutoSubmitKey, ClipboardHandling, KeyboardImplementation, LLMPrompt,
     OverlayButtonStyle, OverlayIconSet, OverlayOpacity, OverlayPosition, OverlayTheme, PasteMethod,
-    ShortcutBinding, SoundTheme, TypingTool, APPLE_INTELLIGENCE_PROVIDER_ID,
+    ShortcutBinding, SoundTheme, TrayIconStyle, TypingTool, APPLE_INTELLIGENCE_PROVIDER_ID,
 };
 use crate::tray;
 
@@ -636,6 +636,25 @@ pub fn change_overlay_opacity_setting(app: AppHandle, opacity: String) -> Result
     };
     settings.overlay_opacity = parsed;
     settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_tray_icon_style_setting(app: AppHandle, style: String) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    let parsed = match style.as_str() {
+        "original" => TrayIconStyle::Original,
+        "states" => TrayIconStyle::States,
+        "logo" => TrayIconStyle::Logo,
+        other => {
+            warn!("Invalid tray icon style '{}', defaulting to states", other);
+            TrayIconStyle::States
+        }
+    };
+    settings.tray_icon_style = parsed;
+    settings::write_settings(&app, settings);
+    crate::tray::change_tray_icon(&app, crate::tray::TrayIconState::Idle);
     Ok(())
 }
 
