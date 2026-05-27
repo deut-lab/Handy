@@ -404,6 +404,13 @@
             "medium": "Média",
             "light": "Leve"
           }
+        },
+        "buttonStyle": {
+          "title": "Botões",
+          "options": {
+            "circle": "Com círculos",
+            "simple": "Simples"
+          }
         }
       }
     },

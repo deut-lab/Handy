@@ -382,6 +382,13 @@
             "medium": "متوسطة",
             "light": "خفيفة"
           }
+        },
+        "buttonStyle": {
+          "title": "الأزرار",
+          "options": {
+            "circle": "داخل دوائر",
+            "simple": "بسيطة"
+          }
         }
       }
     },

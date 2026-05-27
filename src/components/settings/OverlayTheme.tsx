@@ -8,6 +8,7 @@ import {
   TranscriptionIcon,
 } from "../icons";
 import type {
+  OverlayButtonStyle,
   OverlayIconSet,
   OverlayOpacity,
   OverlayTheme as OverlayThemeValue,
@@ -96,6 +97,7 @@ const ThemeCard: React.FC<{
   selected: boolean;
   disabled: boolean;
   iconSet: OverlayIconSet;
+  buttonStyle: OverlayButtonStyle;
   opacity: OverlayOpacity;
   transcribingText: string;
   recordingText: string;
@@ -105,6 +107,7 @@ const ThemeCard: React.FC<{
   selected,
   disabled,
   iconSet,
+  buttonStyle,
   opacity,
   transcribingText,
   recordingText,
@@ -121,10 +124,12 @@ const ThemeCard: React.FC<{
         : "border-mid-gray/25 bg-mid-gray/5 hover:border-[#3e7288]/70 hover:bg-[#e8f1f4]/55"
     } ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
   >
-    <div className="flex items-center justify-between gap-3">
-      <span className="text-sm font-semibold text-text">{view.name}</span>
+    <div className="flex min-w-0 items-center justify-between gap-3">
+      <span className="min-w-0 truncate text-sm font-semibold text-text">
+        {view.name}
+      </span>
       <span
-        className={`flex h-4 w-4 items-center justify-center rounded-full border ${
+        className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
           selected
             ? "border-[#3e7288] bg-[#3e7288] text-white"
             : "border-mid-gray/40"
@@ -139,7 +144,7 @@ const ThemeCard: React.FC<{
         {recordingText}
       </div>
       <div
-        className={`grid h-8 grid-cols-[20px_minmax(42px,1fr)_42px] items-center gap-1 rounded-full px-2 shadow-sm ${view.overlayClass}`}
+        className={`grid h-8 min-w-0 grid-cols-[18px_minmax(24px,1fr)_50px] items-center gap-1 rounded-full px-2 shadow-sm ${view.overlayClass}`}
         style={{ opacity: opacityPreview[opacity] }}
       >
         <MiniStatusIcon
@@ -148,11 +153,23 @@ const ThemeCard: React.FC<{
           color={view.iconColor}
         />
         <MiniBars barClass={view.barClass} />
-        <div className="flex items-center justify-end gap-0.5">
-          <span className={view.finishClass}>
+        <div className="flex items-center justify-end gap-1.5 overflow-hidden">
+          <span
+            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+              buttonStyle === "circle"
+                ? `border bg-white/50 ${view.finishClass}`
+                : view.finishClass
+            }`}
+          >
             <MiniFinishIcon iconSet={iconSet} />
           </span>
-          <span className={view.cancelClass}>
+          <span
+            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+              buttonStyle === "circle"
+                ? `border bg-white/50 ${view.cancelClass}`
+                : view.cancelClass
+            }`}
+          >
             <MiniCancelIcon iconSet={iconSet} />
           </span>
         </div>
@@ -215,6 +232,8 @@ export const OverlayTheme: React.FC<OverlayThemeProps> = React.memo(
       "calm") as OverlayThemeValue;
     const selectedIconSet = (getSetting("overlay_icon_set") ||
       "original") as OverlayIconSet;
+    const selectedButtonStyle = (getSetting("overlay_button_style") ||
+      "circle") as OverlayButtonStyle;
     const selectedOpacity = (getSetting("overlay_opacity") ||
       "medium") as OverlayOpacity;
 
@@ -291,8 +310,20 @@ export const OverlayTheme: React.FC<OverlayThemeProps> = React.memo(
       },
     ];
 
+    const buttonStyleViews: ChoiceView<OverlayButtonStyle>[] = [
+      {
+        value: "circle",
+        name: t("settings.advanced.overlayTheme.buttonStyle.options.circle"),
+      },
+      {
+        value: "simple",
+        name: t("settings.advanced.overlayTheme.buttonStyle.options.simple"),
+      },
+    ];
+
     const isThemeUpdating = isUpdating("overlay_theme");
     const isIconSetUpdating = isUpdating("overlay_icon_set");
+    const isButtonStyleUpdating = isUpdating("overlay_button_style");
     const isOpacityUpdating = isUpdating("overlay_opacity");
 
     return (
@@ -303,7 +334,7 @@ export const OverlayTheme: React.FC<OverlayThemeProps> = React.memo(
         grouped={grouped}
       >
         <div className="space-y-4">
-          <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-4">
+          <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2 2xl:grid-cols-4">
             {views.map((view) => (
               <ThemeCard
                 key={view.value}
@@ -311,6 +342,7 @@ export const OverlayTheme: React.FC<OverlayThemeProps> = React.memo(
                 selected={selectedTheme === view.value}
                 disabled={isThemeUpdating}
                 iconSet={selectedIconSet}
+                buttonStyle={selectedButtonStyle}
                 opacity={selectedOpacity}
                 recordingText={t(
                   "settings.advanced.overlayTheme.states.recording",
@@ -323,7 +355,7 @@ export const OverlayTheme: React.FC<OverlayThemeProps> = React.memo(
             ))}
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-3 md:grid-cols-3">
             <div>
               <div className="mb-2 text-xs font-semibold uppercase text-text/60">
                 {t("settings.advanced.overlayTheme.iconSet.title")}
@@ -337,6 +369,25 @@ export const OverlayTheme: React.FC<OverlayThemeProps> = React.memo(
                     disabled={isIconSetUpdating}
                     onSelect={() =>
                       updateSetting("overlay_icon_set", view.value)
+                    }
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div className="mb-2 text-xs font-semibold uppercase text-text/60">
+                {t("settings.advanced.overlayTheme.buttonStyle.title")}
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {buttonStyleViews.map((view) => (
+                  <ChoiceButton
+                    key={view.value}
+                    view={view}
+                    selected={selectedButtonStyle === view.value}
+                    disabled={isButtonStyleUpdating}
+                    onSelect={() =>
+                      updateSetting("overlay_button_style", view.value)
                     }
                   />
                 ))}

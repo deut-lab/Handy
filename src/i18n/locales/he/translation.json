@@ -404,6 +404,13 @@
             "medium": "בינונית",
             "light": "קלה"
           }
+        },
+        "buttonStyle": {
+          "title": "כפתורים",
+          "options": {
+            "circle": "בעיגולים",
+            "simple": "פשוטים"
+          }
         }
       }
     },

@@ -11,6 +11,7 @@ import {
 } from "@/components/icons";
 import {
   commands,
+  type OverlayButtonStyle,
   type OverlayIconSet,
   type OverlayOpacity,
   type OverlayTheme,
@@ -33,6 +34,7 @@ const RecordingOverlay: React.FC = () => {
   const [state, setState] = useState<OverlayState>("recording");
   const [theme, setTheme] = useState<OverlayTheme>("calm");
   const [iconSet, setIconSet] = useState<OverlayIconSet>("original");
+  const [buttonStyle, setButtonStyle] = useState<OverlayButtonStyle>("circle");
   const [opacity, setOpacity] = useState<OverlayOpacity>("medium");
   const [levels, setLevels] = useState<number[]>(Array(16).fill(0));
   const smoothedLevelsRef = useRef<number[]>(Array(16).fill(0));
@@ -44,6 +46,7 @@ const RecordingOverlay: React.FC = () => {
       if (result.status === "ok") {
         setTheme(result.data.overlay_theme ?? "calm");
         setIconSet(result.data.overlay_icon_set ?? "original");
+        setButtonStyle(result.data.overlay_button_style ?? "circle");
         setOpacity(result.data.overlay_opacity ?? "medium");
       }
     };
@@ -109,24 +112,24 @@ const RecordingOverlay: React.FC = () => {
 
   const getFinishIcon = () => {
     if (iconSet === "original") {
-      return <InsertIcon width={15} height={15} color="currentColor" />;
+      return <InsertIcon width={16} height={16} color="currentColor" />;
     }
 
-    return <Check size={14} strokeWidth={2.4} />;
+    return <Check size={15} strokeWidth={2.4} />;
   };
 
   const getCancelIcon = () => {
     if (iconSet === "original") {
-      return <CancelIcon width={15} height={15} color="currentColor" />;
+      return <CancelIcon width={16} height={16} color="currentColor" />;
     }
 
-    return <X size={14} strokeWidth={2.4} />;
+    return <X size={15} strokeWidth={2.4} />;
   };
 
   return (
     <div
       dir={direction}
-      className={`recording-overlay recording-overlay-${theme} recording-overlay-opacity-${opacity} ${
+      className={`recording-overlay recording-overlay-${theme} recording-overlay-buttons-${buttonStyle} recording-overlay-opacity-${opacity} ${
         isVisible ? "fade-in" : ""
       }`}
     >

@@ -404,6 +404,13 @@
             "medium": "보통",
             "light": "연하게"
           }
+        },
+        "buttonStyle": {
+          "title": "버튼",
+          "options": {
+            "circle": "원형",
+            "simple": "단순"
+          }
         }
       }
     },

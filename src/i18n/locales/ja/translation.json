@@ -404,6 +404,13 @@
             "medium": "中",
             "light": "薄い"
           }
+        },
+        "buttonStyle": {
+          "title": "ボタン",
+          "options": {
+            "circle": "丸付き",
+            "simple": "シンプル"
+          }
         }
       }
     },

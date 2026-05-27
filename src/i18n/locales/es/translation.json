@@ -404,6 +404,13 @@
             "medium": "Media",
             "light": "Ligera"
           }
+        },
+        "buttonStyle": {
+          "title": "Botones",
+          "options": {
+            "circle": "Con círculos",
+            "simple": "Simples"
+          }
         }
       }
     },

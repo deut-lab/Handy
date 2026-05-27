@@ -404,6 +404,13 @@
             "medium": "Mellan",
             "light": "Lätt"
           }
+        },
+        "buttonStyle": {
+          "title": "Knappar",
+          "options": {
+            "circle": "I cirklar",
+            "simple": "Enkla"
+          }
         }
       }
     },

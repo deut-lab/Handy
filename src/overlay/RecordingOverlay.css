@@ -1,8 +1,8 @@
 .recording-overlay {
   height: 36px;
-  width: 176px;
+  width: 188px;
   display: grid;
-  grid-template-columns: 20px minmax(42px, 1fr) 44px;
+  grid-template-columns: 20px minmax(50px, 1fr) 54px;
   align-items: center;
   column-gap: 4px;
   padding: 6px;
@@ -151,14 +151,14 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 2px;
+  gap: 6px;
 }
 
 .overlay-action {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  border: 0;
+  border: 1px solid transparent;
   background: transparent;
   display: flex;
   align-items: center;
@@ -169,6 +169,32 @@
     background-color 150ms ease-out,
     transform 100ms ease-out;
   flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.recording-overlay-buttons-simple .overlay-action {
+  border-color: transparent;
+  background: transparent;
+}
+
+.recording-overlay-buttons-circle.recording-overlay-calm .overlay-action {
+  border-color: #bfd0d9;
+  background: #ffffff8a;
+}
+
+.recording-overlay-buttons-circle.recording-overlay-classic .overlay-action {
+  border-color: #faa2ca66;
+  background: #ffffff0f;
+}
+
+.recording-overlay-buttons-circle.recording-overlay-dark .overlay-action {
+  border-color: #6f8794;
+  background: #ffffff14;
+}
+
+.recording-overlay-buttons-circle.recording-overlay-gray .overlay-action {
+  border-color: #b0bbc2;
+  background: #ffffff96;
 }
 
 .recording-overlay-calm .finish-button {

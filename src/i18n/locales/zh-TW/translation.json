@@ -404,6 +404,13 @@
             "medium": "中等",
             "light": "較淡"
           }
+        },
+        "buttonStyle": {
+          "title": "按鈕",
+          "options": {
+            "circle": "圓圈",
+            "simple": "簡單"
+          }
         }
       }
     },

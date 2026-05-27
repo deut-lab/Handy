@@ -404,6 +404,13 @@
             "medium": "Mittel",
             "light": "Leicht"
           }
+        },
+        "buttonStyle": {
+          "title": "Tasten",
+          "options": {
+            "circle": "In Kreisen",
+            "simple": "Einfach"
+          }
         }
       }
     },

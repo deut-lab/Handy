@@ -132,6 +132,13 @@ pub enum OverlayIconSet {
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
 #[serde(rename_all = "snake_case")]
+pub enum OverlayButtonStyle {
+    Simple,
+    Circle,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
+#[serde(rename_all = "snake_case")]
 pub enum OverlayOpacity {
     Solid,
     Medium,
@@ -212,6 +219,12 @@ impl Default for OverlayTheme {
 impl Default for OverlayIconSet {
     fn default() -> Self {
         OverlayIconSet::Original
+    }
+}
+
+impl Default for OverlayButtonStyle {
+    fn default() -> Self {
+        OverlayButtonStyle::Circle
     }
 }
 
@@ -417,6 +430,8 @@ pub struct AppSettings {
     pub overlay_theme: OverlayTheme,
     #[serde(default)]
     pub overlay_icon_set: OverlayIconSet,
+    #[serde(default)]
+    pub overlay_button_style: OverlayButtonStyle,
     #[serde(default)]
     pub overlay_opacity: OverlayOpacity,
     #[serde(default = "default_debug_mode")]
@@ -845,6 +860,7 @@ pub fn get_default_settings() -> AppSettings {
         overlay_position: default_overlay_position(),
         overlay_theme: OverlayTheme::default(),
         overlay_icon_set: OverlayIconSet::default(),
+        overlay_button_style: OverlayButtonStyle::default(),
         overlay_opacity: OverlayOpacity::default(),
         debug_mode: false,
         log_level: default_log_level(),
@@ -1037,6 +1053,7 @@ mod tests {
         let settings = get_default_settings();
         assert_eq!(settings.overlay_theme, OverlayTheme::Calm);
         assert_eq!(settings.overlay_icon_set, OverlayIconSet::Original);
+        assert_eq!(settings.overlay_button_style, OverlayButtonStyle::Circle);
         assert_eq!(settings.overlay_opacity, OverlayOpacity::Medium);
     }
 
@@ -1053,6 +1070,14 @@ mod tests {
         assert_eq!(
             serde_json::to_string(&OverlayIconSet::Line).unwrap(),
             "\"line\""
+        );
+        assert_eq!(
+            serde_json::to_string(&OverlayButtonStyle::Simple).unwrap(),
+            "\"simple\""
+        );
+        assert_eq!(
+            serde_json::to_string(&OverlayButtonStyle::Circle).unwrap(),
+            "\"circle\""
         );
         assert_eq!(
             serde_json::to_string(&OverlayOpacity::Solid).unwrap(),

@@ -404,6 +404,13 @@
             "medium": "Vừa",
             "light": "Nhẹ"
           }
+        },
+        "buttonStyle": {
+          "title": "Nút",
+          "options": {
+            "circle": "Có vòng tròn",
+            "simple": "Đơn giản"
+          }
         }
       }
     },

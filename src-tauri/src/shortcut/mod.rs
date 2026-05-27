@@ -23,8 +23,8 @@ use tauri_plugin_autostart::ManagerExt;
 use crate::settings::APPLE_INTELLIGENCE_DEFAULT_MODEL_ID;
 use crate::settings::{
     self, get_settings, AutoSubmitKey, ClipboardHandling, KeyboardImplementation, LLMPrompt,
-    OverlayIconSet, OverlayOpacity, OverlayPosition, OverlayTheme, PasteMethod, ShortcutBinding,
-    SoundTheme, TypingTool, APPLE_INTELLIGENCE_PROVIDER_ID,
+    OverlayButtonStyle, OverlayIconSet, OverlayOpacity, OverlayPosition, OverlayTheme, PasteMethod,
+    ShortcutBinding, SoundTheme, TypingTool, APPLE_INTELLIGENCE_PROVIDER_ID,
 };
 use crate::tray;
 
@@ -594,6 +594,29 @@ pub fn change_overlay_icon_set_setting(app: AppHandle, icon_set: String) -> Resu
         }
     };
     settings.overlay_icon_set = parsed;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_overlay_button_style_setting(
+    app: AppHandle,
+    button_style: String,
+) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    let parsed = match button_style.as_str() {
+        "simple" => OverlayButtonStyle::Simple,
+        "circle" => OverlayButtonStyle::Circle,
+        other => {
+            warn!(
+                "Invalid overlay button style '{}', defaulting to circle",
+                other
+            );
+            OverlayButtonStyle::Circle
+        }
+    };
+    settings.overlay_button_style = parsed;
     settings::write_settings(&app, settings);
     Ok(())
 }

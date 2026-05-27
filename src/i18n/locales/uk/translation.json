@@ -404,6 +404,13 @@
             "medium": "Середня",
             "light": "Легка"
           }
+        },
+        "buttonStyle": {
+          "title": "Кнопки",
+          "options": {
+            "circle": "У кружках",
+            "simple": "Прості"
+          }
         }
       }
     },

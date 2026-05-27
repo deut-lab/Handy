@@ -404,6 +404,13 @@
             "medium": "Средна",
             "light": "Лека"
           }
+        },
+        "buttonStyle": {
+          "title": "Бутони",
+          "options": {
+            "circle": "В кръгове",
+            "simple": "Прости"
+          }
         }
       }
     },

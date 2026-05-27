@@ -404,6 +404,13 @@
             "medium": "Orta",
             "light": "Hafif"
           }
+        },
+        "buttonStyle": {
+          "title": "Düğmeler",
+          "options": {
+            "circle": "Daireli",
+            "simple": "Basit"
+          }
         }
       }
     },

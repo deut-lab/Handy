@@ -404,6 +404,13 @@
             "medium": "Media",
             "light": "Leggera"
           }
+        },
+        "buttonStyle": {
+          "title": "Pulsanti",
+          "options": {
+            "circle": "Cerchiati",
+            "simple": "Semplici"
+          }
         }
       }
     },

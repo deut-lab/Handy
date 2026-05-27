@@ -404,6 +404,13 @@
             "medium": "Střední",
             "light": "Lehká"
           }
+        },
+        "buttonStyle": {
+          "title": "Tlačítka",
+          "options": {
+            "circle": "V kroužcích",
+            "simple": "Jednoduchá"
+          }
         }
       }
     },

@@ -404,6 +404,13 @@
             "medium": "Średnia",
             "light": "Lekka"
           }
+        },
+        "buttonStyle": {
+          "title": "Przyciski",
+          "options": {
+            "circle": "W kółkach",
+            "simple": "Proste"
+          }
         }
       }
     },
