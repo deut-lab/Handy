@@ -2,9 +2,9 @@
   height: 36px;
   width: 150px;
   display: grid;
-  grid-template-columns: 18px minmax(32px, 1fr) 48px;
+  grid-template-columns: 24px minmax(26px, 1fr) 48px;
   align-items: center;
-  column-gap: 3px;
+  column-gap: 2px;
   padding: 5px 6px;
   border-radius: 18px;
   opacity: 0;
@@ -15,8 +15,8 @@
 
 .recording-overlay-state-transcribing,
 .recording-overlay-state-processing {
-  grid-template-columns: 18px minmax(0, 1fr);
-  column-gap: 7px;
+  grid-template-columns: 24px minmax(0, 1fr);
+  column-gap: 5px;
   padding-right: 10px;
 }
 
@@ -73,6 +73,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 0;
 }
 
 .overlay-middle {
@@ -167,7 +168,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 4px;
+  gap: 2px;
 }
 
 .overlay-action {
