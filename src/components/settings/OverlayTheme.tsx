@@ -47,11 +47,11 @@ const opacityPreview: Record<OverlayOpacity, number> = {
 };
 
 const MiniBars: React.FC<{ barClass: string }> = ({ barClass }) => (
-  <div className="flex h-4 items-end justify-center gap-0.5 overflow-hidden">
+  <div className="flex h-4 items-end justify-center gap-px overflow-hidden">
     {bars.map((height, index) => (
       <span
         key={index}
-        className={`w-1 rounded-sm ${barClass}`}
+        className={`w-[3px] rounded-sm ${barClass}`}
         style={{ height }}
       />
     ))}
@@ -144,7 +144,7 @@ const ThemeCard: React.FC<{
         {recordingText}
       </div>
       <div
-        className={`grid h-8 min-w-0 grid-cols-[18px_minmax(24px,1fr)_50px] items-center gap-1 rounded-full px-2 shadow-sm ${view.overlayClass}`}
+        className={`mx-auto grid h-8 w-[118px] max-w-full grid-cols-[16px_32px_46px] items-center gap-1 rounded-full px-1.5 shadow-sm ${view.overlayClass}`}
         style={{ opacity: opacityPreview[opacity] }}
       >
         <MiniStatusIcon
@@ -153,7 +153,7 @@ const ThemeCard: React.FC<{
           color={view.iconColor}
         />
         <MiniBars barClass={view.barClass} />
-        <div className="flex items-center justify-end gap-1.5 overflow-hidden">
+        <div className="flex items-center justify-end gap-1 overflow-hidden">
           <span
             className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
               buttonStyle === "circle"
@@ -179,7 +179,7 @@ const ThemeCard: React.FC<{
         {transcribingText}
       </div>
       <div
-        className={`grid h-8 grid-cols-[20px_minmax(42px,1fr)] items-center gap-1 rounded-full px-2 shadow-sm ${view.overlayClass}`}
+        className={`mx-auto grid h-8 w-[118px] max-w-full grid-cols-[16px_minmax(0,1fr)] items-center gap-1 rounded-full px-1.5 shadow-sm ${view.overlayClass}`}
         style={{ opacity: opacityPreview[opacity] }}
       >
         <MiniStatusIcon

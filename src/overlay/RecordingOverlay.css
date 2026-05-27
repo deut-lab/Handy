@@ -1,11 +1,11 @@
 .recording-overlay {
   height: 36px;
-  width: 188px;
+  width: 150px;
   display: grid;
-  grid-template-columns: 20px minmax(50px, 1fr) 54px;
+  grid-template-columns: 18px minmax(32px, 1fr) 48px;
   align-items: center;
-  column-gap: 4px;
-  padding: 6px;
+  column-gap: 3px;
+  padding: 5px 6px;
   border-radius: 18px;
   opacity: 0;
   transition: opacity 300ms ease-out;
@@ -79,14 +79,14 @@
   display: flex;
   align-items: end;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   padding-bottom: 0px;
   height: 20px;
   overflow: hidden;
 }
 
 .bar {
-  width: 5px;
+  width: 4px;
   max-height: 16px;
   border-radius: 2px;
   transition: height 80ms linear;
@@ -151,7 +151,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 6px;
+  gap: 4px;
 }
 
 .overlay-action {
