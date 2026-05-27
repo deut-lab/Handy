@@ -23,8 +23,9 @@ use tauri_plugin_autostart::ManagerExt;
 use crate::settings::APPLE_INTELLIGENCE_DEFAULT_MODEL_ID;
 use crate::settings::{
     self, get_settings, AutoSubmitKey, ClipboardHandling, KeyboardImplementation, LLMPrompt,
-    OverlayButtonStyle, OverlayIconSet, OverlayOpacity, OverlayPosition, OverlayTheme, PasteMethod,
-    ShortcutBinding, SoundTheme, TrayIconStyle, TypingTool, APPLE_INTELLIGENCE_PROVIDER_ID,
+    OverlayButtonStyle, OverlayIconSet, OverlayOpacity, OverlayPosition, OverlayTheme,
+    OverlayTranscribingIcon, PasteMethod, ShortcutBinding, SoundTheme, TrayIconStyle, TypingTool,
+    APPLE_INTELLIGENCE_PROVIDER_ID,
 };
 use crate::tray;
 
@@ -594,6 +595,33 @@ pub fn change_overlay_icon_set_setting(app: AppHandle, icon_set: String) -> Resu
         }
     };
     settings.overlay_icon_set = parsed;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_overlay_transcribing_icon_setting(
+    app: AppHandle,
+    icon: String,
+) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    let parsed = match icon.as_str() {
+        "scan_text" => OverlayTranscribingIcon::ScanText,
+        "square_dashed_text" => OverlayTranscribingIcon::SquareDashedText,
+        "scroll_text" => OverlayTranscribingIcon::ScrollText,
+        "text_cursor_input" => OverlayTranscribingIcon::TextCursorInput,
+        "message_square_text" => OverlayTranscribingIcon::MessageSquareText,
+        "text_initial" => OverlayTranscribingIcon::TextInitial,
+        other => {
+            warn!(
+                "Invalid overlay transcribing icon '{}', defaulting to scan_text",
+                other
+            );
+            OverlayTranscribingIcon::ScanText
+        }
+    };
+    settings.overlay_transcribing_icon = parsed;
     settings::write_settings(&app, settings);
     Ok(())
 }

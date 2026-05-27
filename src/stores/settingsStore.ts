@@ -116,6 +116,8 @@ const settingUpdaters: {
   overlay_theme: (value) => commands.changeOverlayThemeSetting(value as string),
   overlay_icon_set: (value) =>
     commands.changeOverlayIconSetSetting(value as string),
+  overlay_transcribing_icon: (value) =>
+    commands.changeOverlayTranscribingIconSetting(value as string),
   overlay_button_style: (value) =>
     commands.changeOverlayButtonStyleSetting(value as string),
   overlay_opacity: (value) =>

@@ -411,6 +411,17 @@
             "circle": "В кружках",
             "simple": "Простые"
           }
+        },
+        "transcribingIcon": {
+          "title": "Значок расшифровки",
+          "options": {
+            "scan_text": "scan-text",
+            "square_dashed_text": "square-dashed-text",
+            "scroll_text": "scroll-text",
+            "text_cursor_input": "text-cursor-input",
+            "message_square_text": "message-square-text",
+            "text_initial": "text-initial"
+          }
         }
       },
       "trayIconStyle": {

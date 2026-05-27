@@ -1,11 +1,12 @@
 import { listen } from "@tauri-apps/api/event";
-import { Check, FileText, Mic, X } from "lucide-react";
+import { Check, Mic, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "./RecordingOverlay.css";
 import {
   CancelIcon,
   InsertIcon,
+  LineTranscribingIcon,
   MicrophoneIcon,
   TranscriptionIcon,
 } from "@/components/icons";
@@ -15,6 +16,7 @@ import {
   type OverlayIconSet,
   type OverlayOpacity,
   type OverlayTheme,
+  type OverlayTranscribingIcon,
 } from "@/bindings";
 import i18n, { syncLanguageFromSettings } from "@/i18n";
 import { getLanguageDirection } from "@/lib/utils/rtl";
@@ -34,6 +36,8 @@ const RecordingOverlay: React.FC = () => {
   const [state, setState] = useState<OverlayState>("recording");
   const [theme, setTheme] = useState<OverlayTheme>("calm");
   const [iconSet, setIconSet] = useState<OverlayIconSet>("original");
+  const [transcribingIcon, setTranscribingIcon] =
+    useState<OverlayTranscribingIcon>("scan_text");
   const [buttonStyle, setButtonStyle] = useState<OverlayButtonStyle>("circle");
   const [opacity, setOpacity] = useState<OverlayOpacity>("medium");
   const [levels, setLevels] = useState<number[]>(Array(16).fill(0));
@@ -46,6 +50,9 @@ const RecordingOverlay: React.FC = () => {
       if (result.status === "ok") {
         setTheme(result.data.overlay_theme ?? "calm");
         setIconSet(result.data.overlay_icon_set ?? "original");
+        setTranscribingIcon(
+          result.data.overlay_transcribing_icon ?? "scan_text",
+        );
         setButtonStyle(result.data.overlay_button_style ?? "circle");
         setOpacity(result.data.overlay_opacity ?? "medium");
       }
@@ -107,7 +114,14 @@ const RecordingOverlay: React.FC = () => {
       return <Mic size={18} strokeWidth={2.2} color={iconColor} />;
     }
 
-    return <FileText size={18} strokeWidth={2.2} color={iconColor} />;
+    return (
+      <LineTranscribingIcon
+        icon={transcribingIcon}
+        size={18}
+        strokeWidth={2.2}
+        color={iconColor}
+      />
+    );
   };
 
   const getFinishIcon = () => {

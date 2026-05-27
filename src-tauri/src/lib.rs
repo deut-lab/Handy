@@ -342,6 +342,7 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_overlay_position_setting,
             shortcut::change_overlay_theme_setting,
             shortcut::change_overlay_icon_set_setting,
+            shortcut::change_overlay_transcribing_icon_setting,
             shortcut::change_overlay_button_style_setting,
             shortcut::change_overlay_opacity_setting,
             shortcut::change_tray_icon_style_setting,

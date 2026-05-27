@@ -1,9 +1,11 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Check, FileText, Mic, X } from "lucide-react";
+import { Check, Mic, X } from "lucide-react";
 import {
   CancelIcon,
   InsertIcon,
+  LineTranscribingIcon,
+  lineTranscribingIcons,
   MicrophoneIcon,
   TranscriptionIcon,
 } from "../icons";
@@ -12,6 +14,7 @@ import type {
   OverlayIconSet,
   OverlayOpacity,
   OverlayTheme as OverlayThemeValue,
+  OverlayTranscribingIcon,
 } from "@/bindings";
 import { useSettings } from "../../hooks/useSettings";
 import { SettingContainer } from "../ui/SettingContainer";
@@ -36,6 +39,7 @@ interface ThemeView {
 interface ChoiceView<T extends string> {
   value: T;
   name: string;
+  icon?: React.ReactNode;
 }
 
 const bars = [5, 11, 16, 9, 14];
@@ -60,9 +64,10 @@ const MiniBars: React.FC<{ barClass: string }> = ({ barClass }) => (
 
 const MiniStatusIcon: React.FC<{
   iconSet: OverlayIconSet;
+  transcribingIcon: OverlayTranscribingIcon;
   state: "recording" | "transcribing";
   color: string;
-}> = ({ iconSet, state, color }) => {
+}> = ({ iconSet, transcribingIcon, state, color }) => {
   if (iconSet === "original") {
     return state === "recording" ? (
       <MicrophoneIcon width={15} height={15} color={color} />
@@ -74,7 +79,12 @@ const MiniStatusIcon: React.FC<{
   return state === "recording" ? (
     <Mic size={15} strokeWidth={2.2} color={color} />
   ) : (
-    <FileText size={15} strokeWidth={2.2} color={color} />
+    <LineTranscribingIcon
+      icon={transcribingIcon}
+      size={15}
+      strokeWidth={2.2}
+      color={color}
+    />
   );
 };
 
@@ -97,6 +107,7 @@ const ThemeCard: React.FC<{
   selected: boolean;
   disabled: boolean;
   iconSet: OverlayIconSet;
+  transcribingIcon: OverlayTranscribingIcon;
   buttonStyle: OverlayButtonStyle;
   opacity: OverlayOpacity;
   transcribingText: string;
@@ -107,6 +118,7 @@ const ThemeCard: React.FC<{
   selected,
   disabled,
   iconSet,
+  transcribingIcon,
   buttonStyle,
   opacity,
   transcribingText,
@@ -149,6 +161,7 @@ const ThemeCard: React.FC<{
       >
         <MiniStatusIcon
           iconSet={iconSet}
+          transcribingIcon={transcribingIcon}
           state="recording"
           color={view.iconColor}
         />
@@ -184,6 +197,7 @@ const ThemeCard: React.FC<{
       >
         <MiniStatusIcon
           iconSet={iconSet}
+          transcribingIcon={transcribingIcon}
           state="transcribing"
           color={view.iconColor}
         />
@@ -213,13 +227,14 @@ const ChoiceButton = <T extends string>({
     aria-pressed={selected}
     disabled={disabled}
     onClick={onSelect}
-    className={`rounded-md border px-3 py-2 text-sm font-medium transition-all ${
+    className={`flex min-w-0 items-center justify-center gap-2 rounded-md border px-2 py-2 text-sm font-medium transition-all ${
       selected
         ? "border-[#3e7288] bg-[#e8f1f4] text-text"
         : "border-mid-gray/25 bg-mid-gray/5 text-text/80 hover:border-[#3e7288]/70"
     } ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
   >
-    {view.name}
+    {view.icon && <span className="shrink-0">{view.icon}</span>}
+    <span className="min-w-0 truncate">{view.name}</span>
   </button>
 );
 
@@ -232,6 +247,8 @@ export const OverlayTheme: React.FC<OverlayThemeProps> = React.memo(
       "calm") as OverlayThemeValue;
     const selectedIconSet = (getSetting("overlay_icon_set") ||
       "original") as OverlayIconSet;
+    const selectedTranscribingIcon = (getSetting("overlay_transcribing_icon") ||
+      "scan_text") as OverlayTranscribingIcon;
     const selectedButtonStyle = (getSetting("overlay_button_style") ||
       "circle") as OverlayButtonStyle;
     const selectedOpacity = (getSetting("overlay_opacity") ||
@@ -321,8 +338,25 @@ export const OverlayTheme: React.FC<OverlayThemeProps> = React.memo(
       },
     ];
 
+    const transcribingIconViews: ChoiceView<OverlayTranscribingIcon>[] =
+      lineTranscribingIcons.map((icon) => ({
+        value: icon,
+        name: t(
+          `settings.advanced.overlayTheme.transcribingIcon.options.${icon}`,
+        ),
+        icon: (
+          <LineTranscribingIcon
+            icon={icon}
+            size={16}
+            strokeWidth={2.2}
+            color="currentColor"
+          />
+        ),
+      }));
+
     const isThemeUpdating = isUpdating("overlay_theme");
     const isIconSetUpdating = isUpdating("overlay_icon_set");
+    const isTranscribingIconUpdating = isUpdating("overlay_transcribing_icon");
     const isButtonStyleUpdating = isUpdating("overlay_button_style");
     const isOpacityUpdating = isUpdating("overlay_opacity");
 
@@ -342,6 +376,7 @@ export const OverlayTheme: React.FC<OverlayThemeProps> = React.memo(
                 selected={selectedTheme === view.value}
                 disabled={isThemeUpdating}
                 iconSet={selectedIconSet}
+                transcribingIcon={selectedTranscribingIcon}
                 buttonStyle={selectedButtonStyle}
                 opacity={selectedOpacity}
                 recordingText={t(
@@ -411,6 +446,25 @@ export const OverlayTheme: React.FC<OverlayThemeProps> = React.memo(
                   />
                 ))}
               </div>
+            </div>
+          </div>
+
+          <div>
+            <div className="mb-2 text-xs font-semibold uppercase text-text/60">
+              {t("settings.advanced.overlayTheme.transcribingIcon.title")}
+            </div>
+            <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+              {transcribingIconViews.map((view) => (
+                <ChoiceButton
+                  key={view.value}
+                  view={view}
+                  selected={selectedTranscribingIcon === view.value}
+                  disabled={isTranscribingIconUpdating}
+                  onSelect={() =>
+                    updateSetting("overlay_transcribing_icon", view.value)
+                  }
+                />
+              ))}
             </div>
           </div>
         </div>

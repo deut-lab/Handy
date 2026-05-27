@@ -130,6 +130,18 @@ pub enum OverlayIconSet {
     Line,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum OverlayTranscribingIcon {
+    #[default]
+    ScanText,
+    SquareDashedText,
+    ScrollText,
+    TextCursorInput,
+    MessageSquareText,
+    TextInitial,
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
 #[serde(rename_all = "snake_case")]
 pub enum OverlayButtonStyle {
@@ -439,6 +451,8 @@ pub struct AppSettings {
     pub overlay_theme: OverlayTheme,
     #[serde(default)]
     pub overlay_icon_set: OverlayIconSet,
+    #[serde(default)]
+    pub overlay_transcribing_icon: OverlayTranscribingIcon,
     #[serde(default)]
     pub overlay_button_style: OverlayButtonStyle,
     #[serde(default)]
@@ -871,6 +885,7 @@ pub fn get_default_settings() -> AppSettings {
         overlay_position: default_overlay_position(),
         overlay_theme: OverlayTheme::default(),
         overlay_icon_set: OverlayIconSet::default(),
+        overlay_transcribing_icon: OverlayTranscribingIcon::default(),
         overlay_button_style: OverlayButtonStyle::default(),
         overlay_opacity: OverlayOpacity::default(),
         tray_icon_style: TrayIconStyle::default(),
@@ -1065,6 +1080,10 @@ mod tests {
         let settings = get_default_settings();
         assert_eq!(settings.overlay_theme, OverlayTheme::Calm);
         assert_eq!(settings.overlay_icon_set, OverlayIconSet::Original);
+        assert_eq!(
+            settings.overlay_transcribing_icon,
+            OverlayTranscribingIcon::ScanText
+        );
         assert_eq!(settings.overlay_button_style, OverlayButtonStyle::Circle);
         assert_eq!(settings.overlay_opacity, OverlayOpacity::Medium);
     }
@@ -1088,6 +1107,30 @@ mod tests {
         assert_eq!(
             serde_json::to_string(&OverlayIconSet::Line).unwrap(),
             "\"line\""
+        );
+        assert_eq!(
+            serde_json::to_string(&OverlayTranscribingIcon::ScanText).unwrap(),
+            "\"scan_text\""
+        );
+        assert_eq!(
+            serde_json::to_string(&OverlayTranscribingIcon::SquareDashedText).unwrap(),
+            "\"square_dashed_text\""
+        );
+        assert_eq!(
+            serde_json::to_string(&OverlayTranscribingIcon::ScrollText).unwrap(),
+            "\"scroll_text\""
+        );
+        assert_eq!(
+            serde_json::to_string(&OverlayTranscribingIcon::TextCursorInput).unwrap(),
+            "\"text_cursor_input\""
+        );
+        assert_eq!(
+            serde_json::to_string(&OverlayTranscribingIcon::MessageSquareText).unwrap(),
+            "\"message_square_text\""
+        );
+        assert_eq!(
+            serde_json::to_string(&OverlayTranscribingIcon::TextInitial).unwrap(),
+            "\"text_initial\""
         );
         assert_eq!(
             serde_json::to_string(&OverlayButtonStyle::Simple).unwrap(),
