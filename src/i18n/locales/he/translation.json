@@ -379,15 +379,31 @@
       },
       "overlayTheme": {
         "title": "Overlay style",
-        "description": "Choose the original, light, or dark recording overlay style.",
+        "description": "בחרו את סגנון חלון ההקלטה, ערכת הסמלים והשקיפות.",
         "options": {
           "classic": "Original",
           "calm": "Light",
-          "dark": "Dark"
+          "dark": "Dark",
+          "gray": "אפור"
         },
         "states": {
           "recording": "Recording",
           "transcribing": "Transcribing"
+        },
+        "iconSet": {
+          "title": "סמלים",
+          "options": {
+            "original": "מקוריים",
+            "line": "קוויים"
+          }
+        },
+        "opacity": {
+          "title": "שקיפות",
+          "options": {
+            "solid": "חזקה",
+            "medium": "בינונית",
+            "light": "קלה"
+          }
         }
       }
     },

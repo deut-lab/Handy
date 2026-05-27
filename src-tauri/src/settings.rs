@@ -120,6 +120,22 @@ pub enum OverlayTheme {
     Calm,
     Classic,
     Dark,
+    Gray,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
+#[serde(rename_all = "snake_case")]
+pub enum OverlayIconSet {
+    Original,
+    Line,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
+#[serde(rename_all = "snake_case")]
+pub enum OverlayOpacity {
+    Solid,
+    Medium,
+    Light,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
@@ -190,6 +206,18 @@ impl Default for KeyboardImplementation {
 impl Default for OverlayTheme {
     fn default() -> Self {
         OverlayTheme::Calm
+    }
+}
+
+impl Default for OverlayIconSet {
+    fn default() -> Self {
+        OverlayIconSet::Original
+    }
+}
+
+impl Default for OverlayOpacity {
+    fn default() -> Self {
+        OverlayOpacity::Medium
     }
 }
 
@@ -387,6 +415,10 @@ pub struct AppSettings {
     pub overlay_position: OverlayPosition,
     #[serde(default)]
     pub overlay_theme: OverlayTheme,
+    #[serde(default)]
+    pub overlay_icon_set: OverlayIconSet,
+    #[serde(default)]
+    pub overlay_opacity: OverlayOpacity,
     #[serde(default = "default_debug_mode")]
     pub debug_mode: bool,
     #[serde(default = "default_log_level")]
@@ -812,6 +844,8 @@ pub fn get_default_settings() -> AppSettings {
         selected_language: "auto".to_string(),
         overlay_position: default_overlay_position(),
         overlay_theme: OverlayTheme::default(),
+        overlay_icon_set: OverlayIconSet::default(),
+        overlay_opacity: OverlayOpacity::default(),
         debug_mode: false,
         log_level: default_log_level(),
         custom_words: Vec::new(),
@@ -996,6 +1030,42 @@ mod tests {
         let settings = get_default_settings();
         assert!(!settings.auto_stop_silence_enabled);
         assert_eq!(settings.auto_stop_silence_seconds, 5);
+    }
+
+    #[test]
+    fn default_overlay_visual_settings_keep_author_style() {
+        let settings = get_default_settings();
+        assert_eq!(settings.overlay_theme, OverlayTheme::Calm);
+        assert_eq!(settings.overlay_icon_set, OverlayIconSet::Original);
+        assert_eq!(settings.overlay_opacity, OverlayOpacity::Medium);
+    }
+
+    #[test]
+    fn overlay_visual_settings_use_stable_store_names() {
+        assert_eq!(
+            serde_json::to_string(&OverlayTheme::Gray).unwrap(),
+            "\"gray\""
+        );
+        assert_eq!(
+            serde_json::to_string(&OverlayIconSet::Original).unwrap(),
+            "\"original\""
+        );
+        assert_eq!(
+            serde_json::to_string(&OverlayIconSet::Line).unwrap(),
+            "\"line\""
+        );
+        assert_eq!(
+            serde_json::to_string(&OverlayOpacity::Solid).unwrap(),
+            "\"solid\""
+        );
+        assert_eq!(
+            serde_json::to_string(&OverlayOpacity::Medium).unwrap(),
+            "\"medium\""
+        );
+        assert_eq!(
+            serde_json::to_string(&OverlayOpacity::Light).unwrap(),
+            "\"light\""
+        );
     }
 
     #[test]

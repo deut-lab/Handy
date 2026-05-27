@@ -31,7 +31,7 @@ tauri_panel! {
     })
 }
 
-const OVERLAY_WIDTH: f64 = 216.0;
+const OVERLAY_WIDTH: f64 = 188.0;
 const OVERLAY_HEIGHT: f64 = 44.0;
 
 #[cfg(target_os = "macos")]
@@ -401,7 +401,7 @@ mod tests {
 
     #[test]
     fn overlay_window_fits_two_buttons() {
-        assert!(OVERLAY_WIDTH >= 216.0);
+        assert!(OVERLAY_WIDTH >= 188.0);
         assert!(OVERLAY_HEIGHT >= 44.0);
     }
 }

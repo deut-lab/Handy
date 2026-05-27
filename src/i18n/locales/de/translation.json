@@ -379,15 +379,31 @@
       },
       "overlayTheme": {
         "title": "Overlay style",
-        "description": "Choose the original, light, or dark recording overlay style.",
+        "description": "Wähle Stil, Symbolsatz und Transparenz der Aufnahmeleiste.",
         "options": {
           "classic": "Original",
           "calm": "Light",
-          "dark": "Dark"
+          "dark": "Dark",
+          "gray": "Grau"
         },
         "states": {
           "recording": "Recording",
           "transcribing": "Transcribing"
+        },
+        "iconSet": {
+          "title": "Symbole",
+          "options": {
+            "original": "Original",
+            "line": "Linien"
+          }
+        },
+        "opacity": {
+          "title": "Transparenz",
+          "options": {
+            "solid": "Stark",
+            "medium": "Mittel",
+            "light": "Leicht"
+          }
         }
       }
     },

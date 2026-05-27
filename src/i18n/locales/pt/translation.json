@@ -379,15 +379,31 @@
       },
       "overlayTheme": {
         "title": "Overlay style",
-        "description": "Choose the original, light, or dark recording overlay style.",
+        "description": "Escolha o estilo, o conjunto de ícones e a transparência da barra de gravação.",
         "options": {
           "classic": "Original",
           "calm": "Light",
-          "dark": "Dark"
+          "dark": "Dark",
+          "gray": "Cinza"
         },
         "states": {
           "recording": "Recording",
           "transcribing": "Transcribing"
+        },
+        "iconSet": {
+          "title": "Ícones",
+          "options": {
+            "original": "Originais",
+            "line": "Linha"
+          }
+        },
+        "opacity": {
+          "title": "Transparência",
+          "options": {
+            "solid": "Forte",
+            "medium": "Média",
+            "light": "Leve"
+          }
         }
       }
     },

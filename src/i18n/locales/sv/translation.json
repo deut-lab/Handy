@@ -379,15 +379,31 @@
       },
       "overlayTheme": {
         "title": "Overlay style",
-        "description": "Choose the original, light, or dark recording overlay style.",
+        "description": "Välj stil, ikonuppsättning och genomskinlighet för inspelningspanelen.",
         "options": {
           "classic": "Original",
           "calm": "Light",
-          "dark": "Dark"
+          "dark": "Dark",
+          "gray": "Grå"
         },
         "states": {
           "recording": "Recording",
           "transcribing": "Transcribing"
+        },
+        "iconSet": {
+          "title": "Ikoner",
+          "options": {
+            "original": "Original",
+            "line": "Linje"
+          }
+        },
+        "opacity": {
+          "title": "Genomskinlighet",
+          "options": {
+            "solid": "Tät",
+            "medium": "Mellan",
+            "light": "Lätt"
+          }
         }
       }
     },

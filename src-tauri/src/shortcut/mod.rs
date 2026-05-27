@@ -23,8 +23,8 @@ use tauri_plugin_autostart::ManagerExt;
 use crate::settings::APPLE_INTELLIGENCE_DEFAULT_MODEL_ID;
 use crate::settings::{
     self, get_settings, AutoSubmitKey, ClipboardHandling, KeyboardImplementation, LLMPrompt,
-    OverlayPosition, OverlayTheme, PasteMethod, ShortcutBinding, SoundTheme, TypingTool,
-    APPLE_INTELLIGENCE_PROVIDER_ID,
+    OverlayIconSet, OverlayOpacity, OverlayPosition, OverlayTheme, PasteMethod, ShortcutBinding,
+    SoundTheme, TypingTool, APPLE_INTELLIGENCE_PROVIDER_ID,
 };
 use crate::tray;
 
@@ -567,12 +567,51 @@ pub fn change_overlay_theme_setting(app: AppHandle, theme: String) -> Result<(),
         "calm" => OverlayTheme::Calm,
         "classic" => OverlayTheme::Classic,
         "dark" => OverlayTheme::Dark,
+        "gray" => OverlayTheme::Gray,
         other => {
             warn!("Invalid overlay theme '{}', defaulting to calm", other);
             OverlayTheme::Calm
         }
     };
     settings.overlay_theme = parsed;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_overlay_icon_set_setting(app: AppHandle, icon_set: String) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    let parsed = match icon_set.as_str() {
+        "original" => OverlayIconSet::Original,
+        "line" => OverlayIconSet::Line,
+        other => {
+            warn!(
+                "Invalid overlay icon set '{}', defaulting to original",
+                other
+            );
+            OverlayIconSet::Original
+        }
+    };
+    settings.overlay_icon_set = parsed;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_overlay_opacity_setting(app: AppHandle, opacity: String) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    let parsed = match opacity.as_str() {
+        "solid" => OverlayOpacity::Solid,
+        "medium" => OverlayOpacity::Medium,
+        "light" => OverlayOpacity::Light,
+        other => {
+            warn!("Invalid overlay opacity '{}', defaulting to medium", other);
+            OverlayOpacity::Medium
+        }
+    };
+    settings.overlay_opacity = parsed;
     settings::write_settings(&app, settings);
     Ok(())
 }

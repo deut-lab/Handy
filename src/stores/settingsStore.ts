@@ -114,6 +114,10 @@ const settingUpdaters: {
   overlay_position: (value) =>
     commands.changeOverlayPositionSetting(value as string),
   overlay_theme: (value) => commands.changeOverlayThemeSetting(value as string),
+  overlay_icon_set: (value) =>
+    commands.changeOverlayIconSetSetting(value as string),
+  overlay_opacity: (value) =>
+    commands.changeOverlayOpacitySetting(value as string),
   debug_mode: (value) => commands.changeDebugModeSetting(value as boolean),
   custom_words: (value) => commands.updateCustomWords(value as string[]),
   word_correction_threshold: (value) =>

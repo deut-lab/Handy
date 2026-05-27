@@ -3,7 +3,18 @@ import { Check, FileText, Mic, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "./RecordingOverlay.css";
-import { commands, type OverlayTheme } from "@/bindings";
+import {
+  CancelIcon,
+  InsertIcon,
+  MicrophoneIcon,
+  TranscriptionIcon,
+} from "@/components/icons";
+import {
+  commands,
+  type OverlayIconSet,
+  type OverlayOpacity,
+  type OverlayTheme,
+} from "@/bindings";
 import i18n, { syncLanguageFromSettings } from "@/i18n";
 import { getLanguageDirection } from "@/lib/utils/rtl";
 
@@ -13,6 +24,7 @@ const themeIconColor: Record<OverlayTheme, string> = {
   calm: "#2f5f73",
   classic: "#faa2ca",
   dark: "#8bb9c9",
+  gray: "#59636b",
 };
 
 const RecordingOverlay: React.FC = () => {
@@ -20,6 +32,8 @@ const RecordingOverlay: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [state, setState] = useState<OverlayState>("recording");
   const [theme, setTheme] = useState<OverlayTheme>("calm");
+  const [iconSet, setIconSet] = useState<OverlayIconSet>("original");
+  const [opacity, setOpacity] = useState<OverlayOpacity>("medium");
   const [levels, setLevels] = useState<number[]>(Array(16).fill(0));
   const smoothedLevelsRef = useRef<number[]>(Array(16).fill(0));
   const direction = getLanguageDirection(i18n.language);
@@ -29,6 +43,8 @@ const RecordingOverlay: React.FC = () => {
       const result = await commands.getAppSettings();
       if (result.status === "ok") {
         setTheme(result.data.overlay_theme ?? "calm");
+        setIconSet(result.data.overlay_icon_set ?? "original");
+        setOpacity(result.data.overlay_opacity ?? "medium");
       }
     };
 
@@ -59,7 +75,7 @@ const RecordingOverlay: React.FC = () => {
         });
 
         smoothedLevelsRef.current = smoothed;
-        setLevels(smoothed.slice(0, 9));
+        setLevels(smoothed.slice(0, 5));
       });
 
       // Cleanup function
@@ -73,8 +89,16 @@ const RecordingOverlay: React.FC = () => {
     setupEventListeners();
   }, []);
 
-  const getIcon = () => {
+  const getStatusIcon = () => {
     const iconColor = themeIconColor[theme];
+
+    if (iconSet === "original") {
+      if (state === "recording") {
+        return <MicrophoneIcon width={18} height={18} color={iconColor} />;
+      }
+
+      return <TranscriptionIcon width={18} height={18} color={iconColor} />;
+    }
 
     if (state === "recording") {
       return <Mic size={18} strokeWidth={2.2} color={iconColor} />;
@@ -83,14 +107,30 @@ const RecordingOverlay: React.FC = () => {
     return <FileText size={18} strokeWidth={2.2} color={iconColor} />;
   };
 
+  const getFinishIcon = () => {
+    if (iconSet === "original") {
+      return <InsertIcon width={15} height={15} color="currentColor" />;
+    }
+
+    return <Check size={14} strokeWidth={2.4} />;
+  };
+
+  const getCancelIcon = () => {
+    if (iconSet === "original") {
+      return <CancelIcon width={15} height={15} color="currentColor" />;
+    }
+
+    return <X size={14} strokeWidth={2.4} />;
+  };
+
   return (
     <div
       dir={direction}
-      className={`recording-overlay recording-overlay-${theme} ${
+      className={`recording-overlay recording-overlay-${theme} recording-overlay-opacity-${opacity} ${
         isVisible ? "fade-in" : ""
       }`}
     >
-      <div className="overlay-left">{getIcon()}</div>
+      <div className="overlay-left">{getStatusIcon()}</div>
 
       <div className="overlay-middle">
         {state === "recording" && (
@@ -100,9 +140,9 @@ const RecordingOverlay: React.FC = () => {
                 key={i}
                 className="bar"
                 style={{
-                  height: `${Math.min(20, 4 + Math.pow(v, 0.7) * 16)}px`, // Cap at 20px max height
+                  height: `${Math.min(16, 3 + Math.pow(v, 0.7) * 13)}px`,
                   transition: "height 60ms ease-out, opacity 120ms ease-out",
-                  opacity: Math.max(0.2, v * 1.7), // Minimum opacity for visibility
+                  opacity: Math.max(0.2, v * 1.7),
                 }}
               />
             ))}
@@ -128,7 +168,7 @@ const RecordingOverlay: React.FC = () => {
                 commands.finishWithoutSubmit();
               }}
             >
-              <Check size={16} strokeWidth={2.4} />
+              {getFinishIcon()}
             </button>
             <button
               type="button"
@@ -139,7 +179,7 @@ const RecordingOverlay: React.FC = () => {
                 commands.cancelOperation();
               }}
             >
-              <X size={16} strokeWidth={2.4} />
+              {getCancelIcon()}
             </button>
           </div>
         )}

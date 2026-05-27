@@ -379,15 +379,31 @@
       },
       "overlayTheme": {
         "title": "Overlay style",
-        "description": "Choose the original, light, or dark recording overlay style.",
+        "description": "Виберіть стиль панелі запису, набір значків і прозорість.",
         "options": {
           "classic": "Original",
           "calm": "Light",
-          "dark": "Dark"
+          "dark": "Dark",
+          "gray": "Сірий"
         },
         "states": {
           "recording": "Recording",
           "transcribing": "Transcribing"
+        },
+        "iconSet": {
+          "title": "Значки",
+          "options": {
+            "original": "Оригінальні",
+            "line": "Лінійні"
+          }
+        },
+        "opacity": {
+          "title": "Прозорість",
+          "options": {
+            "solid": "Щільна",
+            "medium": "Середня",
+            "light": "Легка"
+          }
         }
       }
     },

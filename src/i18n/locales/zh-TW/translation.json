@@ -379,15 +379,31 @@
       },
       "overlayTheme": {
         "title": "Overlay style",
-        "description": "Choose the original, light, or dark recording overlay style.",
+        "description": "選擇錄音浮層樣式、圖示組和透明度。",
         "options": {
           "classic": "Original",
           "calm": "Light",
-          "dark": "Dark"
+          "dark": "Dark",
+          "gray": "灰色"
         },
         "states": {
           "recording": "Recording",
           "transcribing": "Transcribing"
+        },
+        "iconSet": {
+          "title": "圖示",
+          "options": {
+            "original": "原版",
+            "line": "線條"
+          }
+        },
+        "opacity": {
+          "title": "透明度",
+          "options": {
+            "solid": "較實",
+            "medium": "中等",
+            "light": "較淡"
+          }
         }
       }
     },

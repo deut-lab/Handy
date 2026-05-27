@@ -379,15 +379,31 @@
       },
       "overlayTheme": {
         "title": "Overlay style",
-        "description": "Choose the original, light, or dark recording overlay style.",
+        "description": "녹음 오버레이의 스타일, 아이콘 세트, 투명도를 선택합니다.",
         "options": {
           "classic": "Original",
           "calm": "Light",
-          "dark": "Dark"
+          "dark": "Dark",
+          "gray": "회색"
         },
         "states": {
           "recording": "Recording",
           "transcribing": "Transcribing"
+        },
+        "iconSet": {
+          "title": "아이콘",
+          "options": {
+            "original": "원본",
+            "line": "라인"
+          }
+        },
+        "opacity": {
+          "title": "투명도",
+          "options": {
+            "solid": "진하게",
+            "medium": "보통",
+            "light": "연하게"
+          }
         }
       }
     },
