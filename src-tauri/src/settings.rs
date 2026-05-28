@@ -429,6 +429,10 @@ pub struct AppSettings {
     pub start_hidden: bool,
     #[serde(default = "default_autostart_enabled")]
     pub autostart_enabled: bool,
+    #[serde(default = "default_windows_task_startup_enabled")]
+    pub windows_task_startup_enabled: bool,
+    #[serde(default = "default_windows_task_startup_admin")]
+    pub windows_task_startup_admin: bool,
     #[serde(default = "default_update_checks_enabled")]
     pub update_checks_enabled: bool,
     #[serde(default = "default_model")]
@@ -548,6 +552,14 @@ fn default_start_hidden() -> bool {
 
 fn default_autostart_enabled() -> bool {
     false
+}
+
+fn default_windows_task_startup_enabled() -> bool {
+    cfg!(target_os = "windows")
+}
+
+fn default_windows_task_startup_admin() -> bool {
+    cfg!(target_os = "windows")
 }
 
 fn default_update_checks_enabled() -> bool {
@@ -874,6 +886,8 @@ pub fn get_default_settings() -> AppSettings {
         sound_theme: default_sound_theme(),
         start_hidden: default_start_hidden(),
         autostart_enabled: default_autostart_enabled(),
+        windows_task_startup_enabled: default_windows_task_startup_enabled(),
+        windows_task_startup_admin: default_windows_task_startup_admin(),
         update_checks_enabled: default_update_checks_enabled(),
         selected_model: "".to_string(),
         always_on_microphone: false,
@@ -1073,6 +1087,23 @@ mod tests {
         let settings = get_default_settings();
         assert!(!settings.auto_stop_silence_enabled);
         assert_eq!(settings.auto_stop_silence_seconds, 5);
+    }
+
+    #[test]
+    fn default_windows_task_startup_settings_follow_platform() {
+        let settings = get_default_settings();
+
+        #[cfg(target_os = "windows")]
+        {
+            assert!(settings.windows_task_startup_enabled);
+            assert!(settings.windows_task_startup_admin);
+        }
+
+        #[cfg(not(target_os = "windows"))]
+        {
+            assert!(!settings.windows_task_startup_enabled);
+            assert!(!settings.windows_task_startup_admin);
+        }
     }
 
     #[test]

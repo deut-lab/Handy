@@ -27,12 +27,16 @@ export const AboutSettings: React.FC = () => {
     fetchVersion();
   }, []);
 
-  const handleDonateClick = async () => {
+  const openLink = async (url: string) => {
     try {
-      await openUrl("https://handy.computer/donate");
+      await openUrl(url);
     } catch (error) {
-      console.error("Failed to open donate link:", error);
+      console.error("Failed to open link:", error);
     }
+  };
+
+  const handleDonateClick = () => {
+    void openLink("https://handy.computer/donate");
   };
 
   return (
@@ -66,9 +70,45 @@ export const AboutSettings: React.FC = () => {
           <Button
             variant="secondary"
             size="md"
-            onClick={() => openUrl("https://github.com/cjpais/Handy")}
+            onClick={() => {
+              void openLink("https://github.com/cjpais/Handy");
+            }}
           >
             {t("settings.about.sourceCode.button")}
+          </Button>
+        </SettingContainer>
+
+        <SettingContainer
+          title={t("settings.about.updatedSource.title")}
+          description={t("settings.about.updatedSource.description")}
+          grouped={true}
+        >
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => {
+              void openLink("https://github.com/deut-lab/Handy");
+            }}
+          >
+            {t("settings.about.updatedSource.button")}
+          </Button>
+        </SettingContainer>
+
+        <SettingContainer
+          title={t("settings.about.readyInstaller.title")}
+          description={t("settings.about.readyInstaller.description")}
+          grouped={true}
+        >
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => {
+              void openLink(
+                "https://github.com/deut-lab/Handy/releases/latest",
+              );
+            }}
+          >
+            {t("settings.about.readyInstaller.button")}
           </Button>
         </SettingContainer>
 

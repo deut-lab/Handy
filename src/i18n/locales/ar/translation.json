@@ -410,6 +410,14 @@
           "states": "States",
           "logo": "Always logo"
         }
+      },
+      "windowsTaskStartup": {
+        "label": "Start with Windows task",
+        "description": "Reliable startup when you sign in to Windows. Uses a Windows task instead of the regular startup entry."
+      },
+      "windowsTaskStartupAdmin": {
+        "label": "Run with administrator rights",
+        "description": "Start the Windows task with elevated rights so Handy works over windows that were started as administrator."
       }
     },
     "postProcessing": {
@@ -574,9 +582,9 @@
         "description": "الموقع الذي يخزن فيه Handy بياناته"
       },
       "sourceCode": {
-        "title": "كود المصدر",
-        "description": "عرض كود المصدر والمساهمة",
-        "button": "عرض على GitHub"
+        "title": "Original Source Code",
+        "description": "Original Handy source code by cjpais",
+        "button": "Open original"
       },
       "supportDevelopment": {
         "title": "دعم التطوير",
@@ -590,6 +598,16 @@
           "description": "استنتاج عالي الأداء لنموذج التعرف التلقائي على الكلام Whisper من OpenAI",
           "details": ".يستخدم Handy برنامج Whisper.cpp لمعالجة سريعة ومحلية لتحويل الكلام إلى نص. شكراً للعمل الرائع الذي قام به Georgi Gerganov والمساهمون"
         }
+      },
+      "updatedSource": {
+        "title": "Updated Version",
+        "description": "Handy fork with stop after silence, insert without Enter, overlay themes, icon choices, transparency, feedback sounds, and reliable Windows task startup.",
+        "button": "Open updated version"
+      },
+      "readyInstaller": {
+        "title": "Ready Installer",
+        "description": "Latest ready release of the updated version.",
+        "button": "Download"
       }
     },
     "modelSettings": {

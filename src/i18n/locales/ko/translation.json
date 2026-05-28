@@ -432,6 +432,14 @@
           "states": "States",
           "logo": "Always logo"
         }
+      },
+      "windowsTaskStartup": {
+        "label": "Start with Windows task",
+        "description": "Reliable startup when you sign in to Windows. Uses a Windows task instead of the regular startup entry."
+      },
+      "windowsTaskStartupAdmin": {
+        "label": "Run with administrator rights",
+        "description": "Start the Windows task with elevated rights so Handy works over windows that were started as administrator."
       }
     },
     "postProcessing": {
@@ -596,9 +604,9 @@
         "description": "Handy가 데이터를 저장하는 위치"
       },
       "sourceCode": {
-        "title": "소스 코드",
-        "description": "소스 코드 보기 및 기여",
-        "button": "GitHub에서 보기"
+        "title": "Original Source Code",
+        "description": "Original Handy source code by cjpais",
+        "button": "Open original"
       },
       "supportDevelopment": {
         "title": "개발 지원",
@@ -612,6 +620,16 @@
           "description": "OpenAI의 Whisper 자동 음성 인식 모델의 고성능 추론",
           "details": "Handy는 빠르고 로컬 음성-텍스트 처리를 위해 Whisper.cpp를 사용합니다. Georgi Gerganov와 기여자들의 놀라운 작업에 감사드립니다."
         }
+      },
+      "updatedSource": {
+        "title": "Updated Version",
+        "description": "Handy fork with stop after silence, insert without Enter, overlay themes, icon choices, transparency, feedback sounds, and reliable Windows task startup.",
+        "button": "Open updated version"
+      },
+      "readyInstaller": {
+        "title": "Ready Installer",
+        "description": "Latest ready release of the updated version.",
+        "button": "Download"
       }
     }
   },

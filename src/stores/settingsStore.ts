@@ -86,6 +86,10 @@ const settingUpdaters: {
   start_hidden: (value) => commands.changeStartHiddenSetting(value as boolean),
   autostart_enabled: (value) =>
     commands.changeAutostartSetting(value as boolean),
+  windows_task_startup_enabled: (value) =>
+    commands.changeWindowsTaskStartupSetting(value as boolean),
+  windows_task_startup_admin: (value) =>
+    commands.changeWindowsTaskStartupAdminSetting(value as boolean),
   update_checks_enabled: (value) =>
     commands.changeUpdateChecksSetting(value as boolean),
   push_to_talk: (value) => commands.changePttSetting(value as boolean),

@@ -77,6 +77,10 @@ Var OldMainBinaryName
 
 ; --- PORTABLE MODE ---
 Var PortableMode
+Var WindowsTaskStartup
+Var WindowsTaskStartupAdmin
+Var WindowsTaskStartupCheckbox
+Var WindowsTaskStartupAdminCheckbox
 
 Name "${PRODUCTNAME}"
 BrandingText "${COPYRIGHT}"
@@ -217,6 +221,7 @@ Function PageLeaveInstallType
   ${NSD_GetState} $InstallTypeRadioPortable $0
   ${If} $0 = ${BST_CHECKED}
     StrCpy $PortableMode 1
+    StrCpy $WindowsTaskStartup 0
     ; --- PORTABLE MODE --- Switch default directory to Desktop\Handy for portable
     ${If} $INSTDIR == "${PLACEHOLDER_INSTALL_DIR}"
     ${OrIf} $INSTDIR == "$LOCALAPPDATA\${PRODUCTNAME}"
@@ -224,6 +229,7 @@ Function PageLeaveInstallType
     ${EndIf}
   ${Else}
     StrCpy $PortableMode 0
+    StrCpy $WindowsTaskStartup 1
     ; Restore normal default if user switched back from portable
     ${If} $INSTDIR == "$DESKTOP\${PRODUCTNAME}"
       StrCpy $INSTDIR "$LOCALAPPDATA\${PRODUCTNAME}"
@@ -231,6 +237,60 @@ Function PageLeaveInstallType
   ${EndIf}
 FunctionEnd
 ; --- END PORTABLE MODE ---
+
+Page custom PageWindowsTaskStartup PageLeaveWindowsTaskStartup
+
+Function PageWindowsTaskStartup
+  ${If} $PassiveMode = 1
+  ${OrIf} ${Silent}
+  ${OrIf} $UpdateMode = 1
+  ${OrIf} $PortableMode = 1
+    Abort
+  ${EndIf}
+
+  !insertmacro MUI_HEADER_TEXT "Windows Startup" "Choose the reliable startup method for ${PRODUCTNAME}."
+
+  nsDialogs::Create 1018
+  Pop $0
+  ${If} $0 == error
+    Abort
+  ${EndIf}
+
+  ${NSD_CreateLabel} 0 0 100% 28u "Regular Windows startup can fail. We recommend starting ${PRODUCTNAME} with a Windows task."
+  Pop $0
+
+  ${NSD_CreateCheckbox} 30u 42u -30u 12u "Start with a Windows task (recommended)"
+  Pop $WindowsTaskStartupCheckbox
+
+  ${NSD_CreateCheckbox} 30u 68u -30u 12u "Run that task with administrator rights (recommended)"
+  Pop $WindowsTaskStartupAdminCheckbox
+
+  ${If} $WindowsTaskStartup = 1
+    ${NSD_Check} $WindowsTaskStartupCheckbox
+  ${EndIf}
+
+  ${If} $WindowsTaskStartupAdmin = 1
+    ${NSD_Check} $WindowsTaskStartupAdminCheckbox
+  ${EndIf}
+
+  nsDialogs::Show
+FunctionEnd
+
+Function PageLeaveWindowsTaskStartup
+  ${NSD_GetState} $WindowsTaskStartupCheckbox $0
+  ${If} $0 = ${BST_CHECKED}
+    StrCpy $WindowsTaskStartup 1
+  ${Else}
+    StrCpy $WindowsTaskStartup 0
+  ${EndIf}
+
+  ${NSD_GetState} $WindowsTaskStartupAdminCheckbox $0
+  ${If} $0 = ${BST_CHECKED}
+    StrCpy $WindowsTaskStartupAdmin 1
+  ${Else}
+    StrCpy $WindowsTaskStartupAdmin 0
+  ${EndIf}
+FunctionEnd
 
 ; 5. (was 4) Custom page to ask user if he wants to reinstall/uninstall
 ;    only if a previous installation was detected
@@ -474,7 +534,47 @@ Var AppStartMenuFolder
 !insertmacro MUI_PAGE_FINISH
 
 Function RunMainBinary
-  nsis_tauri_utils::RunAsUser "$INSTDIR\${MAINBINARYNAME}.exe" ""
+  ${If} $PortableMode <> 1
+  ${AndIf} $WindowsTaskStartup = 1
+    Call StartWindowsTaskStartup
+  ${Else}
+    nsis_tauri_utils::RunAsUser "$INSTDIR\${MAINBINARYNAME}.exe" ""
+  ${EndIf}
+FunctionEnd
+
+Function ApplyWindowsTaskStartup
+  ${If} $PortableMode = 1
+    Return
+  ${EndIf}
+
+  ${If} $WindowsTaskStartup <> 1
+    Call RemoveWindowsTaskStartup
+    Return
+  ${EndIf}
+
+  ${If} $WindowsTaskStartupAdmin = 1
+    StrCpy $0 "1"
+  ${Else}
+    StrCpy $0 "0"
+  ${EndIf}
+
+  ExecWait 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$INSTDIR\resources\windows_startup_task.ps1" -Mode install -ExePath "$INSTDIR\${MAINBINARYNAME}.exe" -WorkingDirectory "$INSTDIR" -Admin $0' $1
+  DetailPrint "Windows task startup setup exit code: $1"
+FunctionEnd
+
+Function StartWindowsTaskStartup
+  ExecWait 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$INSTDIR\resources\windows_startup_task.ps1" -Mode start' $1
+  DetailPrint "Windows task startup run exit code: $1"
+FunctionEnd
+
+Function RemoveWindowsTaskStartup
+  ExecWait 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$INSTDIR\resources\windows_startup_task.ps1" -Mode remove' $1
+  DetailPrint "Windows task startup remove exit code: $1"
+FunctionEnd
+
+Function un.RemoveWindowsTaskStartup
+  ExecWait 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$INSTDIR\resources\windows_startup_task.ps1" -Mode remove' $1
+  DetailPrint "Windows task startup remove exit code: $1"
 FunctionEnd
 
 ; Uninstaller Pages
@@ -532,6 +632,9 @@ FunctionEnd
 {{/each}}
 
 Function .onInit
+  StrCpy $WindowsTaskStartup 1
+  StrCpy $WindowsTaskStartupAdmin 1
+
   ${GetOptions} $CMDLINE "/P" $PassiveMode
   ${IfNot} ${Errors}
     StrCpy $PassiveMode 1
@@ -547,10 +650,21 @@ Function .onInit
     StrCpy $UpdateMode 1
   ${EndIf}
 
+  ${GetOptions} $CMDLINE "/NO_WINDOWS_TASK" $R0
+  ${IfNot} ${Errors}
+    StrCpy $WindowsTaskStartup 0
+  ${EndIf}
+
+  ${GetOptions} $CMDLINE "/NO_WINDOWS_TASK_ADMIN" $R0
+  ${IfNot} ${Errors}
+    StrCpy $WindowsTaskStartupAdmin 0
+  ${EndIf}
+
   ; --- PORTABLE MODE --- Parse /PORTABLE flag for silent/passive installs
   ${GetOptions} $CMDLINE "/PORTABLE" $PortableMode
   ${IfNot} ${Errors}
     StrCpy $PortableMode 1
+    StrCpy $WindowsTaskStartup 0
   ${EndIf}
 
   !if "${DISPLAYLANGUAGESELECTOR}" == "true"
@@ -830,6 +944,8 @@ Section Install
     ${OrIf} ${Silent}
       Call CreateOrUpdateDesktopShortcut
     ${EndIf}
+
+    Call ApplyWindowsTaskStartup
   ${EndIf} ; --- END PORTABLE MODE guard ---
 
   !ifmacrodef NSIS_HOOK_POSTINSTALL
@@ -850,7 +966,12 @@ Function .onInstSuccess
     ${GetOptions} $CMDLINE "/R" $R0
     ${IfNot} ${Errors}
       ${GetOptions} $CMDLINE "/ARGS" $R0
-      nsis_tauri_utils::RunAsUser "$INSTDIR\${MAINBINARYNAME}.exe" "$R0"
+      ${If} $PortableMode <> 1
+      ${AndIf} $WindowsTaskStartup = 1
+        Call StartWindowsTaskStartup
+      ${Else}
+        nsis_tauri_utils::RunAsUser "$INSTDIR\${MAINBINARYNAME}.exe" "$R0"
+      ${EndIf}
     ${EndIf}
   ${EndIf}
 FunctionEnd
@@ -882,6 +1003,10 @@ Section Uninstall
   !endif
 
   !insertmacro CheckIfAppIsRunning "${MAINBINARYNAME}.exe" "${PRODUCTNAME}"
+
+  ${If} $UpdateMode <> 1
+    Call un.RemoveWindowsTaskStartup
+  ${EndIf}
 
   ; Delete the app directory and its content from disk
   ; Copy main executable

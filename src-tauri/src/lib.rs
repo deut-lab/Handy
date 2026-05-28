@@ -19,6 +19,7 @@ mod transcription_coordinator;
 mod tray;
 mod tray_i18n;
 mod utils;
+mod windows_startup;
 
 pub use cli::CliArgs;
 #[cfg(debug_assertions)]
@@ -295,6 +296,14 @@ fn initialize_core_logic(app_handle: &AppHandle) {
         let _ = autostart_manager.disable();
     }
 
+    if let Err(err) = windows_startup::sync_task(
+        app_handle,
+        settings.windows_task_startup_enabled,
+        settings.windows_task_startup_admin,
+    ) {
+        log::warn!("Failed to sync Windows startup task: {}", err);
+    }
+
     // Create the recording overlay window (hidden by default)
     utils::create_recording_overlay(app_handle);
 }
@@ -337,6 +346,8 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_sound_theme_setting,
             shortcut::change_start_hidden_setting,
             shortcut::change_autostart_setting,
+            shortcut::change_windows_task_startup_setting,
+            shortcut::change_windows_task_startup_admin_setting,
             shortcut::change_translate_to_english_setting,
             shortcut::change_selected_language_setting,
             shortcut::change_overlay_position_setting,

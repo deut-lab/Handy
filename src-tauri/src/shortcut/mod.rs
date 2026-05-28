@@ -28,6 +28,7 @@ use crate::settings::{
     APPLE_INTELLIGENCE_PROVIDER_ID,
 };
 use crate::tray;
+use crate::windows_startup;
 
 // Note: Commands are accessed via shortcut::handy_keys:: in lib.rs
 
@@ -744,6 +745,57 @@ pub fn change_autostart_setting(app: AppHandle, enabled: bool) -> Result<(), Str
         "settings-changed",
         serde_json::json!({
             "setting": "autostart_enabled",
+            "value": enabled
+        }),
+    );
+
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_windows_task_startup_setting(app: AppHandle, enabled: bool) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.windows_task_startup_enabled = enabled;
+    let admin = settings.windows_task_startup_admin;
+    settings::write_settings(&app, settings);
+
+    if let Err(err) = windows_startup::sync_task(&app, enabled, admin) {
+        warn!("Failed to update Windows startup task: {}", err);
+    }
+
+    let _ = app.emit(
+        "settings-changed",
+        serde_json::json!({
+            "setting": "windows_task_startup_enabled",
+            "value": enabled
+        }),
+    );
+
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_windows_task_startup_admin_setting(
+    app: AppHandle,
+    enabled: bool,
+) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.windows_task_startup_admin = enabled;
+    let task_enabled = settings.windows_task_startup_enabled;
+    settings::write_settings(&app, settings);
+
+    if task_enabled {
+        if let Err(err) = windows_startup::sync_task(&app, true, enabled) {
+            warn!("Failed to update Windows startup task rights: {}", err);
+        }
+    }
+
+    let _ = app.emit(
+        "settings-changed",
+        serde_json::json!({
+            "setting": "windows_task_startup_admin",
             "value": enabled
         }),
     );
