@@ -188,6 +188,7 @@ pub fn update_tray_menu(app: &AppHandle, state: &TrayIconState, locale: Option<&
                     &copy_last_transcript_i,
                     &separator(),
                     &settings_i,
+                    &separator(),
                     &quit_i,
                 ],
             )
@@ -201,6 +202,7 @@ pub fn update_tray_menu(app: &AppHandle, state: &TrayIconState, locale: Option<&
                 &model_submenu,
                 &separator(),
                 &settings_i,
+                &separator(),
                 &quit_i,
             ],
         )

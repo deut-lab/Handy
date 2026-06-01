@@ -26,13 +26,31 @@ export const SoundPicker: React.FC<SoundPickerProps> = ({
 
   const selectedTheme = getSetting("sound_theme") ?? "marimba";
 
-  const themeList: SoundTheme[] = ["marimba", "pop", "bell", "chime", "pluck"];
+  const themeList: SoundTheme[] = [
+    "marimba",
+    "pop",
+    "bell",
+    "chime",
+    "pluck",
+    "switcher",
+    "click",
+    "mouse",
+    "soft_switch",
+    "bright_switch",
+    "minimal",
+  ];
   const themeLabels: Record<SoundTheme, string> = {
     marimba: t("settings.sound.soundTheme.options.marimba"),
     pop: t("settings.sound.soundTheme.options.pop"),
     bell: t("settings.sound.soundTheme.options.bell"),
     chime: t("settings.sound.soundTheme.options.chime"),
     pluck: t("settings.sound.soundTheme.options.pluck"),
+    switcher: t("settings.sound.soundTheme.options.switcher"),
+    click: t("settings.sound.soundTheme.options.click"),
+    mouse: t("settings.sound.soundTheme.options.mouse"),
+    soft_switch: t("settings.sound.soundTheme.options.softSwitch"),
+    bright_switch: t("settings.sound.soundTheme.options.brightSwitch"),
+    minimal: t("settings.sound.soundTheme.options.minimal"),
     custom: t("settings.sound.soundTheme.options.custom"),
   };
 

@@ -315,6 +315,12 @@ pub enum SoundTheme {
     Bell,
     Chime,
     Pluck,
+    Switcher,
+    Click,
+    Mouse,
+    SoftSwitch,
+    BrightSwitch,
+    Minimal,
     Custom,
 }
 
@@ -326,6 +332,12 @@ impl SoundTheme {
             SoundTheme::Bell => "bell",
             SoundTheme::Chime => "chime",
             SoundTheme::Pluck => "pluck",
+            SoundTheme::Switcher => "switcher",
+            SoundTheme::Click => "click",
+            SoundTheme::Mouse => "mouse",
+            SoundTheme::SoftSwitch => "soft_switch",
+            SoundTheme::BrightSwitch => "bright_switch",
+            SoundTheme::Minimal => "minimal",
             SoundTheme::Custom => "custom",
         }
     }
@@ -1205,6 +1217,12 @@ mod tests {
             (SoundTheme::Bell, "bell"),
             (SoundTheme::Chime, "chime"),
             (SoundTheme::Pluck, "pluck"),
+            (SoundTheme::Switcher, "switcher"),
+            (SoundTheme::Click, "click"),
+            (SoundTheme::Mouse, "mouse"),
+            (SoundTheme::SoftSwitch, "soft_switch"),
+            (SoundTheme::BrightSwitch, "bright_switch"),
+            (SoundTheme::Minimal, "minimal"),
         ];
 
         for (theme, name) in themes {
