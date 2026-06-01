@@ -1,6 +1,5 @@
 use crate::managers::history::{HistoryEntry, HistoryManager};
 use crate::managers::model::ModelManager;
-use crate::managers::transcription::TranscriptionManager;
 use crate::settings;
 use crate::settings::TrayIconStyle;
 use crate::tray_i18n::get_tray_translations;
@@ -131,32 +130,10 @@ pub fn update_tray_menu(app: &AppHandle, state: &TrayIconState, locale: Option<&
     let locale = locale.unwrap_or(&settings.app_language);
     let strings = get_tray_translations(Some(locale.to_string()));
 
-    // Platform-specific accelerators
-    #[cfg(target_os = "macos")]
-    let (settings_accelerator, quit_accelerator) = (Some("Cmd+,"), Some("Cmd+Q"));
-    #[cfg(not(target_os = "macos"))]
-    let (settings_accelerator, quit_accelerator) = (Some("Ctrl+,"), Some("Ctrl+Q"));
-
     // Create common menu items
     let version_label = version_label();
-    let version_i = MenuItem::with_id(app, "version", &version_label, false, None::<&str>)
-        .expect("failed to create version item");
-    let settings_i = MenuItem::with_id(
-        app,
-        "settings",
-        &strings.settings,
-        true,
-        settings_accelerator,
-    )
-    .expect("failed to create settings item");
-    let check_updates_i = MenuItem::with_id(
-        app,
-        "check_updates",
-        &strings.check_updates,
-        settings.update_checks_enabled,
-        None::<&str>,
-    )
-    .expect("failed to create check updates item");
+    let settings_i = MenuItem::with_id(app, "settings", &strings.settings, true, None::<&str>)
+        .expect("failed to create settings item");
     let copy_last_transcript_i = MenuItem::with_id(
         app,
         "copy_last_transcript",
@@ -165,8 +142,7 @@ pub fn update_tray_menu(app: &AppHandle, state: &TrayIconState, locale: Option<&
         None::<&str>,
     )
     .expect("failed to create copy last transcript item");
-    let model_loaded = app.state::<Arc<TranscriptionManager>>().is_model_loaded();
-    let quit_i = MenuItem::with_id(app, "quit", &strings.quit, true, quit_accelerator)
+    let quit_i = MenuItem::with_id(app, "quit", &strings.quit, true, None::<&str>)
         .expect("failed to create quit item");
     let separator = || PredefinedMenuItem::separator(app).expect("failed to create separator");
 
@@ -200,15 +176,6 @@ pub fn update_tray_menu(app: &AppHandle, state: &TrayIconState, locale: Option<&
         submenu
     };
 
-    let unload_model_i = MenuItem::with_id(
-        app,
-        "unload_model",
-        &strings.unload_model,
-        model_loaded,
-        None::<&str>,
-    )
-    .expect("failed to create unload model item");
-
     let menu = match state {
         TrayIconState::Recording | TrayIconState::Transcribing => {
             let cancel_i = MenuItem::with_id(app, "cancel", &strings.cancel, true, None::<&str>)
@@ -216,15 +183,11 @@ pub fn update_tray_menu(app: &AppHandle, state: &TrayIconState, locale: Option<&
             Menu::with_items(
                 app,
                 &[
-                    &version_i,
-                    &separator(),
                     &cancel_i,
                     &separator(),
                     &copy_last_transcript_i,
                     &separator(),
                     &settings_i,
-                    &check_updates_i,
-                    &separator(),
                     &quit_i,
                 ],
             )
@@ -233,16 +196,11 @@ pub fn update_tray_menu(app: &AppHandle, state: &TrayIconState, locale: Option<&
         TrayIconState::Idle => Menu::with_items(
             app,
             &[
-                &version_i,
-                &separator(),
                 &copy_last_transcript_i,
                 &separator(),
                 &model_submenu,
-                &unload_model_i,
                 &separator(),
                 &settings_i,
-                &check_updates_i,
-                &separator(),
                 &quit_i,
             ],
         )

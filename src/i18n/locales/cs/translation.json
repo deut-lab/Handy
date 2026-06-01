@@ -1,9 +1,7 @@
 {
   "tray": {
     "settings": "Nastavení...",
-    "checkUpdates": "Zkontrolovat aktualizace...",
     "copyLastTranscript": "Zkopírovat poslední přepis",
-    "unloadModel": "Uvolnit model",
     "model": "Model",
     "quit": "Ukončit",
     "cancel": "Zrušit"

@@ -1,9 +1,7 @@
 {
   "tray": {
-    "settings": "Settings...",
-    "checkUpdates": "Check for Updates...",
-    "copyLastTranscript": "Copy Last Transcript",
-    "unloadModel": "Unload Model",
+    "settings": "Settings",
+    "copyLastTranscript": "Copy Last Transcription",
     "model": "Model",
     "quit": "Quit",
     "cancel": "Cancel"

@@ -1,9 +1,7 @@
 {
   "tray": {
     "settings": "Configuración...",
-    "checkUpdates": "Buscar actualizaciones...",
     "copyLastTranscript": "Copiar la última transcripción",
-    "unloadModel": "Descargar modelo",
     "model": "Modelo",
     "quit": "Salir",
     "cancel": "Cancelar"

@@ -1,9 +1,7 @@
 {
   "tray": {
-    "settings": "Настройки...",
-    "checkUpdates": "Проверить обновления...",
+    "settings": "Настройки",
     "copyLastTranscript": "Скопировать последнюю транскрипцию",
-    "unloadModel": "Выгрузить модель",
     "model": "Модель",
     "quit": "Выход",
     "cancel": "Отмена"
