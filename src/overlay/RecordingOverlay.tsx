@@ -24,10 +24,10 @@ import { getLanguageDirection } from "@/lib/utils/rtl";
 type OverlayState = "recording" | "transcribing" | "processing";
 
 const themeIconColor: Record<OverlayTheme, string> = {
-  calm: "#2f5f73",
+  calm: "#127f78",
   classic: "#faa2ca",
-  dark: "#8bb9c9",
-  gray: "#59636b",
+  dark: "#74d7b4",
+  gray: "#2f7669",
 };
 
 const RecordingOverlay: React.FC = () => {

@@ -23,7 +23,7 @@ const IconBox: React.FC<{ children: React.ReactNode; active: boolean }> = ({
   <span
     className={`flex h-8 w-8 items-center justify-center rounded-full border transition-colors ${
       active
-        ? "border-[#3e7288] bg-[#e8f1f4] text-[#2f5f73]"
+        ? "border-[#168a6f] bg-[#e5f6ee] text-[#127f78]"
         : "border-mid-gray/25 bg-mid-gray/5 text-text/70"
     }`}
   >
@@ -44,8 +44,8 @@ const StyleCard: React.FC<{
     onClick={onSelect}
     className={`rounded-lg border p-3 text-start transition-all ${
       selected
-        ? "border-[#3e7288] bg-[#e8f1f4] shadow-sm"
-        : "border-mid-gray/25 bg-mid-gray/5 hover:border-[#3e7288]/70 hover:bg-[#e8f1f4]/55"
+        ? "border-[#168a6f] bg-[#e5f6ee] shadow-sm"
+        : "border-mid-gray/25 bg-mid-gray/5 hover:border-[#168a6f]/70 hover:bg-[#e5f6ee]/55"
     } ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
   >
     <div className="mb-3 flex min-w-0 items-center justify-between gap-3">
@@ -55,7 +55,7 @@ const StyleCard: React.FC<{
       <span
         className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
           selected
-            ? "border-[#3e7288] bg-[#3e7288] text-white"
+            ? "border-[#168a6f] bg-[#168a6f] text-white"
             : "border-mid-gray/40"
         }`}
       >

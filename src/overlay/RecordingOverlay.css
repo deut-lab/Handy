@@ -108,7 +108,7 @@
 }
 
 .recording-overlay-calm .bar {
-  background: #3e7288;
+  background: #18a572;
 }
 
 .recording-overlay-classic .bar {
@@ -116,11 +116,11 @@
 }
 
 .recording-overlay-dark .bar {
-  background: #8bb9c9;
+  background: #74d7b4;
 }
 
 .recording-overlay-gray .bar {
-  background: #64727c;
+  background: #34816d;
 }
 
 .recording-overlay.fade-in {
@@ -215,11 +215,11 @@
 }
 
 .recording-overlay-calm .finish-button {
-  color: #2f6f57;
+  color: #13914d;
 }
 
 .recording-overlay-calm .cancel-button {
-  color: #587080;
+  color: #5f7078;
 }
 
 .recording-overlay-classic .finish-button,
@@ -228,19 +228,19 @@
 }
 
 .recording-overlay-dark .finish-button {
-  color: #95d1bb;
+  color: #78e39b;
 }
 
 .recording-overlay-dark .cancel-button {
-  color: #b8c7d0;
+  color: #c3d0d6;
 }
 
 .recording-overlay-gray .finish-button {
-  color: #3f6d57;
+  color: #208853;
 }
 
 .recording-overlay-gray .cancel-button {
-  color: #697781;
+  color: #66737a;
 }
 
 .recording-overlay-calm .overlay-action:hover {

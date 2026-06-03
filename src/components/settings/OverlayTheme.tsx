@@ -132,8 +132,8 @@ const ThemeCard: React.FC<{
     onClick={onSelect}
     className={`w-full rounded-lg border p-3 text-start transition-all ${
       selected
-        ? "border-[#3e7288] bg-[#e8f1f4] shadow-sm"
-        : "border-mid-gray/25 bg-mid-gray/5 hover:border-[#3e7288]/70 hover:bg-[#e8f1f4]/55"
+        ? "border-[#168a6f] bg-[#e5f6ee] shadow-sm"
+        : "border-mid-gray/25 bg-mid-gray/5 hover:border-[#168a6f]/70 hover:bg-[#e5f6ee]/55"
     } ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
   >
     <div className="flex min-w-0 items-center justify-between gap-3">
@@ -143,7 +143,7 @@ const ThemeCard: React.FC<{
       <span
         className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
           selected
-            ? "border-[#3e7288] bg-[#3e7288] text-white"
+            ? "border-[#168a6f] bg-[#168a6f] text-white"
             : "border-mid-gray/40"
         }`}
       >
@@ -229,8 +229,8 @@ const ChoiceButton = <T extends string>({
     onClick={onSelect}
     className={`flex min-w-0 items-center justify-center gap-2 rounded-md border px-2 py-2 text-sm font-medium transition-all ${
       selected
-        ? "border-[#3e7288] bg-[#e8f1f4] text-text"
-        : "border-mid-gray/25 bg-mid-gray/5 text-text/80 hover:border-[#3e7288]/70"
+        ? "border-[#168a6f] bg-[#e5f6ee] text-text"
+        : "border-mid-gray/25 bg-mid-gray/5 text-text/80 hover:border-[#168a6f]/70"
     } ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
   >
     {view.icon && <span className="shrink-0">{view.icon}</span>}
@@ -271,10 +271,10 @@ export const OverlayTheme: React.FC<OverlayThemeProps> = React.memo(
         name: t("settings.advanced.overlayTheme.options.calm"),
         panelClass: "bg-slate-100/70",
         overlayClass: "border border-[#c8d2da] bg-[#f7fafc]",
-        iconColor: "#2f5f73",
-        barClass: "bg-[#3e7288]",
-        finishClass: "text-[#2f6f57]",
-        cancelClass: "text-[#587080]",
+        iconColor: "#127f78",
+        barClass: "bg-[#18a572]",
+        finishClass: "text-[#13914d]",
+        cancelClass: "text-[#5f7078]",
         textClass: "text-[#243743]",
       },
       {
@@ -282,10 +282,10 @@ export const OverlayTheme: React.FC<OverlayThemeProps> = React.memo(
         name: t("settings.advanced.overlayTheme.options.gray"),
         panelClass: "bg-zinc-100",
         overlayClass: "border border-[#b8c0c6] bg-[#ebeef0]",
-        iconColor: "#59636b",
-        barClass: "bg-[#64727c]",
-        finishClass: "text-[#3f6d57]",
-        cancelClass: "text-[#697781]",
+        iconColor: "#2f7669",
+        barClass: "bg-[#34816d]",
+        finishClass: "text-[#208853]",
+        cancelClass: "text-[#66737a]",
         textClass: "text-[#2f363b]",
       },
       {
@@ -293,10 +293,10 @@ export const OverlayTheme: React.FC<OverlayThemeProps> = React.memo(
         name: t("settings.advanced.overlayTheme.options.dark"),
         panelClass: "bg-slate-200/70",
         overlayClass: "border border-[#3a4a55] bg-[#1f2933]",
-        iconColor: "#8bb9c9",
-        barClass: "bg-[#8bb9c9]",
-        finishClass: "text-[#95d1bb]",
-        cancelClass: "text-[#b8c7d0]",
+        iconColor: "#74d7b4",
+        barClass: "bg-[#74d7b4]",
+        finishClass: "text-[#78e39b]",
+        cancelClass: "text-[#c3d0d6]",
         textClass: "text-[#edf4f7]",
       },
     ];
