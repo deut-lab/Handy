@@ -151,14 +151,6 @@ pub enum OverlayButtonStyle {
     Circle,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
-#[serde(rename_all = "snake_case")]
-pub enum OverlayOpacity {
-    Solid,
-    Medium,
-    Light,
-}
-
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum TrayIconStyle {
@@ -255,12 +247,6 @@ impl Default for OverlayIconSet {
 impl Default for OverlayButtonStyle {
     fn default() -> Self {
         OverlayButtonStyle::Circle
-    }
-}
-
-impl Default for OverlayOpacity {
-    fn default() -> Self {
-        OverlayOpacity::Light
     }
 }
 
@@ -486,8 +472,11 @@ pub struct AppSettings {
     pub overlay_transcribing_icon: OverlayTranscribingIcon,
     #[serde(default)]
     pub overlay_button_style: OverlayButtonStyle,
-    #[serde(default)]
-    pub overlay_opacity: OverlayOpacity,
+    #[serde(
+        default = "default_overlay_opacity",
+        deserialize_with = "deserialize_overlay_opacity"
+    )]
+    pub overlay_opacity: u8,
     #[serde(default)]
     pub tray_icon_style: TrayIconStyle,
     #[serde(default = "default_debug_mode")]
@@ -632,6 +621,40 @@ fn default_auto_submit() -> bool {
 
 fn default_auto_stop_silence_seconds() -> u64 {
     7
+}
+
+fn default_overlay_opacity() -> u8 {
+    30
+}
+
+fn normalize_overlay_opacity(value: u64) -> u8 {
+    (((value.min(100) + 5) / 10) * 10) as u8
+}
+
+fn deserialize_overlay_opacity<'de, D>(deserializer: D) -> Result<u8, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let value = serde_json::Value::deserialize(deserializer)?;
+
+    match value {
+        serde_json::Value::Number(number) => number
+            .as_u64()
+            .map(normalize_overlay_opacity)
+            .ok_or_else(|| de::Error::custom("overlay opacity must be 0-100")),
+        serde_json::Value::String(text) => {
+            let percent = match text.as_str() {
+                "solid" => 0,
+                "medium" => 20,
+                "light" => 30,
+                other => other.parse::<u64>().map_err(de::Error::custom)?,
+            };
+            Ok(normalize_overlay_opacity(percent))
+        }
+        _ => Err(de::Error::custom(
+            "overlay opacity must be a number or string",
+        )),
+    }
 }
 
 fn default_long_dictation_silence_seconds() -> u64 {
@@ -1015,7 +1038,7 @@ pub fn get_default_settings() -> AppSettings {
         overlay_icon_set: OverlayIconSet::default(),
         overlay_transcribing_icon: OverlayTranscribingIcon::default(),
         overlay_button_style: OverlayButtonStyle::default(),
-        overlay_opacity: OverlayOpacity::default(),
+        overlay_opacity: default_overlay_opacity(),
         tray_icon_style: TrayIconStyle::default(),
         debug_mode: default_debug_mode(),
         log_level: default_log_level(),
@@ -1291,7 +1314,7 @@ mod tests {
             OverlayTranscribingIcon::ScanText
         );
         assert_eq!(settings.overlay_button_style, OverlayButtonStyle::Circle);
-        assert_eq!(settings.overlay_opacity, OverlayOpacity::Light);
+        assert_eq!(settings.overlay_opacity, 30);
     }
 
     #[test]
@@ -1347,18 +1370,6 @@ mod tests {
             "\"circle\""
         );
         assert_eq!(
-            serde_json::to_string(&OverlayOpacity::Solid).unwrap(),
-            "\"solid\""
-        );
-        assert_eq!(
-            serde_json::to_string(&OverlayOpacity::Medium).unwrap(),
-            "\"medium\""
-        );
-        assert_eq!(
-            serde_json::to_string(&OverlayOpacity::Light).unwrap(),
-            "\"light\""
-        );
-        assert_eq!(
             serde_json::to_string(&TrayIconStyle::Original).unwrap(),
             "\"original\""
         );
@@ -1370,6 +1381,25 @@ mod tests {
             serde_json::to_string(&TrayIconStyle::Logo).unwrap(),
             "\"logo\""
         );
+    }
+
+    #[test]
+    fn overlay_opacity_accepts_old_names_and_rounds_numbers() {
+        assert_eq!(normalize_overlay_opacity(0), 0);
+        assert_eq!(normalize_overlay_opacity(14), 10);
+        assert_eq!(normalize_overlay_opacity(15), 20);
+        assert_eq!(normalize_overlay_opacity(101), 100);
+
+        let value: AppSettings = serde_json::from_value(serde_json::json!({
+            "bindings": {},
+            "push_to_talk": false,
+            "audio_feedback": false,
+            "overlay_opacity": "light",
+            "external_script_path": null
+        }))
+        .unwrap();
+
+        assert_eq!(value.overlay_opacity, 30);
     }
 
     #[test]

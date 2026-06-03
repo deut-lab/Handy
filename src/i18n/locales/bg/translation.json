@@ -402,12 +402,7 @@
           }
         },
         "opacity": {
-          "title": "Прозрачност",
-          "options": {
-            "solid": "Плътна",
-            "medium": "Средна",
-            "light": "Лека"
-          }
+          "title": "Прозрачност"
         },
         "buttonStyle": {
           "title": "Бутони",

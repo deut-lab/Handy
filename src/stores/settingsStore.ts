@@ -125,7 +125,7 @@ const settingUpdaters: {
   overlay_button_style: (value) =>
     commands.changeOverlayButtonStyleSetting(value as string),
   overlay_opacity: (value) =>
-    commands.changeOverlayOpacitySetting(value as string),
+    commands.changeOverlayOpacitySetting(value as number),
   tray_icon_style: (value) =>
     commands.changeTrayIconStyleSetting(value as string),
   debug_mode: (value) => commands.changeDebugModeSetting(value as boolean),

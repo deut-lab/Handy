@@ -402,12 +402,7 @@
           }
         },
         "opacity": {
-          "title": "Şeffaflık",
-          "options": {
-            "solid": "Yoğun",
-            "medium": "Orta",
-            "light": "Hafif"
-          }
+          "title": "Şeffaflık"
         },
         "buttonStyle": {
           "title": "Düğmeler",

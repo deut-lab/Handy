@@ -14,7 +14,6 @@ import {
   commands,
   type OverlayButtonStyle,
   type OverlayIconSet,
-  type OverlayOpacity,
   type OverlayTheme,
   type OverlayTranscribingIcon,
 } from "@/bindings";
@@ -30,6 +29,34 @@ const themeIconColor: Record<OverlayTheme, string> = {
   gray: "#2f7669",
 };
 
+const getOpacityPercent = (value: unknown): number => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return Math.min(100, Math.max(0, Math.round(value / 10) * 10));
+  }
+
+  if (typeof value === "string") {
+    if (value === "solid") {
+      return 0;
+    }
+    if (value === "medium") {
+      return 20;
+    }
+    if (value === "light") {
+      return 30;
+    }
+
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) {
+      return Math.min(100, Math.max(0, Math.round(parsed / 10) * 10));
+    }
+  }
+
+  return 30;
+};
+
+const getOverlayAlpha = (opacityPercent: number): number =>
+  Math.min(1, Math.max(0, (100 - opacityPercent) / 100));
+
 const RecordingOverlay: React.FC = () => {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
@@ -39,7 +66,7 @@ const RecordingOverlay: React.FC = () => {
   const [transcribingIcon, setTranscribingIcon] =
     useState<OverlayTranscribingIcon>("scan_text");
   const [buttonStyle, setButtonStyle] = useState<OverlayButtonStyle>("circle");
-  const [opacity, setOpacity] = useState<OverlayOpacity>("medium");
+  const [opacity, setOpacity] = useState<number>(30);
   const [levels, setLevels] = useState<number[]>(Array(16).fill(0));
   const smoothedLevelsRef = useRef<number[]>(Array(16).fill(0));
   const direction = getLanguageDirection(i18n.language);
@@ -54,7 +81,7 @@ const RecordingOverlay: React.FC = () => {
           result.data.overlay_transcribing_icon ?? "scan_text",
         );
         setButtonStyle(result.data.overlay_button_style ?? "circle");
-        setOpacity(result.data.overlay_opacity ?? "medium");
+        setOpacity(getOpacityPercent(result.data.overlay_opacity));
       }
     };
 
@@ -143,9 +170,14 @@ const RecordingOverlay: React.FC = () => {
   return (
     <div
       dir={direction}
-      className={`recording-overlay recording-overlay-${theme} recording-overlay-buttons-${buttonStyle} recording-overlay-opacity-${opacity} recording-overlay-state-${state} ${
+      className={`recording-overlay recording-overlay-${theme} recording-overlay-buttons-${buttonStyle} recording-overlay-state-${state} ${
         isVisible ? "fade-in" : ""
       }`}
+      style={
+        {
+          "--overlay-alpha": getOverlayAlpha(opacity),
+        } as React.CSSProperties
+      }
     >
       <div className="overlay-left">{getStatusIcon()}</div>
 

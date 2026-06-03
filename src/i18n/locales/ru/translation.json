@@ -402,12 +402,7 @@
           }
         },
         "opacity": {
-          "title": "Прозрачность",
-          "options": {
-            "solid": "Плотная",
-            "medium": "Средняя",
-            "light": "Лёгкая"
-          }
+          "title": "Прозрачность"
         },
         "buttonStyle": {
           "title": "Кнопки",

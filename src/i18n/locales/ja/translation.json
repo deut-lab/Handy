@@ -402,12 +402,7 @@
           }
         },
         "opacity": {
-          "title": "透明度",
-          "options": {
-            "solid": "濃い",
-            "medium": "中",
-            "light": "薄い"
-          }
+          "title": "透明度"
         },
         "buttonStyle": {
           "title": "ボタン",

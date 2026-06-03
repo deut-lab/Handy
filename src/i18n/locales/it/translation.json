@@ -402,12 +402,7 @@
           }
         },
         "opacity": {
-          "title": "Trasparenza",
-          "options": {
-            "solid": "Forte",
-            "medium": "Media",
-            "light": "Leggera"
-          }
+          "title": "Trasparenza"
         },
         "buttonStyle": {
           "title": "Pulsanti",

@@ -10,7 +10,7 @@
   opacity: 0;
   transition: opacity 300ms ease-out;
   box-sizing: border-box;
-  --overlay-alpha: 0.84;
+  --overlay-alpha: 0.7;
 }
 
 .recording-overlay-state-transcribing,
@@ -23,18 +23,6 @@
 .recording-overlay-state-transcribing .overlay-right,
 .recording-overlay-state-processing .overlay-right {
   display: none;
-}
-
-.recording-overlay-opacity-solid {
-  --overlay-alpha: 0.96;
-}
-
-.recording-overlay-opacity-medium {
-  --overlay-alpha: 0.84;
-}
-
-.recording-overlay-opacity-light {
-  --overlay-alpha: 0.7;
 }
 
 .recording-overlay-calm {

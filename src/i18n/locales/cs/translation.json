@@ -402,12 +402,7 @@
           }
         },
         "opacity": {
-          "title": "Průhlednost",
-          "options": {
-            "solid": "Výrazná",
-            "medium": "Střední",
-            "light": "Lehká"
-          }
+          "title": "Průhlednost"
         },
         "buttonStyle": {
           "title": "Tlačítka",

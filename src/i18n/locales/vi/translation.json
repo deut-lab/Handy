@@ -402,12 +402,7 @@
           }
         },
         "opacity": {
-          "title": "Độ trong suốt",
-          "options": {
-            "solid": "Đậm",
-            "medium": "Vừa",
-            "light": "Nhẹ"
-          }
+          "title": "Độ trong suốt"
         },
         "buttonStyle": {
           "title": "Nút",

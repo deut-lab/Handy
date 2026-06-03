@@ -23,9 +23,9 @@ use tauri_plugin_autostart::ManagerExt;
 use crate::settings::APPLE_INTELLIGENCE_DEFAULT_MODEL_ID;
 use crate::settings::{
     self, get_settings, AutoSubmitKey, ClipboardHandling, KeyboardImplementation, LLMPrompt,
-    LongDictationMode, OverlayButtonStyle, OverlayIconSet, OverlayOpacity, OverlayPosition,
-    OverlayTheme, OverlayTranscribingIcon, PasteMethod, ShortcutBinding, SoundTheme, TrayIconStyle,
-    TypingTool, APPLE_INTELLIGENCE_PROVIDER_ID,
+    LongDictationMode, OverlayButtonStyle, OverlayIconSet, OverlayPosition, OverlayTheme,
+    OverlayTranscribingIcon, PasteMethod, ShortcutBinding, SoundTheme, TrayIconStyle, TypingTool,
+    APPLE_INTELLIGENCE_PROVIDER_ID,
 };
 use crate::tray;
 use crate::windows_startup;
@@ -658,18 +658,9 @@ pub fn change_overlay_button_style_setting(
 
 #[tauri::command]
 #[specta::specta]
-pub fn change_overlay_opacity_setting(app: AppHandle, opacity: String) -> Result<(), String> {
+pub fn change_overlay_opacity_setting(app: AppHandle, opacity: u8) -> Result<(), String> {
     let mut settings = settings::get_settings(&app);
-    let parsed = match opacity.as_str() {
-        "solid" => OverlayOpacity::Solid,
-        "medium" => OverlayOpacity::Medium,
-        "light" => OverlayOpacity::Light,
-        other => {
-            warn!("Invalid overlay opacity '{}', defaulting to medium", other);
-            OverlayOpacity::Medium
-        }
-    };
-    settings.overlay_opacity = parsed;
+    settings.overlay_opacity = (((opacity.min(100) as u16 + 5) / 10) * 10) as u8;
     settings::write_settings(&app, settings);
     Ok(())
 }

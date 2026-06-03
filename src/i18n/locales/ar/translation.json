@@ -380,12 +380,7 @@
           }
         },
         "opacity": {
-          "title": "الشفافية",
-          "options": {
-            "solid": "قوية",
-            "medium": "متوسطة",
-            "light": "خفيفة"
-          }
+          "title": "الشفافية"
         },
         "buttonStyle": {
           "title": "الأزرار",

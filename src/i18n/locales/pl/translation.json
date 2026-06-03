@@ -402,12 +402,7 @@
           }
         },
         "opacity": {
-          "title": "Przezroczystość",
-          "options": {
-            "solid": "Mocna",
-            "medium": "Średnia",
-            "light": "Lekka"
-          }
+          "title": "Przezroczystość"
         },
         "buttonStyle": {
           "title": "Przyciski",

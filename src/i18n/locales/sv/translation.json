@@ -402,12 +402,7 @@
           }
         },
         "opacity": {
-          "title": "Genomskinlighet",
-          "options": {
-            "solid": "Tät",
-            "medium": "Mellan",
-            "light": "Lätt"
-          }
+          "title": "Genomskinlighet"
         },
         "buttonStyle": {
           "title": "Knappar",

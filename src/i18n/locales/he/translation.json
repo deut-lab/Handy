@@ -402,12 +402,7 @@
           }
         },
         "opacity": {
-          "title": "שקיפות",
-          "options": {
-            "solid": "חזקה",
-            "medium": "בינונית",
-            "light": "קלה"
-          }
+          "title": "שקיפות"
         },
         "buttonStyle": {
           "title": "כפתורים",

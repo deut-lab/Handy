@@ -402,12 +402,7 @@
           }
         },
         "opacity": {
-          "title": "Transparência",
-          "options": {
-            "solid": "Forte",
-            "medium": "Média",
-            "light": "Leve"
-          }
+          "title": "Transparência"
         },
         "buttonStyle": {
           "title": "Botões",
