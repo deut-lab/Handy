@@ -4,6 +4,8 @@ use serde::{Deserialize, Deserializer, Serialize};
 use specta::Type;
 use std::collections::HashMap;
 use std::fmt;
+use std::fs;
+use std::path::{Path, PathBuf};
 use tauri::AppHandle;
 use tauri_plugin_store::StoreExt;
 
@@ -239,7 +241,7 @@ impl Default for OverlayTheme {
 
 impl Default for OverlayIconSet {
     fn default() -> Self {
-        OverlayIconSet::Original
+        OverlayIconSet::Line
     }
 }
 
@@ -251,13 +253,13 @@ impl Default for OverlayButtonStyle {
 
 impl Default for OverlayOpacity {
     fn default() -> Self {
-        OverlayOpacity::Medium
+        OverlayOpacity::Light
     }
 }
 
 impl Default for ModelUnloadTimeout {
     fn default() -> Self {
-        ModelUnloadTimeout::Min5
+        ModelUnloadTimeout::Never
     }
 }
 
@@ -273,7 +275,7 @@ impl Default for PasteMethod {
 
 impl Default for ClipboardHandling {
     fn default() -> Self {
-        ClipboardHandling::DontModify
+        ClipboardHandling::CopyToClipboard
     }
 }
 
@@ -378,7 +380,7 @@ pub enum WhisperAcceleratorSetting {
 
 impl Default for WhisperAcceleratorSetting {
     fn default() -> Self {
-        WhisperAcceleratorSetting::Auto
+        WhisperAcceleratorSetting::Gpu
     }
 }
 
@@ -547,7 +549,7 @@ pub struct AppSettings {
 }
 
 fn default_model() -> String {
-    "".to_string()
+    "parakeet-tdt-0.6b-v3".to_string()
 }
 
 fn default_always_on_microphone() -> bool {
@@ -559,7 +561,7 @@ fn default_translate_to_english() -> bool {
 }
 
 fn default_start_hidden() -> bool {
-    false
+    true
 }
 
 fn default_autostart_enabled() -> bool {
@@ -590,11 +592,11 @@ fn default_overlay_position() -> OverlayPosition {
 }
 
 fn default_debug_mode() -> bool {
-    false
+    true
 }
 
 fn default_log_level() -> LogLevel {
-    LogLevel::Debug
+    LogLevel::Error
 }
 
 fn default_word_correction_threshold() -> f64 {
@@ -606,19 +608,19 @@ fn default_paste_delay_ms() -> u64 {
 }
 
 fn default_auto_submit() -> bool {
-    false
+    true
 }
 
 fn default_auto_stop_silence_seconds() -> u64 {
-    5
+    7
 }
 
 fn default_history_limit() -> usize {
-    5
+    999
 }
 
 fn default_recording_retention_period() -> RecordingRetentionPeriod {
-    RecordingRetentionPeriod::PreserveLimit
+    RecordingRetentionPeriod::Never
 }
 
 fn default_audio_feedback_volume() -> f32 {
@@ -626,7 +628,7 @@ fn default_audio_feedback_volume() -> f32 {
 }
 
 fn default_sound_theme() -> SoundTheme {
-    SoundTheme::Marimba
+    SoundTheme::Pop
 }
 
 fn default_post_process_enabled() -> bool {
@@ -773,7 +775,7 @@ fn default_post_process_prompts() -> Vec<LLMPrompt> {
 }
 
 fn default_whisper_gpu_device() -> i32 {
-    -1 // auto
+    0
 }
 
 fn default_typing_tool() -> TypingTool {
@@ -838,9 +840,82 @@ fn ensure_post_process_defaults(settings: &mut AppSettings) -> bool {
 
 pub const SETTINGS_STORE_PATH: &str = "settings_store.json";
 
+fn import_settings_if_missing(target: &Path, old: &Path) -> std::io::Result<bool> {
+    if target.exists() || !old.is_file() {
+        return Ok(false);
+    }
+
+    if let Some(parent) = target.parent() {
+        fs::create_dir_all(parent)?;
+    }
+
+    fs::copy(old, target)?;
+    reset_imported_auto_fields(target)?;
+    Ok(true)
+}
+
+fn reset_imported_auto_fields(path: &Path) -> std::io::Result<()> {
+    let text = fs::read_to_string(path)?;
+    let mut value: serde_json::Value =
+        serde_json::from_str(&text).map_err(std::io::Error::other)?;
+
+    if let Some(settings) = value
+        .get_mut("settings")
+        .and_then(|item| item.as_object_mut())
+    {
+        settings.insert(
+            "app_language".to_string(),
+            serde_json::Value::String(default_app_language()),
+        );
+        settings.insert(
+            "selected_language".to_string(),
+            serde_json::Value::String(default_selected_language()),
+        );
+    }
+
+    let text = serde_json::to_string_pretty(&value).map_err(std::io::Error::other)?;
+    fs::write(path, text)
+}
+
+#[cfg(target_os = "windows")]
+fn old_handy_settings_path() -> Option<PathBuf> {
+    std::env::var_os("APPDATA")
+        .map(PathBuf::from)
+        .map(|path| path.join("com.pais.handy").join(SETTINGS_STORE_PATH))
+}
+
+#[cfg(not(target_os = "windows"))]
+fn old_handy_settings_path() -> Option<PathBuf> {
+    None
+}
+
+fn import_old_handy_settings(app: &AppHandle) {
+    if crate::portable::is_portable() {
+        return;
+    }
+
+    let Ok(target) = crate::portable::resolve_app_data(app, SETTINGS_STORE_PATH) else {
+        return;
+    };
+
+    let Some(old) = old_handy_settings_path() else {
+        return;
+    };
+
+    if target == old {
+        return;
+    }
+
+    match import_settings_if_missing(&target, &old) {
+        Ok(true) => debug!("Imported settings from old Handy profile"),
+        Ok(false) => {}
+        Err(error) => warn!("Failed to import old Handy settings: {}", error),
+    }
+}
+
 pub fn get_default_settings() -> AppSettings {
     #[cfg(target_os = "windows")]
-    let default_shortcut = "ctrl+space";
+    let default_shortcut = "`";
     #[cfg(target_os = "macos")]
     let default_shortcut = "option+space";
     #[cfg(target_os = "linux")]
@@ -892,8 +967,8 @@ pub fn get_default_settings() -> AppSettings {
 
     AppSettings {
         bindings,
-        push_to_talk: true,
-        audio_feedback: false,
+        push_to_talk: false,
+        audio_feedback: true,
         audio_feedback_volume: default_audio_feedback_volume(),
         sound_theme: default_sound_theme(),
         start_hidden: default_start_hidden(),
@@ -901,13 +976,13 @@ pub fn get_default_settings() -> AppSettings {
         windows_task_startup_enabled: default_windows_task_startup_enabled(),
         windows_task_startup_admin: default_windows_task_startup_admin(),
         update_checks_enabled: default_update_checks_enabled(),
-        selected_model: "".to_string(),
+        selected_model: default_model(),
         always_on_microphone: false,
         selected_microphone: None,
         clamshell_microphone: None,
         selected_output_device: None,
         translate_to_english: false,
-        selected_language: "auto".to_string(),
+        selected_language: default_selected_language(),
         overlay_position: default_overlay_position(),
         overlay_theme: OverlayTheme::default(),
         overlay_icon_set: OverlayIconSet::default(),
@@ -915,7 +990,7 @@ pub fn get_default_settings() -> AppSettings {
         overlay_button_style: OverlayButtonStyle::default(),
         overlay_opacity: OverlayOpacity::default(),
         tray_icon_style: TrayIconStyle::default(),
-        debug_mode: false,
+        debug_mode: default_debug_mode(),
         log_level: default_log_level(),
         custom_words: Vec::new(),
         model_unload_timeout: ModelUnloadTimeout::default(),
@@ -926,7 +1001,7 @@ pub fn get_default_settings() -> AppSettings {
         clipboard_handling: ClipboardHandling::default(),
         auto_submit: default_auto_submit(),
         auto_submit_key: AutoSubmitKey::default(),
-        auto_stop_silence_enabled: false,
+        auto_stop_silence_enabled: true,
         auto_stop_silence_seconds: default_auto_stop_silence_seconds(),
         post_process_enabled: default_post_process_enabled(),
         post_process_provider_id: default_post_process_provider_id(),
@@ -938,7 +1013,7 @@ pub fn get_default_settings() -> AppSettings {
         mute_while_recording: false,
         append_trailing_space: false,
         app_language: default_app_language(),
-        experimental_enabled: false,
+        experimental_enabled: true,
         lazy_stream_close: false,
         keyboard_implementation: KeyboardImplementation::default(),
         show_tray_icon: default_show_tray_icon(),
@@ -949,7 +1024,7 @@ pub fn get_default_settings() -> AppSettings {
         whisper_accelerator: WhisperAcceleratorSetting::default(),
         ort_accelerator: OrtAcceleratorSetting::default(),
         whisper_gpu_device: default_whisper_gpu_device(),
-        extra_recording_buffer_ms: 0,
+        extra_recording_buffer_ms: 250,
     }
 }
 
@@ -977,6 +1052,8 @@ impl AppSettings {
 }
 
 pub fn load_or_create_app_settings(app: &AppHandle) -> AppSettings {
+    import_old_handy_settings(app);
+
     // Initialize store
     let store = app
         .store(crate::portable::store_path(SETTINGS_STORE_PATH))
@@ -1028,6 +1105,8 @@ pub fn load_or_create_app_settings(app: &AppHandle) -> AppSettings {
 }
 
 pub fn get_settings(app: &AppHandle) -> AppSettings {
+    import_old_handy_settings(app);
+
     let store = app
         .store(crate::portable::store_path(SETTINGS_STORE_PATH))
         .expect("Failed to initialize store");
@@ -1088,17 +1167,51 @@ mod tests {
     use super::*;
 
     #[test]
-    fn default_settings_disable_auto_submit() {
+    fn default_settings_enable_auto_submit() {
         let settings = get_default_settings();
-        assert!(!settings.auto_submit);
+        assert!(settings.auto_submit);
         assert_eq!(settings.auto_submit_key, AutoSubmitKey::Enter);
     }
 
     #[test]
-    fn default_settings_disable_silence_stop() {
+    fn default_settings_enable_silence_stop() {
         let settings = get_default_settings();
-        assert!(!settings.auto_stop_silence_enabled);
-        assert_eq!(settings.auto_stop_silence_seconds, 5);
+        assert!(settings.auto_stop_silence_enabled);
+        assert_eq!(settings.auto_stop_silence_seconds, 7);
+    }
+
+    #[test]
+    fn default_language_settings_stay_automatic() {
+        let settings = get_default_settings();
+        assert_eq!(settings.selected_language, "auto");
+    }
+
+    #[test]
+    fn imported_settings_reset_language_fields() {
+        let dir = tempfile::tempdir().unwrap();
+        let old = dir.path().join("old.json");
+        let target = dir.path().join("new").join(SETTINGS_STORE_PATH);
+
+        fs::write(
+            &old,
+            r#"{
+              "settings": {
+                "app_language": "fixed-old",
+                "selected_language": "ru",
+                "debug_mode": true
+              }
+            }"#,
+        )
+        .unwrap();
+
+        assert!(import_settings_if_missing(&target, &old).unwrap());
+
+        let value: serde_json::Value =
+            serde_json::from_str(&fs::read_to_string(&target).unwrap()).unwrap();
+        let settings = value.get("settings").unwrap();
+        assert_ne!(settings.get("app_language").unwrap(), "fixed-old");
+        assert_eq!(settings.get("selected_language").unwrap(), "auto");
+        assert_eq!(settings.get("debug_mode").unwrap(), true);
     }
 
     #[test]
@@ -1122,13 +1235,13 @@ mod tests {
     fn default_overlay_visual_settings_keep_author_style() {
         let settings = get_default_settings();
         assert_eq!(settings.overlay_theme, OverlayTheme::Calm);
-        assert_eq!(settings.overlay_icon_set, OverlayIconSet::Original);
+        assert_eq!(settings.overlay_icon_set, OverlayIconSet::Line);
         assert_eq!(
             settings.overlay_transcribing_icon,
             OverlayTranscribingIcon::ScanText
         );
         assert_eq!(settings.overlay_button_style, OverlayButtonStyle::Circle);
-        assert_eq!(settings.overlay_opacity, OverlayOpacity::Medium);
+        assert_eq!(settings.overlay_opacity, OverlayOpacity::Light);
     }
 
     #[test]
