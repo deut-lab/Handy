@@ -209,7 +209,7 @@ fn initialize_core_logic(app_handle: &AppHandle) {
         )
         .tooltip(tray::tray_tooltip())
         .show_menu_on_left_click(true)
-        .icon_as_template(true)
+        .icon_as_template(tray::tray_icon_is_template())
         .on_menu_event(|app, event| match event.id.as_ref() {
             "settings" => {
                 show_main_window(app);

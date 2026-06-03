@@ -10,6 +10,8 @@ use tauri::menu::{CheckMenuItem, Menu, MenuItem, PredefinedMenuItem, Submenu};
 use tauri::tray::TrayIcon;
 use tauri::{AppHandle, Manager, Theme};
 use tauri_plugin_clipboard_manager::ClipboardExt;
+#[cfg(target_os = "windows")]
+use winreg::{enums::HKEY_CURRENT_USER, RegKey};
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum TrayIconState {
@@ -25,12 +27,42 @@ pub enum AppTheme {
     Colored, // Pink/colored theme for Linux
 }
 
+fn theme_from_windows_system_light_setting(value: Option<u32>) -> AppTheme {
+    match value {
+        Some(1) => AppTheme::Light,
+        Some(0) => AppTheme::Dark,
+        _ => AppTheme::Dark,
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn get_windows_taskbar_theme() -> Option<AppTheme> {
+    let key = RegKey::predef(HKEY_CURRENT_USER)
+        .open_subkey("Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize")
+        .ok()?;
+    let value = key.get_value::<u32, _>("SystemUsesLightTheme").ok();
+    Some(theme_from_windows_system_light_setting(value))
+}
+
+#[cfg(not(target_os = "windows"))]
+fn get_windows_taskbar_theme() -> Option<AppTheme> {
+    None
+}
+
+pub fn tray_icon_is_template() -> bool {
+    cfg!(target_os = "macos")
+}
+
 /// Gets the current app theme, with Linux defaulting to Colored theme
 pub fn get_current_theme(app: &AppHandle) -> AppTheme {
     if cfg!(target_os = "linux") {
         // On Linux, always use the colored theme
         AppTheme::Colored
     } else {
+        if let Some(theme) = get_windows_taskbar_theme() {
+            return theme;
+        }
+
         // On other platforms, map system theme to our app theme
         if let Some(main_window) = app.get_webview_window("main") {
             match main_window.theme().unwrap_or(Theme::Dark) {
@@ -211,7 +243,7 @@ pub fn update_tray_menu(app: &AppHandle, state: &TrayIconState, locale: Option<&
 
     let tray = app.state::<TrayIcon>();
     let _ = tray.set_menu(Some(menu));
-    let _ = tray.set_icon_as_template(true);
+    let _ = tray.set_icon_as_template(tray_icon_is_template());
     let _ = tray.set_tooltip(Some(version_label));
 }
 
@@ -264,7 +296,10 @@ pub fn copy_last_transcript(app: &AppHandle) {
 
 #[cfg(test)]
 mod tests {
-    use super::{get_icon_path, last_transcript_text, AppTheme, TrayIconState};
+    use super::{
+        get_icon_path, last_transcript_text, theme_from_windows_system_light_setting,
+        tray_icon_is_template, AppTheme, TrayIconState,
+    };
     use crate::managers::history::HistoryEntry;
     use crate::settings::TrayIconStyle;
 
@@ -360,5 +395,27 @@ mod tests {
             ),
             "resources/tray_state_idle_dark.png"
         );
+    }
+
+    #[test]
+    fn windows_taskbar_theme_uses_system_theme_setting() {
+        assert_eq!(
+            theme_from_windows_system_light_setting(Some(0)),
+            AppTheme::Dark
+        );
+        assert_eq!(
+            theme_from_windows_system_light_setting(Some(1)),
+            AppTheme::Light
+        );
+        assert_eq!(
+            theme_from_windows_system_light_setting(None),
+            AppTheme::Dark
+        );
+    }
+
+    #[test]
+    fn windows_tray_icons_are_not_template_icons() {
+        #[cfg(target_os = "windows")]
+        assert!(!tray_icon_is_template());
     }
 }
