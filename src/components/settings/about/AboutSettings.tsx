@@ -8,6 +8,7 @@ import { Button } from "../../ui/Button";
 import { AppDataDirectory } from "../AppDataDirectory";
 import { AppLanguageSelector } from "../AppLanguageSelector";
 import { LogDirectory } from "../debug";
+import { getShownVersion } from "@/lib/version";
 
 export const AboutSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -17,7 +18,7 @@ export const AboutSettings: React.FC = () => {
     const fetchVersion = async () => {
       try {
         const appVersion = await getVersion();
-        setVersion(appVersion);
+        setVersion(getShownVersion(appVersion));
       } catch (error) {
         console.error("Failed to get app version:", error);
         setVersion("0.1.2");

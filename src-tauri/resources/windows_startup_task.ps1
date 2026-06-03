@@ -7,7 +7,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$TaskName = "Handy Admin Startup"
+$TaskName = "Handy Voice Admin Startup"
 
 if ($Mode -eq "remove") {
   Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false -ErrorAction SilentlyContinue
@@ -31,9 +31,9 @@ $User = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
 $UseAdmin = $Admin -ne 0
 $RunLevel = if ($UseAdmin) { "Highest" } else { "Limited" }
 $Description = if ($UseAdmin) {
-  "Start Handy with admin rights when the user logs in."
+  "Start Handy Voice with admin rights when the user logs in."
 } else {
-  "Start Handy when the user logs in."
+  "Start Handy Voice when the user logs in."
 }
 
 $Action = New-ScheduledTaskAction -Execute $ExePath -WorkingDirectory $WorkingDirectory

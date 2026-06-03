@@ -6,7 +6,7 @@ use std::process::Command;
 #[cfg(target_os = "windows")]
 use tauri::AppHandle;
 
-pub const TASK_NAME: &str = "Handy Admin Startup";
+pub const TASK_NAME: &str = "Handy Voice Admin Startup";
 
 #[cfg(target_os = "windows")]
 fn ps_quote(value: &str) -> String {
@@ -57,9 +57,9 @@ pub fn build_register_task_script(exe: &Path, work: &Path, admin: bool) -> Strin
     let task_name = ps_quote(TASK_NAME);
     let run_level = if admin { "Highest" } else { "Limited" };
     let description = if admin {
-        "Start Handy with admin rights when the user logs in."
+        "Start Handy Voice with admin rights when the user logs in."
     } else {
-        "Start Handy when the user logs in."
+        "Start Handy Voice when the user logs in."
     };
     let description = ps_quote(description);
 
@@ -129,7 +129,7 @@ mod tests {
         assert!(script.contains("-RunLevel Highest"));
         assert!(script.contains("New-ScheduledTaskAction -Execute $exe -WorkingDirectory $work"));
         assert!(script.contains("Register-ScheduledTask"));
-        assert!(script.contains("Handy Admin Startup"));
+        assert!(script.contains("Handy Voice Admin Startup"));
     }
 
     #[test]

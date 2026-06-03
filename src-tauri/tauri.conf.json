@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Handy",
-  "version": "0.8.7",
-  "identifier": "com.pais.handy",
+  "productName": "Handy Voice",
+  "version": "0.8.7+1",
+  "identifier": "com.deutlab.handyvoice",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",
@@ -28,6 +28,7 @@
     "createUpdaterArtifacts": true,
     "targets": "all",
     "resources": ["resources/**/*"],
+    "publisher": "Deut Lab",
     "license": "MIT",
     "icon": [
       "icons/32x32.png",

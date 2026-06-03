@@ -3,6 +3,7 @@ import { getVersion } from "@tauri-apps/api/app";
 
 import ModelSelector from "../model-selector";
 import UpdateChecker from "../update-checker";
+import { getShownVersion } from "@/lib/version";
 
 const Footer: React.FC = () => {
   const [version, setVersion] = useState("");
@@ -11,7 +12,7 @@ const Footer: React.FC = () => {
     const fetchVersion = async () => {
       try {
         const appVersion = await getVersion();
-        setVersion(appVersion);
+        setVersion(getShownVersion(appVersion));
       } catch (error) {
         console.error("Failed to get app version:", error);
         setVersion("0.1.2");

@@ -13,6 +13,8 @@ use tauri_plugin_clipboard_manager::ClipboardExt;
 #[cfg(target_os = "windows")]
 use winreg::{enums::HKEY_CURRENT_USER, RegKey};
 
+const APP_SHOWN_VERSION: &str = "0.8.7.1";
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum TrayIconState {
     Idle,
@@ -150,9 +152,9 @@ pub fn tray_tooltip() -> String {
 
 fn version_label() -> String {
     if cfg!(debug_assertions) {
-        format!("Handy v{} (Dev)", env!("CARGO_PKG_VERSION"))
+        format!("Handy Voice v{} (Dev)", APP_SHOWN_VERSION)
     } else {
-        format!("Handy v{}", env!("CARGO_PKG_VERSION"))
+        format!("Handy Voice v{}", APP_SHOWN_VERSION)
     }
 }
 

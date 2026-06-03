@@ -96,8 +96,8 @@ VIProductVersion "${VERSIONWITHBUILD}"
 VIAddVersionKey "ProductName" "${PRODUCTNAME}"
 VIAddVersionKey "FileDescription" "${PRODUCTNAME}"
 VIAddVersionKey "LegalCopyright" "${COPYRIGHT}"
-VIAddVersionKey "FileVersion" "${VERSION}"
-VIAddVersionKey "ProductVersion" "${VERSION}"
+VIAddVersionKey "FileVersion" "${VERSIONWITHBUILD}"
+VIAddVersionKey "ProductVersion" "${VERSIONWITHBUILD}"
 
 # additional plugins
 !addplugindir "${ADDITIONALPLUGINSPATH}"
@@ -915,7 +915,7 @@ Section Install
     ; Registry information for add/remove programs
     WriteRegStr SHCTX "${UNINSTKEY}" "DisplayName" "${PRODUCTNAME}"
     WriteRegStr SHCTX "${UNINSTKEY}" "DisplayIcon" "$\"$INSTDIR\${MAINBINARYNAME}.exe$\""
-    WriteRegStr SHCTX "${UNINSTKEY}" "DisplayVersion" "${VERSION}"
+    WriteRegStr SHCTX "${UNINSTKEY}" "DisplayVersion" "${VERSIONWITHBUILD}"
     WriteRegStr SHCTX "${UNINSTKEY}" "Publisher" "${MANUFACTURER}"
     WriteRegStr SHCTX "${UNINSTKEY}" "InstallLocation" "$\"$INSTDIR$\""
     WriteRegStr SHCTX "${UNINSTKEY}" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
