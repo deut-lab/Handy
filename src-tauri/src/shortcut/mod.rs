@@ -23,9 +23,9 @@ use tauri_plugin_autostart::ManagerExt;
 use crate::settings::APPLE_INTELLIGENCE_DEFAULT_MODEL_ID;
 use crate::settings::{
     self, get_settings, AutoSubmitKey, ClipboardHandling, KeyboardImplementation, LLMPrompt,
-    OverlayButtonStyle, OverlayIconSet, OverlayOpacity, OverlayPosition, OverlayTheme,
-    OverlayTranscribingIcon, PasteMethod, ShortcutBinding, SoundTheme, TrayIconStyle, TypingTool,
-    APPLE_INTELLIGENCE_PROVIDER_ID,
+    LongDictationMode, OverlayButtonStyle, OverlayIconSet, OverlayOpacity, OverlayPosition,
+    OverlayTheme, OverlayTranscribingIcon, PasteMethod, ShortcutBinding, SoundTheme, TrayIconStyle,
+    TypingTool, APPLE_INTELLIGENCE_PROVIDER_ID,
 };
 use crate::tray;
 use crate::windows_startup;
@@ -1000,6 +1000,49 @@ pub fn change_auto_stop_silence_seconds_setting(
 ) -> Result<(), String> {
     let mut settings = settings::get_settings(&app);
     settings.auto_stop_silence_seconds = seconds.clamp(1, 30);
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_long_dictation_mode_setting(app: AppHandle, mode: String) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.long_dictation_mode = match mode.as_str() {
+        "off" => LongDictationMode::Off,
+        "pause_chunks" => LongDictationMode::PauseChunks,
+        other => {
+            warn!(
+                "Invalid long dictation mode '{}', defaulting to pause_chunks",
+                other
+            );
+            LongDictationMode::PauseChunks
+        }
+    };
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_long_dictation_silence_seconds_setting(
+    app: AppHandle,
+    seconds: u64,
+) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.long_dictation_silence_seconds = seconds.clamp(1, 10);
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_long_dictation_min_chunk_seconds_setting(
+    app: AppHandle,
+    seconds: u64,
+) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.long_dictation_min_chunk_seconds = seconds.clamp(2, 60);
     settings::write_settings(&app, settings);
     Ok(())
 }

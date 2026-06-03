@@ -209,6 +209,13 @@ pub enum AutoSubmitKey {
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
 #[serde(rename_all = "snake_case")]
+pub enum LongDictationMode {
+    Off,
+    PauseChunks,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
+#[serde(rename_all = "snake_case")]
 pub enum RecordingRetentionPeriod {
     Never,
     PreserveLimit,
@@ -282,6 +289,12 @@ impl Default for ClipboardHandling {
 impl Default for AutoSubmitKey {
     fn default() -> Self {
         AutoSubmitKey::Enter
+    }
+}
+
+impl Default for LongDictationMode {
+    fn default() -> Self {
+        LongDictationMode::PauseChunks
     }
 }
 
@@ -503,6 +516,12 @@ pub struct AppSettings {
     pub auto_stop_silence_enabled: bool,
     #[serde(default = "default_auto_stop_silence_seconds")]
     pub auto_stop_silence_seconds: u64,
+    #[serde(default)]
+    pub long_dictation_mode: LongDictationMode,
+    #[serde(default = "default_long_dictation_silence_seconds")]
+    pub long_dictation_silence_seconds: u64,
+    #[serde(default = "default_long_dictation_min_chunk_seconds")]
+    pub long_dictation_min_chunk_seconds: u64,
     #[serde(default = "default_post_process_enabled")]
     pub post_process_enabled: bool,
     #[serde(default = "default_post_process_provider_id")]
@@ -613,6 +632,14 @@ fn default_auto_submit() -> bool {
 
 fn default_auto_stop_silence_seconds() -> u64 {
     7
+}
+
+fn default_long_dictation_silence_seconds() -> u64 {
+    1
+}
+
+fn default_long_dictation_min_chunk_seconds() -> u64 {
+    8
 }
 
 fn default_history_limit() -> usize {
@@ -1003,6 +1030,9 @@ pub fn get_default_settings() -> AppSettings {
         auto_submit_key: AutoSubmitKey::default(),
         auto_stop_silence_enabled: true,
         auto_stop_silence_seconds: default_auto_stop_silence_seconds(),
+        long_dictation_mode: LongDictationMode::default(),
+        long_dictation_silence_seconds: default_long_dictation_silence_seconds(),
+        long_dictation_min_chunk_seconds: default_long_dictation_min_chunk_seconds(),
         post_process_enabled: default_post_process_enabled(),
         post_process_provider_id: default_post_process_provider_id(),
         post_process_providers: default_post_process_providers(),
@@ -1184,6 +1214,26 @@ mod tests {
     fn default_language_settings_stay_automatic() {
         let settings = get_default_settings();
         assert_eq!(settings.selected_language, "auto");
+    }
+
+    #[test]
+    fn default_long_dictation_uses_pause_chunks() {
+        let settings = get_default_settings();
+        assert_eq!(settings.long_dictation_mode, LongDictationMode::PauseChunks);
+        assert_eq!(settings.long_dictation_silence_seconds, 1);
+        assert_eq!(settings.long_dictation_min_chunk_seconds, 8);
+    }
+
+    #[test]
+    fn long_dictation_mode_uses_stable_store_names() {
+        assert_eq!(
+            serde_json::to_string(&LongDictationMode::Off).unwrap(),
+            "\"off\""
+        );
+        assert_eq!(
+            serde_json::to_string(&LongDictationMode::PauseChunks).unwrap(),
+            "\"pause_chunks\""
+        );
     }
 
     #[test]

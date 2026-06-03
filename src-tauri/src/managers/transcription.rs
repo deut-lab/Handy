@@ -438,6 +438,19 @@ impl TranscriptionManager {
     }
 
     pub fn transcribe(&self, audio: Vec<f32>) -> Result<String> {
+        self.transcribe_inner(audio, true, "transcription")
+    }
+
+    pub fn transcribe_live_chunk(&self, audio: Vec<f32>) -> Result<String> {
+        self.transcribe_inner(audio, false, "live chunk")
+    }
+
+    fn transcribe_inner(
+        &self,
+        audio: Vec<f32>,
+        unload_when_done: bool,
+        context: &str,
+    ) -> Result<String> {
         #[cfg(debug_assertions)]
         if std::env::var("HANDY_FORCE_TRANSCRIPTION_FAILURE").is_ok() {
             return Err(anyhow::anyhow!(
@@ -454,7 +467,9 @@ impl TranscriptionManager {
 
         if audio.is_empty() {
             debug!("Empty audio vector");
-            self.maybe_unload_immediately("empty audio");
+            if unload_when_done {
+                self.maybe_unload_immediately("empty audio");
+            }
             return Ok(String::new());
         }
 
@@ -714,7 +729,8 @@ impl TranscriptionManager {
             ""
         };
         info!(
-            "Transcription completed in {}ms{}",
+            "{} completed in {}ms{}",
+            context,
             (et - st).as_millis(),
             translation_note
         );
@@ -727,7 +743,9 @@ impl TranscriptionManager {
             info!("Transcription result: {}", final_result);
         }
 
-        self.maybe_unload_immediately("transcription");
+        if unload_when_done {
+            self.maybe_unload_immediately(context);
+        }
 
         Ok(final_result)
     }

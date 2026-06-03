@@ -444,6 +444,13 @@
       "windowsTaskStartupAdmin": {
         "label": "Run with administrator rights",
         "description": "Start the Windows task with elevated rights so Handy works over windows that were started as administrator."
+      },
+      "longDictation": {
+        "title": "Long Dictation",
+        "description": "Split long recordings at natural pauses and transcribe earlier chunks in the background while the microphone keeps recording.",
+        "enabled": "Transcribe chunks while recording",
+        "pause": "pause",
+        "min": "min chunk"
       }
     },
     "postProcessing": {

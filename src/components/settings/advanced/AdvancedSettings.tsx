@@ -22,6 +22,7 @@ import { KeyboardImplementationSelector } from "../debug/KeyboardImplementationS
 import { AccelerationSelector } from "../AccelerationSelector";
 import { LazyStreamClose } from "../LazyStreamClose";
 import { AutoStopSilence } from "../AutoStopSilence";
+import { LongDictation } from "../LongDictation";
 import { OverlayTheme } from "../OverlayTheme";
 import { TrayIconStyle } from "../TrayIconStyle";
 
@@ -58,6 +59,7 @@ export const AdvancedSettings: React.FC = () => {
         <CustomWords descriptionMode="tooltip" grouped />
         <AppendTrailingSpace descriptionMode="tooltip" grouped={true} />
         <AutoStopSilence descriptionMode="tooltip" grouped={true} />
+        <LongDictation descriptionMode="tooltip" grouped={true} />
       </SettingsGroup>
 
       <SettingsGroup title={t("settings.advanced.groups.history")}>

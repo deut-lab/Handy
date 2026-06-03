@@ -147,6 +147,12 @@ const settingUpdaters: {
     commands.changeAutoStopSilenceEnabledSetting(value as boolean),
   auto_stop_silence_seconds: (value) =>
     commands.changeAutoStopSilenceSecondsSetting(value as number),
+  long_dictation_mode: (value) =>
+    commands.changeLongDictationModeSetting(value as string),
+  long_dictation_silence_seconds: (value) =>
+    commands.changeLongDictationSilenceSecondsSetting(value as number),
+  long_dictation_min_chunk_seconds: (value) =>
+    commands.changeLongDictationMinChunkSecondsSetting(value as number),
   history_limit: (value) => commands.updateHistoryLimit(value as number),
   post_process_enabled: (value) =>
     commands.changePostProcessEnabledSetting(value as boolean),

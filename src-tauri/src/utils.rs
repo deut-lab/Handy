@@ -1,4 +1,5 @@
 use crate::managers::audio::AudioRecordingManager;
+use crate::managers::live_transcription::LiveTranscriptionManager;
 use crate::managers::transcription::TranscriptionManager;
 use crate::shortcut;
 use crate::TranscriptionCoordinator;
@@ -25,6 +26,10 @@ pub fn cancel_current_operation(app: &AppHandle) {
     let recording_was_active = audio_manager.is_recording();
     audio_manager.cancel_recording();
 
+    if let Some(live_manager) = app.try_state::<Arc<LiveTranscriptionManager>>() {
+        live_manager.cancel();
+    }
+
     // Update tray icon and hide overlay
     change_tray_icon(app, crate::tray::TrayIconState::Idle);
     hide_recording_overlay(app);
@@ -39,6 +44,15 @@ pub fn cancel_current_operation(app: &AppHandle) {
     }
 
     info!("Operation cancellation completed - returned to idle state");
+}
+
+/// Queue a finished audio chunk while the microphone keeps recording.
+pub fn submit_live_transcription_chunk(app: &AppHandle, audio: Vec<f32>) {
+    let Some(live_manager) = app.try_state::<Arc<LiveTranscriptionManager>>() else {
+        return;
+    };
+
+    live_manager.submit_chunk(audio);
 }
 
 /// Stop recording after enough quiet frames.

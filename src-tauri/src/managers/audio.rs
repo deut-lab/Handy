@@ -1,6 +1,8 @@
-use crate::audio_toolkit::{list_input_devices, vad::SmoothedVad, AudioRecorder, SileroVad};
+use crate::audio_toolkit::{
+    list_input_devices, vad::SmoothedVad, AudioRecorder, LiveChunkConfig, RecordedAudio, SileroVad,
+};
 use crate::helpers::clamshell;
-use crate::settings::{get_settings, AppSettings};
+use crate::settings::{get_settings, AppSettings, LongDictationMode};
 use crate::utils;
 use log::{debug, error, info};
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -141,6 +143,12 @@ fn create_audio_recorder(
             move || {
                 utils::trigger_silence_stop(&app_handle);
             }
+        })
+        .with_live_chunk_callback({
+            let app_handle = app_handle.clone();
+            move |chunk| {
+                utils::submit_live_transcription_chunk(&app_handle, chunk);
+            }
         });
 
     Ok(recorder)
@@ -152,6 +160,17 @@ fn silence_stop_seconds(settings: &AppSettings) -> Option<u64> {
     } else {
         None
     }
+}
+
+fn live_chunk_config(settings: &AppSettings) -> Option<LiveChunkConfig> {
+    if settings.long_dictation_mode == LongDictationMode::Off {
+        return None;
+    }
+
+    Some(LiveChunkConfig {
+        silence_seconds: settings.long_dictation_silence_seconds.clamp(1, 10),
+        min_chunk_seconds: settings.long_dictation_min_chunk_seconds.clamp(2, 60),
+    })
 }
 
 /* ──────────────────────────────────────────────────────────────── */
@@ -415,6 +434,7 @@ impl AudioRecordingManager {
             if let Some(rec) = self.recorder.lock().unwrap().as_ref() {
                 let settings = get_settings(&self.app_handle);
                 rec.set_silence_stop_seconds(silence_stop_seconds(&settings));
+                rec.set_live_chunk_config(live_chunk_config(&settings));
 
                 if rec.start().is_ok() {
                     *self.is_recording.lock().unwrap() = true;
@@ -441,7 +461,7 @@ impl AudioRecordingManager {
         Ok(())
     }
 
-    pub fn stop_recording(&self, binding_id: &str) -> Option<Vec<f32>> {
+    pub fn stop_recording(&self, binding_id: &str) -> Option<RecordedAudio> {
         let mut state = self.state.lock().unwrap();
 
         match *state {
@@ -461,18 +481,21 @@ impl AudioRecordingManager {
                     std::thread::sleep(Duration::from_millis(settings.extra_recording_buffer_ms));
                 }
 
-                let samples = if let Some(rec) = self.recorder.lock().unwrap().as_ref() {
+                let mut recorded_audio = if let Some(rec) = self.recorder.lock().unwrap().as_ref() {
                     match rec.stop() {
                         Ok(buf) => buf,
                         Err(e) => {
                             error!("stop() failed: {e}");
-                            Vec::new()
+                            RecordedAudio::default()
                         }
                     }
                 } else {
                     error!("Recorder not available");
-                    Vec::new()
+                    RecordedAudio::default()
                 };
+                if let Some(rec) = self.recorder.lock().unwrap().as_ref() {
+                    rec.set_live_chunk_config(None);
+                }
 
                 *self.is_recording.lock().unwrap() = false;
 
@@ -486,14 +509,20 @@ impl AudioRecordingManager {
                 }
 
                 // Pad if very short
-                let s_len = samples.len();
+                let s_len = recorded_audio.samples.len();
                 // debug!("Got {} samples", s_len);
                 if s_len < WHISPER_SAMPLE_RATE && s_len > 0 {
-                    let mut padded = samples;
-                    padded.resize(WHISPER_SAMPLE_RATE * 5 / 4, 0.0);
-                    Some(padded)
+                    recorded_audio
+                        .samples
+                        .resize(WHISPER_SAMPLE_RATE * 5 / 4, 0.0);
+                    if !recorded_audio.used_live_chunks {
+                        recorded_audio
+                            .live_tail
+                            .resize(WHISPER_SAMPLE_RATE * 5 / 4, 0.0);
+                    }
+                    Some(recorded_audio)
                 } else {
-                    Some(samples)
+                    Some(recorded_audio)
                 }
             }
             _ => None,
@@ -523,6 +552,7 @@ impl AudioRecordingManager {
 
             if let Some(rec) = self.recorder.lock().unwrap().as_ref() {
                 let _ = rec.stop(); // Discard the result
+                rec.set_live_chunk_config(None);
             }
 
             *self.is_recording.lock().unwrap() = false;

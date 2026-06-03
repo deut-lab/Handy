@@ -21,7 +21,7 @@ use crate::audio_toolkit::{
 
 enum Cmd {
     Start,
-    Stop(mpsc::Sender<Vec<f32>>),
+    Stop(mpsc::Sender<RecordedAudio>),
     Shutdown,
 }
 
@@ -38,6 +38,15 @@ pub struct AudioRecorder {
     level_cb: Option<Arc<dyn Fn(Vec<f32>) + Send + Sync + 'static>>,
     silence_stop_cb: Option<Arc<dyn Fn() + Send + Sync + 'static>>,
     silence_stop_seconds: Arc<Mutex<Option<u64>>>,
+    live_chunk_cb: Option<Arc<dyn Fn(Vec<f32>) + Send + Sync + 'static>>,
+    live_chunk_config: Arc<Mutex<Option<LiveChunkConfig>>>,
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct RecordedAudio {
+    pub samples: Vec<f32>,
+    pub live_tail: Vec<f32>,
+    pub used_live_chunks: bool,
 }
 
 impl AudioRecorder {
@@ -50,6 +59,8 @@ impl AudioRecorder {
             level_cb: None,
             silence_stop_cb: None,
             silence_stop_seconds: Arc::new(Mutex::new(None)),
+            live_chunk_cb: None,
+            live_chunk_config: Arc::new(Mutex::new(None)),
         })
     }
 
@@ -74,9 +85,23 @@ impl AudioRecorder {
         self
     }
 
+    pub fn with_live_chunk_callback<F>(mut self, cb: F) -> Self
+    where
+        F: Fn(Vec<f32>) + Send + Sync + 'static,
+    {
+        self.live_chunk_cb = Some(Arc::new(cb));
+        self
+    }
+
     pub fn set_silence_stop_seconds(&self, seconds: Option<u64>) {
         if let Ok(mut guard) = self.silence_stop_seconds.lock() {
             *guard = seconds;
+        }
+    }
+
+    pub fn set_live_chunk_config(&self, config: Option<LiveChunkConfig>) {
+        if let Ok(mut guard) = self.live_chunk_config.lock() {
+            *guard = config;
         }
     }
 
@@ -103,6 +128,8 @@ impl AudioRecorder {
         let level_cb = self.level_cb.clone();
         let silence_stop_cb = self.silence_stop_cb.clone();
         let silence_stop_seconds = self.silence_stop_seconds.clone();
+        let live_chunk_cb = self.live_chunk_cb.clone();
+        let live_chunk_config = self.live_chunk_config.clone();
 
         let worker = std::thread::spawn(move || {
             let stop_flag = Arc::new(AtomicBool::new(false));
@@ -188,6 +215,8 @@ impl AudioRecorder {
                         stop_flag,
                         silence_stop_cb,
                         silence_stop_seconds,
+                        live_chunk_cb,
+                        live_chunk_config,
                     );
                     drop(stream);
                 }
@@ -231,7 +260,7 @@ impl AudioRecorder {
         Ok(())
     }
 
-    pub fn stop(&self) -> Result<Vec<f32>, Box<dyn std::error::Error>> {
+    pub fn stop(&self) -> Result<RecordedAudio, Box<dyn std::error::Error>> {
         let (resp_tx, resp_rx) = mpsc::channel();
         if let Some(tx) = &self.cmd_tx {
             tx.send(Cmd::Stop(resp_tx))?;
@@ -380,6 +409,12 @@ pub fn is_no_input_device_error(error_message: &str) -> bool {
 
 const FRAME_DURATION_MS: u64 = 30;
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct LiveChunkConfig {
+    pub silence_seconds: u64,
+    pub min_chunk_seconds: u64,
+}
+
 struct SilenceStopState {
     saw_speech: bool,
     quiet_frames: u64,
@@ -430,9 +465,76 @@ impl SilenceStopState {
     }
 }
 
+struct LiveChunkState {
+    saw_speech: bool,
+    quiet_frames: u64,
+    did_emit: bool,
+}
+
+impl LiveChunkState {
+    fn new() -> Self {
+        Self {
+            saw_speech: false,
+            quiet_frames: 0,
+            did_emit: false,
+        }
+    }
+
+    fn reset(&mut self) {
+        self.saw_speech = false;
+        self.quiet_frames = 0;
+        self.did_emit = false;
+    }
+
+    fn reset_after_emit(&mut self) {
+        self.reset();
+    }
+
+    fn update(
+        &mut self,
+        is_speech: bool,
+        pending_sample_count: usize,
+        config: Option<LiveChunkConfig>,
+    ) -> bool {
+        let Some(config) = config else {
+            return false;
+        };
+
+        if self.did_emit {
+            return false;
+        }
+
+        if is_speech {
+            self.saw_speech = true;
+            self.quiet_frames = 0;
+            return false;
+        }
+
+        if !self.saw_speech {
+            return false;
+        }
+
+        self.quiet_frames += 1;
+        let quiet_ms = self.quiet_frames * FRAME_DURATION_MS;
+        let min_samples =
+            config.min_chunk_seconds as usize * constants::WHISPER_SAMPLE_RATE as usize;
+
+        if quiet_ms >= config.silence_seconds * 1000 && pending_sample_count >= min_samples {
+            self.did_emit = true;
+            return true;
+        }
+
+        false
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{is_microphone_access_denied, is_no_input_device_error, SilenceStopState};
+    use super::{
+        is_microphone_access_denied, is_no_input_device_error, LiveChunkConfig, LiveChunkState,
+        SilenceStopState,
+    };
+    use crate::audio_toolkit::constants;
 
     #[test]
     fn detects_access_is_denied() {
@@ -507,6 +609,51 @@ mod tests {
 
         assert!(stop.update(false, Some(1)));
     }
+
+    #[test]
+    fn live_chunk_waits_for_minimum_length_and_silence() {
+        let mut state = LiveChunkState::new();
+        let config = LiveChunkConfig {
+            silence_seconds: 1,
+            min_chunk_seconds: 8,
+        };
+        let sample_rate = constants::WHISPER_SAMPLE_RATE as usize;
+
+        assert!(!state.update(true, 7 * sample_rate, Some(config)));
+
+        for _ in 0..34 {
+            assert!(!state.update(false, 7 * sample_rate, Some(config)));
+        }
+
+        assert!(!state.update(true, 8 * sample_rate, Some(config)));
+
+        for _ in 0..33 {
+            assert!(!state.update(false, 8 * sample_rate, Some(config)));
+        }
+
+        assert!(state.update(false, 8 * sample_rate, Some(config)));
+    }
+
+    #[test]
+    fn live_chunk_resets_after_emit() {
+        let mut state = LiveChunkState::new();
+        let config = LiveChunkConfig {
+            silence_seconds: 1,
+            min_chunk_seconds: 1,
+        };
+        let sample_rate = constants::WHISPER_SAMPLE_RATE as usize;
+
+        assert!(!state.update(true, sample_rate, Some(config)));
+        for _ in 0..33 {
+            assert!(!state.update(false, sample_rate, Some(config)));
+        }
+        assert!(state.update(false, sample_rate, Some(config)));
+
+        state.reset_after_emit();
+
+        assert!(!state.update(false, 0, Some(config)));
+        assert!(!state.update(true, sample_rate, Some(config)));
+    }
 }
 
 fn run_consumer(
@@ -518,6 +665,8 @@ fn run_consumer(
     stop_flag: Arc<AtomicBool>,
     silence_stop_cb: Option<Arc<dyn Fn() + Send + Sync + 'static>>,
     silence_stop_seconds: Arc<Mutex<Option<u64>>>,
+    live_chunk_cb: Option<Arc<dyn Fn(Vec<f32>) + Send + Sync + 'static>>,
+    live_chunk_config: Arc<Mutex<Option<LiveChunkConfig>>>,
 ) {
     let mut frame_resampler = FrameResampler::new(
         in_sample_rate as usize,
@@ -526,8 +675,11 @@ fn run_consumer(
     );
 
     let mut processed_samples = Vec::<f32>::new();
+    let mut pending_live_chunk = Vec::<f32>::new();
+    let mut did_emit_live_chunks = false;
     let mut recording = false;
     let mut silence_stop = SilenceStopState::new();
+    let mut live_chunk = LiveChunkState::new();
 
     // ---------- spectrum visualisation setup ---------------------------- //
     const BUCKETS: usize = 16;
@@ -545,6 +697,7 @@ fn run_consumer(
         recording: bool,
         vad: &Option<Arc<Mutex<Box<dyn vad::VoiceActivityDetector>>>>,
         out_buf: &mut Vec<f32>,
+        live_buf: &mut Vec<f32>,
     ) -> bool {
         if !recording {
             return false;
@@ -555,12 +708,14 @@ fn run_consumer(
             match det.push_frame(samples).unwrap_or(VadFrame::Speech(samples)) {
                 VadFrame::Speech(buf) => {
                     out_buf.extend_from_slice(buf);
+                    live_buf.extend_from_slice(buf);
                     true
                 }
                 VadFrame::Noise => false,
             }
         } else {
             out_buf.extend_from_slice(samples);
+            live_buf.extend_from_slice(samples);
             true
         }
     }
@@ -585,7 +740,13 @@ fn run_consumer(
 
         // ---------- existing pipeline ------------------------------------ //
         frame_resampler.push(&raw, &mut |frame: &[f32]| {
-            let is_speech = handle_frame(frame, recording, &vad, &mut processed_samples);
+            let is_speech = handle_frame(
+                frame,
+                recording,
+                &vad,
+                &mut processed_samples,
+                &mut pending_live_chunk,
+            );
             let stop_seconds = silence_stop_seconds
                 .lock()
                 .map(|guard| *guard)
@@ -596,6 +757,18 @@ fn run_consumer(
                     cb();
                 }
             }
+
+            let chunk_config = live_chunk_config.lock().map(|guard| *guard).unwrap_or(None);
+
+            if recording && live_chunk.update(is_speech, pending_live_chunk.len(), chunk_config) {
+                if let Some(cb) = &live_chunk_cb {
+                    cb(std::mem::take(&mut pending_live_chunk));
+                    did_emit_live_chunks = true;
+                } else {
+                    pending_live_chunk.clear();
+                }
+                live_chunk.reset_after_emit();
+            }
         });
 
         // non-blocking check for a command
@@ -604,8 +777,11 @@ fn run_consumer(
                 Cmd::Start => {
                     stop_flag.store(false, Ordering::Relaxed);
                     processed_samples.clear();
+                    pending_live_chunk.clear();
+                    did_emit_live_chunks = false;
                     recording = true;
                     silence_stop.reset();
+                    live_chunk.reset();
                     visualizer.reset();
                     if let Some(v) = &vad {
                         v.lock().unwrap().reset();
@@ -624,7 +800,13 @@ fn run_consumer(
                         match sample_rx.recv_timeout(Duration::from_secs(2)) {
                             Ok(AudioChunk::Samples(remaining)) => {
                                 frame_resampler.push(&remaining, &mut |frame: &[f32]| {
-                                    let _ = handle_frame(frame, true, &vad, &mut processed_samples);
+                                    let _ = handle_frame(
+                                        frame,
+                                        true,
+                                        &vad,
+                                        &mut processed_samples,
+                                        &mut pending_live_chunk,
+                                    );
                                 });
                             }
                             Ok(AudioChunk::EndOfStream) => break,
@@ -636,10 +818,21 @@ fn run_consumer(
                     }
 
                     frame_resampler.finish(&mut |frame: &[f32]| {
-                        let _ = handle_frame(frame, true, &vad, &mut processed_samples);
+                        let _ = handle_frame(
+                            frame,
+                            true,
+                            &vad,
+                            &mut processed_samples,
+                            &mut pending_live_chunk,
+                        );
                     });
 
-                    let _ = reply_tx.send(std::mem::take(&mut processed_samples));
+                    let _ = reply_tx.send(RecordedAudio {
+                        samples: std::mem::take(&mut processed_samples),
+                        live_tail: std::mem::take(&mut pending_live_chunk),
+                        used_live_chunks: did_emit_live_chunks,
+                    });
+                    did_emit_live_chunks = false;
 
                     // Resume the audio callback so the consumer loop can continue
                     // receiving chunks (important for always-on microphone mode).

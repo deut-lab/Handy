@@ -4,8 +4,11 @@ use crate::audio_feedback::{play_feedback_sound, play_feedback_sound_blocking, S
 use crate::audio_toolkit::{is_microphone_access_denied, is_no_input_device_error};
 use crate::managers::audio::AudioRecordingManager;
 use crate::managers::history::HistoryManager;
+use crate::managers::live_transcription::LiveTranscriptionManager;
 use crate::managers::transcription::TranscriptionManager;
-use crate::settings::{get_settings, AppSettings, APPLE_INTELLIGENCE_PROVIDER_ID};
+use crate::settings::{
+    get_settings, AppSettings, LongDictationMode, APPLE_INTELLIGENCE_PROVIDER_ID,
+};
 use crate::shortcut;
 use crate::tray::{change_tray_icon, TrayIconState};
 use crate::utils::{
@@ -394,6 +397,14 @@ impl ShortcutAction for TranscribeAction {
         // Load model in the background
         let tm = app.state::<Arc<TranscriptionManager>>();
         let rm = app.state::<Arc<AudioRecordingManager>>();
+        let live = app.state::<Arc<LiveTranscriptionManager>>();
+        let settings = get_settings(app);
+
+        if settings.long_dictation_mode == LongDictationMode::PauseChunks {
+            live.start(Arc::clone(&tm));
+        } else {
+            live.cancel();
+        }
 
         // Load ASR model and VAD model in parallel
         tm.initiate_model_load();
@@ -409,7 +420,6 @@ impl ShortcutAction for TranscribeAction {
         show_recording_overlay(app);
 
         // Get the microphone mode to determine audio feedback timing
-        let settings = get_settings(app);
         let is_always_on = settings.always_on_microphone;
         debug!("Microphone mode - always_on: {}", is_always_on);
 
@@ -463,6 +473,7 @@ impl ShortcutAction for TranscribeAction {
         } else {
             // Starting failed (for example due to blocked microphone permissions).
             // Revert UI state so we don't stay stuck in the recording overlay.
+            live.cancel();
             utils::hide_recording_overlay(app);
             change_tray_icon(app, TrayIconState::Idle);
             if let Some(err) = recording_error {
@@ -506,6 +517,7 @@ impl ShortcutAction for TranscribeAction {
         let rm = Arc::clone(&app.state::<Arc<AudioRecordingManager>>());
         let tm = Arc::clone(&app.state::<Arc<TranscriptionManager>>());
         let hm = Arc::clone(&app.state::<Arc<HistoryManager>>());
+        let live = Arc::clone(&app.state::<Arc<LiveTranscriptionManager>>());
 
         change_tray_icon(app, TrayIconState::Transcribing);
         show_transcribing_overlay(app);
@@ -527,7 +539,8 @@ impl ShortcutAction for TranscribeAction {
             );
 
             let stop_recording_time = Instant::now();
-            if let Some(samples) = rm.stop_recording(&binding_id) {
+            if let Some(recorded_audio) = rm.stop_recording(&binding_id) {
+                let samples = recorded_audio.samples;
                 debug!(
                     "Recording stopped and samples retrieved in {:?}, sample count: {}",
                     stop_recording_time.elapsed(),
@@ -551,7 +564,28 @@ impl ShortcutAction for TranscribeAction {
 
                     // Transcribe concurrently with WAV save
                     let transcription_time = Instant::now();
-                    let transcription_result = tm.transcribe(samples);
+                    let transcription_result = if recorded_audio.used_live_chunks {
+                        match live.finish(recorded_audio.live_tail) {
+                            Some(Ok(text)) if !text.trim().is_empty() => Ok(text),
+                            Some(Ok(_)) => {
+                                warn!(
+                                    "Live transcription returned empty text; falling back to full transcription"
+                                );
+                                tm.transcribe(samples.clone())
+                            }
+                            Some(Err(err)) => {
+                                warn!(
+                                    "Live transcription failed; falling back to full transcription: {}",
+                                    err
+                                );
+                                tm.transcribe(samples.clone())
+                            }
+                            None => tm.transcribe(samples.clone()),
+                        }
+                    } else {
+                        live.cancel();
+                        tm.transcribe(samples)
+                    };
 
                     // Await WAV save and verify
                     let wav_saved = match wav_handle.await {
