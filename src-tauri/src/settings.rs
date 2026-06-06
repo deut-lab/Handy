@@ -379,7 +379,7 @@ pub enum WhisperAcceleratorSetting {
 
 impl Default for WhisperAcceleratorSetting {
     fn default() -> Self {
-        WhisperAcceleratorSetting::Gpu
+        WhisperAcceleratorSetting::Auto
     }
 }
 

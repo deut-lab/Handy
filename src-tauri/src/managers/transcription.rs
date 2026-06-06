@@ -758,11 +758,19 @@ pub fn apply_accelerator_settings(app: &tauri::AppHandle) {
 
     let settings = get_settings(app);
 
-    let whisper_pref = match settings.whisper_accelerator {
+    let mut whisper_pref = match settings.whisper_accelerator {
         WhisperAcceleratorSetting::Auto => accel::WhisperAccelerator::Auto,
         WhisperAcceleratorSetting::Cpu => accel::WhisperAccelerator::CpuOnly,
         WhisperAcceleratorSetting::Gpu => accel::WhisperAccelerator::Gpu,
     };
+
+    let whisper_has_gpu =
+        accel::WhisperAccelerator::available().contains(&accel::WhisperAccelerator::Gpu);
+    if !whisper_has_gpu && whisper_pref != accel::WhisperAccelerator::CpuOnly {
+        warn!("Whisper GPU is not built in; using CPU");
+        whisper_pref = accel::WhisperAccelerator::CpuOnly;
+    }
+
     accel::set_whisper_accelerator(whisper_pref);
     accel::set_whisper_gpu_device(settings.whisper_gpu_device);
     info!(
@@ -796,6 +804,12 @@ pub struct GpuDeviceOption {
 static GPU_DEVICES: OnceLock<Vec<GpuDeviceOption>> = OnceLock::new();
 
 fn cached_gpu_devices() -> &'static [GpuDeviceOption] {
+    if !transcribe_rs::accel::WhisperAccelerator::available()
+        .contains(&transcribe_rs::accel::WhisperAccelerator::Gpu)
+    {
+        return &[];
+    }
+
     use transcribe_rs::whisper_cpp::gpu::list_gpu_devices;
 
     GPU_DEVICES.get_or_init(|| {
@@ -829,14 +843,19 @@ pub struct AvailableAccelerators {
 
 /// Return which accelerators are compiled into this build.
 pub fn get_available_accelerators() -> AvailableAccelerators {
-    use transcribe_rs::accel::OrtAccelerator;
+    use transcribe_rs::accel::{OrtAccelerator, WhisperAccelerator};
 
     let ort_options: Vec<String> = OrtAccelerator::available()
         .into_iter()
         .map(|a| a.to_string())
         .collect();
 
-    let whisper_options = vec!["auto".to_string(), "cpu".to_string(), "gpu".to_string()];
+    let mut whisper_options = vec!["auto".to_string()];
+    whisper_options.extend(
+        WhisperAccelerator::available()
+            .into_iter()
+            .map(|a| a.to_string()),
+    );
 
     AvailableAccelerators {
         whisper: whisper_options,

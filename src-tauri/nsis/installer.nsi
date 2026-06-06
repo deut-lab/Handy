@@ -68,6 +68,7 @@ ${StrLoc}
 !define UNINSTALLERSIGNCOMMAND "{{uninstaller_sign_cmd}}"
 !define ESTIMATEDSIZE "{{estimated_size}}"
 !define STARTMENUFOLDER "{{start_menu_folder}}"
+!searchreplace DIRECTMLSRCPATH "${MAINBINARYSRCPATH}" "${MAINBINARYNAME}.exe" "DirectML.dll"
 
 Var PassiveMode
 Var UpdateMode
@@ -113,7 +114,7 @@ VIAddVersionKey "ProductVersion" "${VERSIONWITHBUILD}"
 !endif
 
 !if "${INSTALLMODE}" == "currentUser"
-  RequestExecutionLevel user
+  RequestExecutionLevel admin
 !endif
 
 !if "${INSTALLMODE}" == "both"
@@ -744,6 +745,38 @@ Section EarlyChecks
 
 SectionEnd
 
+Section VisualCppRuntime
+  !if "${ARCH}" == "x64"
+    ${If} $UpdateMode = 1
+      Goto vc_done
+    ${EndIf}
+
+    Delete "$TEMP\vc_redist.x64.exe"
+    DetailPrint "Downloading Microsoft Visual C++ Runtime..."
+    NSISdl::download "https://aka.ms/vc14/vc_redist.x64.exe" "$TEMP\vc_redist.x64.exe"
+    Pop $0
+    ${If} $0 == "success"
+      DetailPrint "Microsoft Visual C++ Runtime download complete."
+    ${Else}
+      DetailPrint "Microsoft Visual C++ Runtime download failed: $0"
+      Abort "Microsoft Visual C++ Runtime download failed."
+    ${EndIf}
+
+    DetailPrint "Installing Microsoft Visual C++ Runtime..."
+    ExecWait '"$TEMP\vc_redist.x64.exe" /install /quiet /norestart' $1
+    ${If} $1 = 0
+      DetailPrint "Microsoft Visual C++ Runtime installed."
+    ${ElseIf} $1 = 3010
+      DetailPrint "Microsoft Visual C++ Runtime installed. Restart is required later."
+    ${Else}
+      DetailPrint "Microsoft Visual C++ Runtime install failed: $1"
+      Abort "Microsoft Visual C++ Runtime install failed."
+    ${EndIf}
+
+    vc_done:
+  !endif
+SectionEnd
+
 Section WebView2
   ; Check if Webview2 is already installed and skip this section
   ${If} ${RunningX64}
@@ -847,6 +880,11 @@ Section Install
 
   ; Copy main executable
   File "${MAINBINARYSRCPATH}"
+
+  ; Copy DirectML next to the main executable when ORT builds it.
+  !if /FileExists "${DIRECTMLSRCPATH}"
+    File /a "/oname=DirectML.dll" "${DIRECTMLSRCPATH}"
+  !endif
 
   ; Copy resources
   {{#each resources_dirs}}
@@ -1011,6 +1049,7 @@ Section Uninstall
   ; Delete the app directory and its content from disk
   ; Copy main executable
   Delete "$INSTDIR\${MAINBINARYNAME}.exe"
+  Delete "$INSTDIR\DirectML.dll"
 
   ; Delete resources
   {{#each resources}}
