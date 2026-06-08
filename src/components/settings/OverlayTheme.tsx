@@ -129,116 +129,119 @@ const MiniCancelIcon: React.FC<{ iconSet: OverlayIconSet }> = ({ iconSet }) =>
     <X size={14} strokeWidth={2.4} />
   );
 
-const ThemeCard: React.FC<{
+const ThemePreview: React.FC<{
   view: ThemeView;
-  selected: boolean;
-  disabled: boolean;
   iconSet: OverlayIconSet;
   transcribingIcon: OverlayTranscribingIcon;
   buttonStyle: OverlayButtonStyle;
   opacity: number;
   transcribingText: string;
   recordingText: string;
-  onSelect: () => void;
 }> = ({
   view,
-  selected,
-  disabled,
   iconSet,
   transcribingIcon,
   buttonStyle,
   opacity,
   transcribingText,
   recordingText,
-  onSelect,
 }) => (
+  <div
+    className={`rounded-lg border border-mid-gray/25 p-4 shadow-sm ${view.panelClass}`}
+  >
+    <div className="grid gap-4">
+      <div className="grid gap-2 sm:grid-cols-[96px_minmax(0,1fr)] sm:items-center">
+        <div className="text-xs font-medium text-text/60">{recordingText}</div>
+        <div
+          className={`grid h-10 w-full max-w-[184px] grid-cols-[22px_56px_64px] items-center gap-2 justify-self-start rounded-full px-2 shadow-sm ${view.overlayClass}`}
+          style={{
+            backgroundColor: getRgb(view.overlayRgb, getOverlayAlpha(opacity)),
+          }}
+        >
+          <MiniStatusIcon
+            iconSet={iconSet}
+            transcribingIcon={transcribingIcon}
+            state="recording"
+            color={view.iconColor}
+          />
+          <MiniBars barClass={view.barClass} />
+          <div className="flex items-center justify-end gap-1.5 overflow-hidden">
+            <span
+              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${
+                buttonStyle === "circle"
+                  ? `border bg-white/50 ${view.finishClass}`
+                  : view.finishClass
+              }`}
+            >
+              <MiniFinishIcon iconSet={iconSet} />
+            </span>
+            <span
+              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${
+                buttonStyle === "circle"
+                  ? `border bg-white/50 ${view.cancelClass}`
+                  : view.cancelClass
+              }`}
+            >
+              <MiniCancelIcon iconSet={iconSet} />
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-[96px_minmax(0,1fr)] sm:items-center">
+        <div className="text-xs font-medium text-text/60">
+          {transcribingText}
+        </div>
+        <div
+          className={`grid h-10 w-full max-w-[184px] grid-cols-[22px_minmax(0,1fr)] items-center gap-2 justify-self-start rounded-full px-2 shadow-sm ${view.overlayClass}`}
+          style={{
+            backgroundColor: getRgb(view.overlayRgb, getOverlayAlpha(opacity)),
+          }}
+        >
+          <MiniStatusIcon
+            iconSet={iconSet}
+            transcribingIcon={transcribingIcon}
+            state="transcribing"
+            color={view.iconColor}
+          />
+          <span
+            className={`truncate text-center text-xs font-semibold ${view.textClass}`}
+          >
+            {transcribingText}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const ThemeChoiceButton: React.FC<{
+  view: ThemeView;
+  selected: boolean;
+  disabled: boolean;
+  onSelect: () => void;
+}> = ({ view, selected, disabled, onSelect }) => (
   <button
     type="button"
     aria-pressed={selected}
     disabled={disabled}
     onClick={onSelect}
-    className={`w-full rounded-lg border p-3 text-start transition-all ${
+    className={`flex min-w-0 items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm font-semibold transition-all ${
       selected
-        ? "border-[#168a6f] bg-[#e5f6ee] shadow-sm"
-        : "border-mid-gray/25 bg-mid-gray/5 hover:border-[#168a6f]/70 hover:bg-[#e5f6ee]/55"
+        ? "border-[#168a6f] bg-[#e5f6ee] text-text shadow-sm"
+        : "border-mid-gray/25 bg-mid-gray/5 text-text/80 hover:border-[#168a6f]/70 hover:bg-[#e5f6ee]/55"
     } ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
   >
-    <div className="flex min-w-0 items-center justify-between gap-3">
-      <span className="min-w-0 truncate text-sm font-semibold text-text">
-        {view.name}
-      </span>
-      <span
-        className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
-          selected
-            ? "border-[#168a6f] bg-[#168a6f] text-white"
-            : "border-mid-gray/40"
-        }`}
-      >
-        {selected && <Check size={12} strokeWidth={2.6} />}
-      </span>
-    </div>
-
-    <div className={`mt-3 rounded-md p-2 ${view.panelClass}`}>
-      <div className="mb-1 text-[11px] font-medium text-text/60">
-        {recordingText}
-      </div>
-      <div
-        className={`mx-auto grid h-8 w-[118px] max-w-full grid-cols-[16px_32px_46px] items-center gap-1 rounded-full px-1.5 shadow-sm ${view.overlayClass}`}
-        style={{
-          backgroundColor: getRgb(view.overlayRgb, getOverlayAlpha(opacity)),
-        }}
-      >
-        <MiniStatusIcon
-          iconSet={iconSet}
-          transcribingIcon={transcribingIcon}
-          state="recording"
-          color={view.iconColor}
-        />
-        <MiniBars barClass={view.barClass} />
-        <div className="flex items-center justify-end gap-1 overflow-hidden">
-          <span
-            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-              buttonStyle === "circle"
-                ? `border bg-white/50 ${view.finishClass}`
-                : view.finishClass
-            }`}
-          >
-            <MiniFinishIcon iconSet={iconSet} />
-          </span>
-          <span
-            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-              buttonStyle === "circle"
-                ? `border bg-white/50 ${view.cancelClass}`
-                : view.cancelClass
-            }`}
-          >
-            <MiniCancelIcon iconSet={iconSet} />
-          </span>
-        </div>
-      </div>
-
-      <div className="mb-1 mt-3 text-[11px] font-medium text-text/60">
-        {transcribingText}
-      </div>
-      <div
-        className={`mx-auto grid h-8 w-[118px] max-w-full grid-cols-[16px_minmax(0,1fr)] items-center gap-1 rounded-full px-1.5 shadow-sm ${view.overlayClass}`}
-        style={{
-          backgroundColor: getRgb(view.overlayRgb, getOverlayAlpha(opacity)),
-        }}
-      >
-        <MiniStatusIcon
-          iconSet={iconSet}
-          transcribingIcon={transcribingIcon}
-          state="transcribing"
-          color={view.iconColor}
-        />
-        <span
-          className={`truncate text-center text-[11px] font-semibold ${view.textClass}`}
-        >
-          {transcribingText}
-        </span>
-      </div>
-    </div>
+    <span className="min-w-0 truncate">{view.name}</span>
+    <span
+      className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
+        selected
+          ? "border-[#168a6f] bg-[#168a6f] text-white"
+          : "border-mid-gray/40"
+      }`}
+    >
+      {selected && <Check size={12} strokeWidth={2.6} />}
+    </span>
   </button>
 );
 
@@ -383,6 +386,8 @@ export const OverlayTheme: React.FC<OverlayThemeProps> = React.memo(
         textClass: "text-[#edf4f7]",
       },
     ];
+    const selectedView =
+      views.find((view) => view.value === selectedTheme) ?? views[1];
 
     const iconSetViews: ChoiceView<OverlayIconSet>[] = [
       {
@@ -436,23 +441,29 @@ export const OverlayTheme: React.FC<OverlayThemeProps> = React.memo(
         grouped={grouped}
       >
         <div className="space-y-4">
-          <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2 2xl:grid-cols-4">
+          <ThemePreview
+            view={selectedView}
+            iconSet={selectedIconSet}
+            transcribingIcon={selectedTranscribingIcon}
+            buttonStyle={selectedButtonStyle}
+            opacity={selectedOpacity}
+            recordingText={t("settings.advanced.overlayTheme.states.recording")}
+            transcribingText={t(
+              "settings.advanced.overlayTheme.states.transcribing",
+            )}
+          />
+
+          <div
+            role="group"
+            aria-label={t("settings.advanced.overlayTheme.title")}
+            className="grid w-full grid-cols-2 gap-2 md:grid-cols-4"
+          >
             {views.map((view) => (
-              <ThemeCard
+              <ThemeChoiceButton
                 key={view.value}
                 view={view}
                 selected={selectedTheme === view.value}
                 disabled={isThemeUpdating}
-                iconSet={selectedIconSet}
-                transcribingIcon={selectedTranscribingIcon}
-                buttonStyle={selectedButtonStyle}
-                opacity={selectedOpacity}
-                recordingText={t(
-                  "settings.advanced.overlayTheme.states.recording",
-                )}
-                transcribingText={t(
-                  "settings.advanced.overlayTheme.states.transcribing",
-                )}
                 onSelect={() => updateSetting("overlay_theme", view.value)}
               />
             ))}
