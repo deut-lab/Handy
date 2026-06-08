@@ -777,6 +777,41 @@ Section VisualCppRuntime
   !endif
 SectionEnd
 
+Section VulkanRuntime
+  !if "${ARCH}" == "x64"
+    ${If} $UpdateMode = 1
+      Goto vulkan_done
+    ${EndIf}
+
+    ${If} ${FileExists} "$WINDIR\System32\vulkan-1.dll"
+      DetailPrint "Vulkan Runtime is already installed."
+      Goto vulkan_done
+    ${EndIf}
+
+    Delete "$TEMP\VulkanRT-X64-1.4.350.0-Installer.exe"
+    DetailPrint "Downloading Vulkan Runtime..."
+    NSISdl::download "https://sdk.lunarg.com/sdk/download/1.4.350.0/windows/VulkanRT-X64-1.4.350.0-Installer.exe" "$TEMP\VulkanRT-X64-1.4.350.0-Installer.exe"
+    Pop $0
+    ${If} $0 == "success"
+      DetailPrint "Vulkan Runtime download complete."
+    ${Else}
+      DetailPrint "Vulkan Runtime download failed: $0"
+      Abort "Vulkan Runtime download failed."
+    ${EndIf}
+
+    DetailPrint "Installing Vulkan Runtime..."
+    ExecWait '"$TEMP\VulkanRT-X64-1.4.350.0-Installer.exe" /S' $1
+    ${If} $1 = 0
+      DetailPrint "Vulkan Runtime installed."
+    ${Else}
+      DetailPrint "Vulkan Runtime install failed: $1"
+      Abort "Vulkan Runtime install failed."
+    ${EndIf}
+
+    vulkan_done:
+  !endif
+SectionEnd
+
 Section WebView2
   ; Check if Webview2 is already installed and skip this section
   ${If} ${RunningX64}

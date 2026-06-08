@@ -379,7 +379,7 @@ pub enum WhisperAcceleratorSetting {
 
 impl Default for WhisperAcceleratorSetting {
     fn default() -> Self {
-        WhisperAcceleratorSetting::Auto
+        WhisperAcceleratorSetting::Gpu
     }
 }
 
@@ -589,7 +589,7 @@ fn default_update_checks_enabled() -> bool {
 }
 
 fn default_selected_language() -> String {
-    "ru".to_string()
+    "auto".to_string()
 }
 
 fn default_overlay_position() -> OverlayPosition {
@@ -686,7 +686,9 @@ fn default_post_process_enabled() -> bool {
 }
 
 fn default_app_language() -> String {
-    "ru".to_string()
+    tauri_plugin_os::locale()
+        .map(|l| l.replace('_', "-"))
+        .unwrap_or_else(|| "en".to_string())
 }
 
 fn default_show_tray_icon() -> bool {
@@ -1232,10 +1234,83 @@ mod tests {
     }
 
     #[test]
-    fn default_language_settings_use_russian() {
+    fn default_language_settings_stay_automatic() {
         let settings = get_default_settings();
-        assert_eq!(settings.app_language, "ru");
-        assert_eq!(settings.selected_language, "ru");
+        assert_eq!(settings.selected_language, "auto");
+    }
+
+    #[test]
+    fn default_personal_settings_match_profile() {
+        let settings = get_default_settings();
+        assert!(!settings.push_to_talk);
+        assert!(settings.audio_feedback);
+        assert_eq!(settings.audio_feedback_volume, 1.0);
+        assert_eq!(settings.sound_theme, SoundTheme::Pop);
+        assert!(settings.start_hidden);
+        assert!(!settings.autostart_enabled);
+        assert_eq!(settings.selected_model, "parakeet-tdt-0.6b-v3");
+        assert!(!settings.always_on_microphone);
+        assert!(!settings.translate_to_english);
+        #[cfg(target_os = "linux")]
+        assert_eq!(settings.overlay_position, OverlayPosition::None);
+        #[cfg(not(target_os = "linux"))]
+        assert_eq!(settings.overlay_position, OverlayPosition::Bottom);
+        assert_eq!(settings.overlay_theme, OverlayTheme::Calm);
+        assert_eq!(settings.overlay_icon_set, OverlayIconSet::Line);
+        assert_eq!(
+            settings.overlay_transcribing_icon,
+            OverlayTranscribingIcon::ScanText
+        );
+        assert_eq!(settings.overlay_button_style, OverlayButtonStyle::Circle);
+        assert_eq!(settings.overlay_opacity, 30);
+        assert_eq!(settings.tray_icon_style, TrayIconStyle::States);
+        assert!(settings.debug_mode);
+        assert_eq!(settings.log_level, LogLevel::Error);
+        assert_eq!(settings.model_unload_timeout, ModelUnloadTimeout::Never);
+        assert_eq!(settings.word_correction_threshold, 0.18);
+        assert_eq!(settings.history_limit, 999);
+        assert_eq!(
+            settings.recording_retention_period,
+            RecordingRetentionPeriod::Never
+        );
+        #[cfg(target_os = "linux")]
+        assert_eq!(settings.paste_method, PasteMethod::Direct);
+        #[cfg(not(target_os = "linux"))]
+        assert_eq!(settings.paste_method, PasteMethod::CtrlV);
+        assert_eq!(
+            settings.clipboard_handling,
+            ClipboardHandling::CopyToClipboard
+        );
+        assert!(settings.auto_submit);
+        assert_eq!(settings.auto_submit_key, AutoSubmitKey::Enter);
+        assert!(settings.auto_stop_silence_enabled);
+        assert_eq!(settings.auto_stop_silence_seconds, 7);
+        assert_eq!(settings.long_dictation_mode, LongDictationMode::PauseChunks);
+        assert_eq!(settings.long_dictation_silence_seconds, 1);
+        assert_eq!(settings.long_dictation_min_chunk_seconds, 8);
+        assert!(!settings.post_process_enabled);
+        assert_eq!(settings.post_process_provider_id, "openai");
+        assert!(!settings.mute_while_recording);
+        assert!(!settings.append_trailing_space);
+        assert!(settings.experimental_enabled);
+        assert!(!settings.lazy_stream_close);
+        #[cfg(target_os = "linux")]
+        assert_eq!(
+            settings.keyboard_implementation,
+            KeyboardImplementation::Tauri
+        );
+        #[cfg(not(target_os = "linux"))]
+        assert_eq!(
+            settings.keyboard_implementation,
+            KeyboardImplementation::HandyKeys
+        );
+        assert!(settings.show_tray_icon);
+        assert_eq!(settings.paste_delay_ms, 60);
+        assert_eq!(settings.typing_tool, TypingTool::Auto);
+        assert_eq!(settings.whisper_accelerator, WhisperAcceleratorSetting::Gpu);
+        assert_eq!(settings.ort_accelerator, OrtAcceleratorSetting::Auto);
+        assert_eq!(settings.whisper_gpu_device, 0);
+        assert_eq!(settings.extra_recording_buffer_ms, 250);
     }
 
     #[test]
@@ -1282,8 +1357,7 @@ mod tests {
             serde_json::from_str(&fs::read_to_string(&target).unwrap()).unwrap();
         let settings = value.get("settings").unwrap();
         assert_ne!(settings.get("app_language").unwrap(), "fixed-old");
-        assert_eq!(settings.get("app_language").unwrap(), "ru");
-        assert_eq!(settings.get("selected_language").unwrap(), "ru");
+        assert_eq!(settings.get("selected_language").unwrap(), "auto");
         assert_eq!(settings.get("debug_mode").unwrap(), true);
     }
 
