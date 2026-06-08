@@ -589,7 +589,7 @@ fn default_update_checks_enabled() -> bool {
 }
 
 fn default_selected_language() -> String {
-    "auto".to_string()
+    "ru".to_string()
 }
 
 fn default_overlay_position() -> OverlayPosition {
@@ -686,9 +686,7 @@ fn default_post_process_enabled() -> bool {
 }
 
 fn default_app_language() -> String {
-    tauri_plugin_os::locale()
-        .map(|l| l.replace('_', "-"))
-        .unwrap_or_else(|| "en".to_string())
+    "ru".to_string()
 }
 
 fn default_show_tray_icon() -> bool {
@@ -1234,9 +1232,10 @@ mod tests {
     }
 
     #[test]
-    fn default_language_settings_stay_automatic() {
+    fn default_language_settings_use_russian() {
         let settings = get_default_settings();
-        assert_eq!(settings.selected_language, "auto");
+        assert_eq!(settings.app_language, "ru");
+        assert_eq!(settings.selected_language, "ru");
     }
 
     #[test]
@@ -1283,7 +1282,8 @@ mod tests {
             serde_json::from_str(&fs::read_to_string(&target).unwrap()).unwrap();
         let settings = value.get("settings").unwrap();
         assert_ne!(settings.get("app_language").unwrap(), "fixed-old");
-        assert_eq!(settings.get("selected_language").unwrap(), "auto");
+        assert_eq!(settings.get("app_language").unwrap(), "ru");
+        assert_eq!(settings.get("selected_language").unwrap(), "ru");
         assert_eq!(settings.get("debug_mode").unwrap(), true);
     }
 
