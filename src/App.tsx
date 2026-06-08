@@ -11,14 +11,14 @@ import { ModelStateEvent, RecordingErrorEvent } from "./lib/types/events";
 import "./App.css";
 import AccessibilityPermissions from "./components/AccessibilityPermissions";
 import Footer from "./components/footer";
-import { AccessibilityOnboarding } from "./components/onboarding";
+import Onboarding, { AccessibilityOnboarding } from "./components/onboarding";
 import { Sidebar, SidebarSection, SECTIONS_CONFIG } from "./components/Sidebar";
 import { useSettings } from "./hooks/useSettings";
 import { useSettingsStore } from "./stores/settingsStore";
 import { commands } from "@/bindings";
 import { getLanguageDirection, initializeRTL } from "@/lib/utils/rtl";
 
-type OnboardingStep = "accessibility" | "done";
+type OnboardingStep = "accessibility" | "model" | "done";
 
 const renderSettingsContent = (section: SidebarSection) => {
   const ActiveComponent =
@@ -213,22 +213,24 @@ function App() {
 
         setOnboardingStep("done");
       } else {
-        // New user - show the normal app shell so settings stay reachable.
+        // New user - start full onboarding
         setIsReturningUser(false);
-        setCurrentSection("models");
-        setOnboardingStep("done");
+        setOnboardingStep("accessibility");
       }
     } catch (error) {
       console.error("Failed to check onboarding status:", error);
-      setCurrentSection("models");
-      setOnboardingStep("done");
+      setOnboardingStep("accessibility");
     }
   };
 
   const handleAccessibilityComplete = () => {
-    if (!isReturningUser) {
-      setCurrentSection("models");
-    }
+    // Returning users already have models, skip to main app
+    // New users need to select a model
+    setOnboardingStep(isReturningUser ? "done" : "model");
+  };
+
+  const handleModelSelected = () => {
+    // Transition to main app - user has started a download
     setOnboardingStep("done");
   };
 
@@ -239,6 +241,10 @@ function App() {
 
   if (onboardingStep === "accessibility") {
     return <AccessibilityOnboarding onComplete={handleAccessibilityComplete} />;
+  }
+
+  if (onboardingStep === "model") {
+    return <Onboarding onModelSelected={handleModelSelected} />;
   }
 
   return (
