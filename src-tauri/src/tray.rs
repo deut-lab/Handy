@@ -13,7 +13,7 @@ use tauri_plugin_clipboard_manager::ClipboardExt;
 #[cfg(target_os = "windows")]
 use winreg::{enums::HKEY_CURRENT_USER, RegKey};
 
-const APP_SHOWN_VERSION: &str = "0.8.10";
+const APP_SHOWN_VERSION: &str = "0.8.11";
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum TrayIconState {
