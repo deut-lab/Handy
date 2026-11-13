@@ -1,12 +1,25 @@
 {
-  "bindings": {
-    "transcribe": {
-      "id": "transcribe",
-      "name": "Transcribe Keyboard Shortcut",
-      "description": "Converts your speech into text.",
-      "default_binding": "Platform-specific: ctrl+space (Windows/Linux), alt+space (macOS)"
+  "_about": "Handy Voice defaults, used once: on the first run, when there is no settings file yet. An existing settings file is never changed. Keys are settings names (settings_store.json); a section named windows, macos or linux applies on that system only. See src-tauri/src/voice/default_settings.rs.",
+  "shortcut_activation": "toggle",
+  "audio_feedback": true,
+  "sound_theme": "pop",
+  "start_hidden": true,
+  "debug_mode": true,
+  "log_level": "error",
+  "model_unload_timeout": "never",
+  "history_limit": 999,
+  "recording_retention_period": "never",
+  "clipboard_handling": "copy_to_clipboard",
+  "auto_submit": true,
+  "experimental_enabled": true,
+  "extra_recording_buffer_ms": 250,
+  "overlay_style": "minimal",
+  "windows": {
+    "bindings": {
+      "transcribe": {
+        "default_binding": "`",
+        "current_binding": "`"
+      }
     }
-  },
-  "push_to_talk": true,
-  "selected_language": "auto"
+  }
 }

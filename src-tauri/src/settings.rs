@@ -1210,7 +1210,9 @@ pub fn get_settings(app: &AppHandle) -> AppSettings {
 
         settings
     } else {
-        let default_settings = get_default_settings();
+        // Handy Voice: the fork's defaults on the first run (voice/default_settings.rs)
+        let default_settings =
+            crate::voice::default_settings::first_run(app, get_default_settings());
         store.set("settings", serde_json::to_value(&default_settings).unwrap());
         default_settings
     };
@@ -1398,6 +1400,11 @@ fn apply_settings_migrations(
         } else {
             OverlayStyle::Live
         };
+        updated = true;
+    }
+
+    // Handy Voice: keep the fork's compact overlay (voice/default_settings.rs)
+    if crate::voice::default_settings::keep_fork_overlay_style(settings, settings_value) {
         updated = true;
     }
 
