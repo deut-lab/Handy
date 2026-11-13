@@ -615,11 +615,8 @@ pub fn tray_tooltip() -> String {
 }
 
 fn version_label() -> String {
-    if cfg!(debug_assertions) {
-        format!("Handy v{} (Dev)", env!("CARGO_PKG_VERSION"))
-    } else {
-        format!("Handy v{}", env!("CARGO_PKG_VERSION"))
-    }
+    // Handy Voice: own name, version from the build (voice/tray_style.rs)
+    crate::voice::tray_style::version_label()
 }
 
 /// Builds the tray menu and tooltip for the given inputs. Pure with respect
