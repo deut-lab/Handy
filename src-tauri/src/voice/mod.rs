@@ -9,3 +9,4 @@ pub mod overlay_look;
 pub mod silence_stop;
 mod sound_themes;
 pub mod tray_style;
+pub mod windows_startup;

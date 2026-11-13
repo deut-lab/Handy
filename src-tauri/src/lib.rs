@@ -393,6 +393,8 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     // Apply the autostart preference (SMAppService login item on macOS 13+,
     // tauri-plugin-autostart elsewhere)
     autostart::apply_autostart(app_handle, settings.autostart_enabled);
+    // Handy Voice: start through a Windows task (voice/windows_startup.rs)
+    voice::windows_startup::sync_at_start(app_handle);
 
     // Create the recording overlay window (hidden by default)
     utils::create_recording_overlay(app_handle);
@@ -693,6 +695,8 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_theme_setting,
             shortcut::change_start_hidden_setting,
             shortcut::change_autostart_setting,
+            voice::windows_startup::change_windows_task_startup_setting,
+            voice::windows_startup::change_windows_task_startup_admin_setting,
             shortcut::change_translate_to_english_setting,
             shortcut::change_selected_language_setting,
             shortcut::change_spoken_languages_setting,

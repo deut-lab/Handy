@@ -1071,6 +1071,14 @@
           "text_initial": "Initial"
         }
       }
+    },
+    "windowsTaskStartup": {
+      "label": "Start with a Windows task",
+      "description": "Reliable start when you sign in to Windows: a Windows task instead of the regular startup entry."
+    },
+    "windowsTaskStartupAdmin": {
+      "label": "With administrator rights",
+      "description": "The Windows task starts Handy Voice with administrator rights, so dictation also works in windows started as administrator. Changing this may ask for administrator rights."
     }
   }
 }

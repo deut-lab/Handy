@@ -1071,6 +1071,14 @@
           "text_initial": "Initiale"
         }
       }
+    },
+    "windowsTaskStartup": {
+      "label": "Über Windows-Aufgabe starten",
+      "description": "Zuverlässiger Start bei der Windows-Anmeldung: eine Windows-Aufgabe statt des normalen Autostart-Eintrags."
+    },
+    "windowsTaskStartupAdmin": {
+      "label": "Mit Administratorrechten",
+      "description": "Die Windows-Aufgabe startet Handy Voice mit Administratorrechten, damit das Diktieren auch in Fenstern funktioniert, die als Administrator laufen. Beim Ändern fragt Windows eventuell nach Administratorrechten."
     }
   }
 }
