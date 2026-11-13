@@ -102,12 +102,6 @@ const Preview: React.FC<{ look: OverlayLook }> = ({ look }) => {
             <LookIcon look={look} kind="working" />
           </span>
           <span className="vlp-label">{t("overlay.transcribing")}</span>
-          <span className="vlp-right">
-            <span className="vlp-button">
-              <LookIcon look={look} kind="cancel" />
-              <ThinCross />
-            </span>
-          </span>
         </div>
       </div>
     </div>

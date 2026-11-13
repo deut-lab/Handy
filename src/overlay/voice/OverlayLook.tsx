@@ -15,7 +15,7 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   commands,
   type AppSettings,
@@ -80,16 +80,75 @@ export const lookFromSettings = (
   opacity: clampOpacity(settings?.overlay_opacity ?? DEFAULT_LOOK.opacity),
 });
 
+/**
+ * Bar width and gap in whole screen pixels. WebView2 zooms the overlay by the
+ * Windows text size (110% gives 1.1), so a 4px bar would cover 4.4 screen
+ * pixels: some bars would land on 4 pixels and others on 5, all blurred.
+ */
+const barSizes = (dpr: number) => ({
+  "--vl-bar-w": `${Math.max(1, Math.round(4 * dpr)) / dpr}px`,
+  "--vl-bar-gap": `${Math.max(1, Math.round(2 * dpr)) / dpr}px`,
+});
+
 /** Classes and variables that apply a look to an element and its children. */
 export const viewLook = (look: OverlayLook): OverlayLookView => ({
   ...look,
   className: `vlook vlook-${look.theme} vlook-icons-${look.iconSet} vlook-buttons-${look.buttonStyle}`,
-  style: { "--vl-alpha": `${100 - look.opacity}%` } as React.CSSProperties,
+  style: {
+    "--vl-alpha": `${100 - look.opacity}%`,
+    ...barSizes(window.devicePixelRatio || 1),
+  } as React.CSSProperties,
 });
+
+/** Re-renders when the screen scale changes (another monitor, text size). */
+const useDevicePixelRatio = (): number => {
+  const [dpr, setDpr] = useState(() => window.devicePixelRatio || 1);
+
+  useEffect(() => {
+    let query: MediaQueryList | null = null;
+    const update = () => {
+      query?.removeEventListener("change", update);
+      const next = window.devicePixelRatio || 1;
+      setDpr(next);
+      query = window.matchMedia(`(resolution: ${next}dppx)`);
+      query.addEventListener("change", update);
+    };
+    update();
+    return () => query?.removeEventListener("change", update);
+  }, []);
+
+  return dpr;
+};
+
+/**
+ * Puts the compact pill's bars on whole screen pixels: with whole-pixel bars
+ * and gaps, only the start can still fall between two pixels, so the bars are
+ * nudged by that fraction. Measured once per bar row and screen scale.
+ */
+const useSnappedBars = (dpr: number) => {
+  const snapped = useRef<{ wave: Element | null; dpr: number }>({
+    wave: null,
+    dpr: 0,
+  });
+
+  useLayoutEffect(() => {
+    const wave = document.querySelector<HTMLElement>(
+      ".vlook .scard.compact .swave",
+    );
+    if (!wave) return;
+    if (snapped.current.wave === wave && snapped.current.dpr === dpr) return;
+    wave.style.translate = "";
+    const left = wave.getBoundingClientRect().left * dpr;
+    wave.style.translate = `${(Math.round(left) - left) / dpr}px 0`;
+    snapped.current = { wave, dpr };
+  });
+};
 
 /** The overlay's look, read again each time the overlay is shown. */
 export const useOverlayLook = (): OverlayLookView => {
   const [look, setLook] = useState<OverlayLook>(DEFAULT_LOOK);
+  const dpr = useDevicePixelRatio();
+  useSnappedBars(dpr);
 
   useEffect(() => {
     let active = true;
