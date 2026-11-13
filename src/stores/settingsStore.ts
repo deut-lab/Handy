@@ -205,6 +205,8 @@ const settingUpdaters: {
     commands.changeChineseScriptSetting(value as ChineseScript),
   show_tray_icon: (value) =>
     commands.changeShowTrayIconSetting(value as boolean),
+  tray_icon_style: (value) =>
+    commands.changeTrayIconStyleSetting(value as NonNullable<typeof value>),
   transcribe_accelerator: (value) =>
     commands.changeTranscribeAcceleratorSetting(
       value as TranscribeAcceleratorSetting,

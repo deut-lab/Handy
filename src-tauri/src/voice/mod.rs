@@ -5,3 +5,4 @@
 //! new Handy releases can be merged with few conflicts.
 
 mod sound_themes;
+pub mod tray_style;

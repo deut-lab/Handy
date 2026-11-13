@@ -534,6 +534,9 @@ pub struct AppSettings {
     pub keyboard_implementation: KeyboardImplementation,
     #[serde(default = "default_show_tray_icon")]
     pub show_tray_icon: bool,
+    // Handy Voice (voice/tray_style.rs)
+    #[serde(default)]
+    pub tray_icon_style: crate::voice::tray_style::TrayIconStyle,
     #[serde(default = "default_paste_delay_ms")]
     pub paste_delay_ms: u64,
     #[serde(default = "default_paste_delay_after_ms")]
@@ -1069,6 +1072,7 @@ pub fn get_default_settings() -> AppSettings {
         airpods_mode: false,
         keyboard_implementation: KeyboardImplementation::default(),
         show_tray_icon: default_show_tray_icon(),
+        tray_icon_style: Default::default(),
         paste_delay_ms: default_paste_delay_ms(),
         paste_delay_after_ms: default_paste_delay_after_ms(),
         reliable_paste: false,

@@ -491,6 +491,14 @@ async changeShowTrayIconSetting(enabled: boolean) : Promise<Result<null, string>
     else return { status: "error", error: e  as any };
 }
 },
+async changeTrayIconStyleSetting(style: TrayIconStyle) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_tray_icon_style_setting", { style }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async changeTranscribeAcceleratorSetting(accelerator: TranscribeAcceleratorSetting) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_transcribe_accelerator_setting", { accelerator }) };
@@ -1132,7 +1140,7 @@ spoken_languages?: string[]; overlay_position?: OverlayPosition; debug_mode?: bo
  * Mac while recording, so its microphone does not return silence while
  * another Apple device is playing through it.
  */
-airpods_mode?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; 
+airpods_mode?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; tray_icon_style?: TrayIconStyle; paste_delay_ms?: number; paste_delay_after_ms?: number; 
 /**
  * Debug-gated ("beta") receipt-sequenced paste: restore the clipboard only
  * after the target app actually reads the transcript, instead of after a
@@ -1546,6 +1554,7 @@ export type TranscriptionOutcome =
  * Transcribing or pasting failed.
  */
 "failed"
+export type TrayIconStyle = "original" | "states" | "logo"
 export type TypingTool = "auto" | "wtype" | "kwtype" | "dotool" | "ydotool" | "xdotool"
 export type VadBackend = "silero" | "earshot"
 export type WindowsMicrophonePermissionStatus = { supported: boolean; overall_access: PermissionAccess; device_access: PermissionAccess; app_access: PermissionAccess; desktop_app_access: PermissionAccess }
