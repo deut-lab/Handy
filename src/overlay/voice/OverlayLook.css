@@ -36,7 +36,7 @@
   --vl-bg: #f7fafc;
   --vl-border: #c8d2da;
   --vl-text: #243743;
-  --vl-accent: #18a572;
+  --vl-accent: #34816d; /* calm green, as the gray theme's */
   --vl-icon: #127f78;
   --vl-muted: #5f7078;
   --vl-faint: #5f7078;
@@ -166,17 +166,17 @@
   }
 }
 
-/* Compact pill (the Minimal overlay) laid out as the fork's: 150px wide with
-   its border, 36px high; the status icon centered in a 24px slot (a button's
-   size), the check and cross in a 48px column, and the five bars centered in
-   the free space between the two. */
+/* Compact pill (the Minimal overlay): 150px wide with its border, 40px high;
+   the status icon centered in a 24px slot, big 30px check and cross (easy to
+   hit) in a 64px column, and the five bars centered in the free space between
+   the two. */
 .vlook .scard.compact {
   --ov-rest-w: 148px;
-  --ov-base-h: 36px;
+  --ov-base-h: 40px;
 }
 .vlook .scard.compact .sbase:not(.snotice) {
-  padding: 0 6px;
-  grid-template-columns: 24px minmax(0, 1fr) 48px;
+  padding: 0 5px;
+  grid-template-columns: 24px minmax(0, 1fr) 64px;
   column-gap: 2px;
 }
 .vlook .scard.compact .sbase-l {
@@ -185,12 +185,28 @@
   justify-content: center;
 }
 .vlook .scard.compact .sbase-r {
-  gap: 2px;
+  gap: 4px;
+}
+.vlook .scard.compact .sx {
+  width: 30px;
+  height: 30px;
+}
+.vlook .scard.compact .sx > svg {
+  width: 11px;
+  height: 11px;
+}
+.vlook.vlook-icons-line .scard.compact .sx svg {
+  width: 17px;
+  height: 17px;
 }
 .vlook .scard.compact .swave {
   justify-self: center;
-  gap: 2px;
+  gap: var(--vl-bar-gap, 2px);
   padding-right: 0;
+}
+/* Whole screen pixels (OverlayLook.tsx), so every bar is equally wide. */
+.vlook .scard.compact .swave i {
+  width: var(--vl-bar-w, 4px);
 }
 .vlook .scard.compact .swave i:nth-child(n + 6) {
   display: none;
