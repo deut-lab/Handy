@@ -36,12 +36,12 @@
   --vl-bg: #f7fafc;
   --vl-border: #c8d2da;
   --vl-text: #243743;
-  /* Muted greens: bars, mic and check. */
-  --vl-accent: #548377;
-  --vl-icon: #548377;
+  /* Soft greens, not bright: bars, mic and check. */
+  --vl-accent: #428a6c;
+  --vl-icon: #428a6c;
   --vl-muted: #5f7078;
   --vl-faint: #5f7078;
-  --vl-finish: #498361;
+  --vl-finish: #3a885a;
   --vl-button: #ffffff8a;
   --vl-button-ring: #bfd0d9;
   --vl-hover: #d9e2e8;
@@ -203,10 +203,8 @@
 .vlook .scard.compact .swave {
   justify-self: center;
   gap: var(--vl-bar-gap, 2px);
+  /* Centered between the mic's 30px slot and the check's circle. */
   padding-right: 0;
-  /* 5px left of the middle of their column: so the gaps to the mic glyph and
-     to the check's circle look the same. */
-  margin-right: 10px;
 }
 /* Whole screen pixels (OverlayLook.tsx), so every bar is equally wide. */
 .vlook .scard.compact .swave i {
