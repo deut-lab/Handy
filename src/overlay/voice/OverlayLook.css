@@ -203,6 +203,9 @@
   justify-self: center;
   gap: var(--vl-bar-gap, 2px);
   padding-right: 0;
+  /* 3.5px left of the middle: the mic glyph is narrower than its slot, so
+     this looks centered between the mic and the check. */
+  margin-right: 7px;
 }
 /* Whole screen pixels (OverlayLook.tsx), so every bar is equally wide. */
 .vlook .scard.compact .swave i {
