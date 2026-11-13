@@ -10,6 +10,7 @@ import { ShowWhatsNewOnUpdate } from "../ShowWhatsNewOnUpdate";
 import { ThemeSelector } from "../ThemeSelector";
 import { LogDirectory } from "../debug";
 import { getAppLabel } from "../voice/appVersion";
+import { AboutHandyVoice } from "../voice/AboutHandyVoice";
 
 export const AboutSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -74,6 +75,8 @@ export const AboutSettings: React.FC = () => {
             {t("settings.about.sourceCode.button")}
           </Button>
         </SettingContainer>
+
+        <AboutHandyVoice />
 
         <AppDataDirectory descriptionMode="tooltip" grouped={true} />
         <LogDirectory grouped={true} />

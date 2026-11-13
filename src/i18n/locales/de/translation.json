@@ -990,6 +990,18 @@
     "dismiss": "Ausblenden"
   },
   "voice": {
+    "about": {
+      "updatedVersion": {
+        "title": "Erweiterte Version",
+        "description": "Handy Voice – Handy mit Erweiterungen: Stopp nach Stille, Einfügen ohne Enter, Aussehen und Größe der Aufnahmeleiste, Symbole, Transparenz, Bestätigungstöne, Autostart über eine Windows-Aufgabe.",
+        "button": "Meine Version öffnen"
+      },
+      "readyInstaller": {
+        "title": "Fertiger Installer",
+        "description": "Die neueste fertige Version der erweiterten Fassung.",
+        "button": "Herunterladen"
+      }
+    },
     "soundTheme": {
       "label": "Sound-Thema",
       "description": "Wähle den Ton für Start und Ende der Aufnahme.",
