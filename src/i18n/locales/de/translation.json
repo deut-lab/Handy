@@ -1094,6 +1094,9 @@
     "windowsTaskStartupAdmin": {
       "label": "Mit Administratorrechten",
       "description": "Die Windows-Aufgabe startet Handy Voice mit Administratorrechten, damit das Diktieren auch in Fenstern funktioniert, die als Administrator laufen. Beim Ändern fragt Windows eventuell nach Administratorrechten."
+    },
+    "appVersion": {
+      "build": "Build {{n}}"
     }
   }
 }
