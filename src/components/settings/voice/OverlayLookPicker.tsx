@@ -1,5 +1,6 @@
 // Handy Voice: the recording overlay's look (src-tauri/src/voice/overlay_look.rs):
-// theme, icons, buttons and transparency, with a preview of the compact pill.
+// theme, icons, transcribing icon, buttons and transparency, with a preview of
+// the compact pill.
 import React from "react";
 import { Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -7,10 +8,12 @@ import type {
   OverlayButtonStyle,
   OverlayIconSet,
   OverlayTheme,
+  OverlayTranscribingIcon,
 } from "@/bindings";
 import {
   LookIcon,
   lookFromSettings,
+  TRANSCRIBING_ICONS,
   viewLook,
   type OverlayLook,
 } from "@/overlay/voice/OverlayLook";
@@ -26,6 +29,9 @@ interface OverlayLookPickerProps {
 const THEMES: OverlayTheme[] = ["classic", "calm", "gray", "dark"];
 const ICON_SETS: OverlayIconSet[] = ["original", "line"];
 const BUTTON_STYLES: OverlayButtonStyle[] = ["circle", "simple"];
+const TRANSCRIBING_ICON_NAMES = Object.keys(
+  TRANSCRIBING_ICONS,
+) as OverlayTranscribingIcon[];
 const BAR_HEIGHTS = [6, 12, 16, 9, 13];
 
 // Handy's own glyphs, as in RecordingOverlay.tsx and InsertButton.tsx.
@@ -252,6 +258,38 @@ export const OverlayLookPicker: React.FC<OverlayLookPickerProps> = React.memo(
               </span>
             </div>
           </Section>
+
+          {look.iconSet === "line" && (
+            <Section title={t("voice.overlayLook.transcribingIcon.title")}>
+              <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+                {TRANSCRIBING_ICON_NAMES.map((icon) => {
+                  const Icon = TRANSCRIBING_ICONS[icon];
+                  return (
+                    <Choice
+                      key={icon}
+                      selected={look.transcribingIcon === icon}
+                      disabled={isUpdating("overlay_transcribing_icon")}
+                      onSelect={() =>
+                        updateSetting("overlay_transcribing_icon", icon)
+                      }
+                    >
+                      <Icon
+                        size={16}
+                        strokeWidth={2.2}
+                        className="shrink-0"
+                        aria-hidden="true"
+                      />
+                      <span className="truncate">
+                        {t(
+                          `voice.overlayLook.transcribingIcon.options.${icon}`,
+                        )}
+                      </span>
+                    </Choice>
+                  );
+                })}
+              </div>
+            </Section>
+          )}
         </div>
       </SettingContainer>
     );

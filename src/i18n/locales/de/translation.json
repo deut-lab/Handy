@@ -1059,6 +1059,17 @@
       },
       "opacity": {
         "title": "Transparenz"
+      },
+      "transcribingIcon": {
+        "title": "Symbol beim Erkennen",
+        "options": {
+          "scan_text": "Scannen",
+          "square_dashed_text": "Auswahl",
+          "scroll_text": "Schriftrolle",
+          "text_cursor_input": "Cursor",
+          "message_square_text": "Nachricht",
+          "text_initial": "Initiale"
+        }
       }
     }
   }

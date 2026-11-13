@@ -1059,6 +1059,17 @@
       },
       "opacity": {
         "title": "Прозрачность"
+      },
+      "transcribingIcon": {
+        "title": "Значок распознавания",
+        "options": {
+          "scan_text": "Сканирование",
+          "square_dashed_text": "Выделение",
+          "scroll_text": "Свиток",
+          "text_cursor_input": "Курсор",
+          "message_square_text": "Сообщение",
+          "text_initial": "Буквица"
+        }
       }
     }
   }

@@ -700,6 +700,7 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_overlay_style_setting,
             voice::overlay_look::change_overlay_theme_setting,
             voice::overlay_look::change_overlay_icon_set_setting,
+            voice::overlay_look::change_overlay_transcribing_icon_setting,
             voice::overlay_look::change_overlay_button_style_setting,
             voice::overlay_look::change_overlay_opacity_setting,
             shortcut::change_debug_mode_setting,

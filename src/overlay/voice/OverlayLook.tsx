@@ -1,8 +1,20 @@
 // Handy Voice: the recording overlay's look (src-tauri/src/voice/overlay_look.rs):
-// color theme, icon set, button style and transparency. Colors live in
-// OverlayLook.css; this file gives the overlay its classes and icons.
+// color theme, icon set, transcribing icon, button style and transparency.
+// Colors live in OverlayLook.css; this file gives the overlay its classes and
+// icons.
 import { listen } from "@tauri-apps/api/event";
-import { Check, Mic, ScanText, X } from "lucide-react";
+import {
+  Check,
+  LetterText,
+  MessageSquareText,
+  Mic,
+  ScanText,
+  ScrollText,
+  TextCursorInput,
+  TextSelect,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import React, { useEffect, useState } from "react";
 import {
   commands,
@@ -10,12 +22,28 @@ import {
   type OverlayButtonStyle,
   type OverlayIconSet,
   type OverlayTheme,
+  type OverlayTranscribingIcon,
 } from "@/bindings";
 import "./OverlayLook.css";
+
+/**
+ * The line icons for "transcribing", by the fork's store names (Lucide icon
+ * names). lucide-react 0.542 still calls square-dashed-text `TextSelect` and
+ * text-initial `LetterText`: the same drawings.
+ */
+export const TRANSCRIBING_ICONS: Record<OverlayTranscribingIcon, LucideIcon> = {
+  scan_text: ScanText,
+  square_dashed_text: TextSelect,
+  scroll_text: ScrollText,
+  text_cursor_input: TextCursorInput,
+  message_square_text: MessageSquareText,
+  text_initial: LetterText,
+};
 
 export interface OverlayLook {
   theme: OverlayTheme;
   iconSet: OverlayIconSet;
+  transcribingIcon: OverlayTranscribingIcon;
   buttonStyle: OverlayButtonStyle;
   /** Transparency in percent, 0-100 in steps of 10. */
   opacity: number;
@@ -30,6 +58,7 @@ export interface OverlayLookView extends OverlayLook {
 export const DEFAULT_LOOK: OverlayLook = {
   theme: "calm",
   iconSet: "line",
+  transcribingIcon: "scan_text",
   buttonStyle: "circle",
   opacity: 30,
 };
@@ -45,6 +74,8 @@ export const lookFromSettings = (
 ): OverlayLook => ({
   theme: settings?.overlay_theme ?? DEFAULT_LOOK.theme,
   iconSet: settings?.overlay_icon_set ?? DEFAULT_LOOK.iconSet,
+  transcribingIcon:
+    settings?.overlay_transcribing_icon ?? DEFAULT_LOOK.transcribingIcon,
   buttonStyle: settings?.overlay_button_style ?? DEFAULT_LOOK.buttonStyle,
   opacity: clampOpacity(settings?.overlay_opacity ?? DEFAULT_LOOK.opacity),
 });
@@ -104,12 +135,14 @@ export const LookIcon: React.FC<{
           <Mic size={18} strokeWidth={2.2} aria-hidden="true" />
         </span>
       );
-    case "working":
+    case "working": {
+      const Icon = TRANSCRIBING_ICONS[look.transcribingIcon] ?? ScanText;
       return (
         <span className="vicon vstatus working">
-          <ScanText size={18} strokeWidth={2.2} aria-hidden="true" />
+          <Icon size={18} strokeWidth={2.2} aria-hidden="true" />
         </span>
       );
+    }
     case "finish":
       return (
         <span className="vicon">

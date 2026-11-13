@@ -1059,6 +1059,17 @@
       },
       "opacity": {
         "title": "Прозорість"
+      },
+      "transcribingIcon": {
+        "title": "Значок розпізнавання",
+        "options": {
+          "scan_text": "Сканування",
+          "square_dashed_text": "Виділення",
+          "scroll_text": "Сувій",
+          "text_cursor_input": "Курсор",
+          "message_square_text": "Повідомлення",
+          "text_initial": "Буквиця"
+        }
       }
     }
   }

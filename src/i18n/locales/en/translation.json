@@ -1059,6 +1059,17 @@
       },
       "opacity": {
         "title": "Transparency"
+      },
+      "transcribingIcon": {
+        "title": "Transcribing icon",
+        "options": {
+          "scan_text": "Scan",
+          "square_dashed_text": "Selection",
+          "scroll_text": "Scroll",
+          "text_cursor_input": "Cursor",
+          "message_square_text": "Message",
+          "text_initial": "Initial"
+        }
       }
     }
   }
