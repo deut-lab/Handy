@@ -477,6 +477,18 @@ pub struct AppSettings {
     pub spoken_languages: Vec<String>,
     #[serde(default = "default_overlay_position")]
     pub overlay_position: OverlayPosition,
+    // Handy Voice (voice/overlay_look.rs)
+    #[serde(default)]
+    pub overlay_theme: crate::voice::overlay_look::OverlayTheme,
+    #[serde(default)]
+    pub overlay_icon_set: crate::voice::overlay_look::OverlayIconSet,
+    #[serde(default)]
+    pub overlay_button_style: crate::voice::overlay_look::OverlayButtonStyle,
+    #[serde(
+        default = "crate::voice::overlay_look::default_opacity",
+        deserialize_with = "crate::voice::overlay_look::deserialize_opacity"
+    )]
+    pub overlay_opacity: u8,
     #[serde(default = "default_debug_mode")]
     pub debug_mode: bool,
     #[serde(default = "default_log_level")]
@@ -1050,6 +1062,10 @@ pub fn get_default_settings() -> AppSettings {
         translate_to_english: false,
         selected_language: "auto".to_string(),
         overlay_position: default_overlay_position(),
+        overlay_theme: Default::default(),
+        overlay_icon_set: Default::default(),
+        overlay_button_style: Default::default(),
+        overlay_opacity: crate::voice::overlay_look::default_opacity(),
         debug_mode: false,
         log_level: default_log_level(),
         custom_words: Vec::new(),

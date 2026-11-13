@@ -5,6 +5,7 @@
 //! new Handy releases can be merged with few conflicts.
 
 pub mod insert_without_enter;
+pub mod overlay_look;
 pub mod silence_stop;
 mod sound_themes;
 pub mod tray_style;

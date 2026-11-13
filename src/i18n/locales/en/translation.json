@@ -1026,6 +1026,40 @@
     },
     "overlay": {
       "insertWithoutSubmit": "Insert without submit"
+    },
+    "overlayLook": {
+      "title": "Overlay look",
+      "description": "Colors, icons, buttons and transparency of the recording overlay.",
+      "states": {
+        "recording": "Recording",
+        "transcribing": "Transcribing"
+      },
+      "theme": {
+        "title": "Theme",
+        "options": {
+          "classic": "Original",
+          "calm": "Light",
+          "gray": "Grey",
+          "dark": "Dark"
+        }
+      },
+      "iconSet": {
+        "title": "Icons",
+        "options": {
+          "original": "Original",
+          "line": "Line"
+        }
+      },
+      "buttonStyle": {
+        "title": "Buttons",
+        "options": {
+          "circle": "Circled",
+          "simple": "Simple"
+        }
+      },
+      "opacity": {
+        "title": "Transparency"
+      }
     }
   }
 }

@@ -1026,6 +1026,40 @@
     },
     "overlay": {
       "insertWithoutSubmit": "Вставити без надсилання"
+    },
+    "overlayLook": {
+      "title": "Вигляд панелі запису",
+      "description": "Кольори, значки, кнопки й прозорість панелі запису.",
+      "states": {
+        "recording": "Запис",
+        "transcribing": "Розпізнавання"
+      },
+      "theme": {
+        "title": "Тема",
+        "options": {
+          "classic": "Оригінальна",
+          "calm": "Світла",
+          "gray": "Сіра",
+          "dark": "Темна"
+        }
+      },
+      "iconSet": {
+        "title": "Значки",
+        "options": {
+          "original": "Оригінальні",
+          "line": "Лінійні"
+        }
+      },
+      "buttonStyle": {
+        "title": "Кнопки",
+        "options": {
+          "circle": "У кружечках",
+          "simple": "Прості"
+        }
+      },
+      "opacity": {
+        "title": "Прозорість"
+      }
     }
   }
 }
