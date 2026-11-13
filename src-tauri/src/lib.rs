@@ -31,6 +31,7 @@ mod transcription_hook;
 mod tray;
 mod tray_i18n;
 mod utils;
+mod voice;
 pub mod webkit_renderer;
 
 pub use cli::CliArgs;
