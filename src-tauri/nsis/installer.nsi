@@ -109,7 +109,8 @@ VIAddVersionKey "ProductVersion" "${VERSION}"
 !endif
 
 !if "${INSTALLMODE}" == "currentUser"
-  RequestExecutionLevel user
+  ; Handy Voice: admin, for the startup task with administrator rights (voice_hooks.nsh)
+  RequestExecutionLevel admin
 !endif
 
 !if "${INSTALLMODE}" == "both"
@@ -474,7 +475,11 @@ Var AppStartMenuFolder
 !insertmacro MUI_PAGE_FINISH
 
 Function RunMainBinary
-  nsis_tauri_utils::RunAsUser "$INSTDIR\${MAINBINARYNAME}.exe" ""
+  ; Handy Voice: through the startup task when it is on (voice_hooks.nsh)
+  !insertmacro VOICE_START_BY_TASK ""
+  ${If} $VoiceStartedByTask <> 1
+    nsis_tauri_utils::RunAsUser "$INSTDIR\${MAINBINARYNAME}.exe" ""
+  ${EndIf}
 FunctionEnd
 
 ; Uninstaller Pages
@@ -850,7 +855,11 @@ Function .onInstSuccess
     ${GetOptions} $CMDLINE "/R" $R0
     ${IfNot} ${Errors}
       ${GetOptions} $CMDLINE "/ARGS" $R0
-      nsis_tauri_utils::RunAsUser "$INSTDIR\${MAINBINARYNAME}.exe" "$R0"
+      ; Handy Voice: through the startup task when it is on (voice_hooks.nsh)
+      !insertmacro VOICE_START_BY_TASK "$R0"
+      ${If} $VoiceStartedByTask <> 1
+        nsis_tauri_utils::RunAsUser "$INSTDIR\${MAINBINARYNAME}.exe" "$R0"
+      ${EndIf}
     ${EndIf}
   ${EndIf}
 FunctionEnd
