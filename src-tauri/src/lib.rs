@@ -1134,7 +1134,9 @@ pub fn run(cli_args: CliArgs) {
             // CLI --start-hidden flag overrides the setting.
             // But if permission onboarding is required, always show the window.
             let should_hide = settings.start_hidden || cli_args.start_hidden;
-            let should_force_show = should_force_show_permissions_window(&app_handle);
+            // Handy Voice: onboarding needs the window, even when starting hidden
+            let should_force_show = should_force_show_permissions_window(&app_handle)
+                || !settings.onboarding_completed;
 
             // If start_hidden but tray is disabled, we must show the window
             // anyway. Without a tray icon, the dock is the only way back in.

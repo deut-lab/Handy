@@ -4,6 +4,7 @@
 //! hooks (a call, a settings field, an enum variant) into these modules, so
 //! new Handy releases can be merged with few conflicts.
 
+pub mod default_settings;
 pub mod insert_without_enter;
 pub mod overlay_look;
 pub mod silence_stop;
