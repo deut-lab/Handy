@@ -161,6 +161,10 @@ const settingUpdaters: {
   auto_submit: (value) => commands.changeAutoSubmitSetting(value as boolean),
   auto_submit_key: (value) =>
     commands.changeAutoSubmitKeySetting(value as string),
+  auto_stop_silence_enabled: (value) =>
+    commands.changeAutoStopSilenceEnabledSetting(value as boolean),
+  auto_stop_silence_seconds: (value) =>
+    commands.changeAutoStopSilenceSecondsSetting(value as number),
   history_limit: (value) => commands.updateHistoryLimit(value as number),
   post_process_enabled: (value) =>
     commands.changePostProcessEnabledSetting(value as boolean),

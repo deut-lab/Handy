@@ -1017,6 +1017,12 @@
         "states": "Status",
         "logo": "Immer Logo"
       }
+    },
+    "autoStopSilence": {
+      "title": "Nach Stille stoppen",
+      "description": "Die Aufnahme automatisch beenden, wenn nach dem Sprechen die gewählte Anzahl Sekunden Stille vergangen ist. Benötigt die Sprachaktivitätserkennung (VAD).",
+      "after": "nach",
+      "seconds": "Sek."
     }
   }
 }

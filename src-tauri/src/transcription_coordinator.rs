@@ -201,6 +201,9 @@ enum Command {
     Input(InputEvent),
     Cancel { recording_was_active: bool },
     ProcessingFinished,
+    /// Handy Voice: end the recording as a stopping press would
+    /// (voice/silence_stop.rs).
+    Stop { source: &'static str },
 }
 
 /// Decide whether a key-up should be deferred (so auto-repeat can cancel it)
@@ -531,6 +534,16 @@ impl CoordinatorState {
         }
     }
 
+    /// Handy Voice: end the running recording as a stopping press would.
+    /// Nothing to do when none is running (a press already stopped it).
+    fn on_stop_request(&mut self, source: &str) -> Option<Effect> {
+        let Stage::Recording(binding_id) = &self.stage else {
+            return None;
+        };
+        let binding_id = binding_id.clone();
+        Some(self.begin_processing(binding_id, source.to_string()))
+    }
+
     /// Optimistic transition to `Recording`; rolled back via
     /// [`CoordinatorState::on_start_result`] if the effect fails to start
     /// recording for real.
@@ -626,6 +639,10 @@ impl TranscriptionCoordinator {
                                 run_effect(&app, &mut state, effect);
                             }
                         }
+                        Command::Stop { source } => match state.on_stop_request(source) {
+                            Some(effect) => run_effect(&app, &mut state, effect),
+                            None => debug!("Ignoring stop from '{source}': not recording"),
+                        },
                     }
                     if !was_locked && state.is_recording_locked() {
                         emit_recording_phase(&app, RecordingPhase::Locked);
@@ -713,6 +730,14 @@ impl TranscriptionCoordinator {
 
     pub fn notify_processing_finished(&self) {
         if self.tx.send(Command::ProcessingFinished).is_err() {
+            warn!("Transcription coordinator channel closed");
+        }
+    }
+
+    /// Handy Voice: stop the running recording as its shortcut would;
+    /// `source` stands in for the hotkey string.
+    pub fn request_stop(&self, source: &'static str) {
+        if self.tx.send(Command::Stop { source }).is_err() {
             warn!("Transcription coordinator channel closed");
         }
     }
@@ -1669,5 +1694,35 @@ mod tests {
             "held 400ms since the real key-down: must stop, not lock"
         );
         assert_eq!(state.stage, Stage::Processing);
+    }
+
+    /// Handy Voice: a stop request ends a running recording as a stopping
+    /// press does, even with the key still held, and is ignored otherwise.
+    #[test]
+    fn stop_request_stops_only_a_running_recording() {
+        let mode = ShortcutActivation::PushToTalk;
+        let mut state = CoordinatorState::new();
+        assert!(state.on_stop_request("voice").is_none());
+
+        let t0 = Instant::now();
+        assert!(matches!(
+            state.on_input(input(mode, true), t0),
+            Some(Effect::Start { .. })
+        ));
+        assert_eq!(
+            state.on_stop_request("voice"),
+            Some(Effect::Stop {
+                binding_id: BINDING.to_string(),
+                hotkey_string: "voice".to_string(),
+            })
+        );
+        assert_eq!(state.stage, Stage::Processing);
+
+        // The key coming up later neither stops again nor queues a start.
+        assert!(state.on_input(input(mode, false), t0 + ms(500)).is_none());
+        assert!(state.on_grace_expired().is_none());
+        assert!(state.on_stop_request("voice").is_none());
+        assert!(state.on_processing_finished().is_none());
+        assert_eq!(state.stage, Stage::Idle);
     }
 }

@@ -499,6 +499,11 @@ pub struct AppSettings {
     pub auto_submit: bool,
     #[serde(default)]
     pub auto_submit_key: AutoSubmitKey,
+    // Handy Voice (voice/silence_stop.rs)
+    #[serde(default = "crate::voice::silence_stop::default_enabled")]
+    pub auto_stop_silence_enabled: bool,
+    #[serde(default = "crate::voice::silence_stop::default_seconds")]
+    pub auto_stop_silence_seconds: u64,
     #[serde(default = "default_post_process_enabled")]
     pub post_process_enabled: bool,
     #[serde(default = "default_post_process_provider_id")]
@@ -1056,6 +1061,8 @@ pub fn get_default_settings() -> AppSettings {
         clipboard_handling: ClipboardHandling::default(),
         auto_submit: default_auto_submit(),
         auto_submit_key: AutoSubmitKey::default(),
+        auto_stop_silence_enabled: crate::voice::silence_stop::default_enabled(),
+        auto_stop_silence_seconds: crate::voice::silence_stop::default_seconds(),
         post_process_enabled: default_post_process_enabled(),
         post_process_provider_id: default_post_process_provider_id(),
         post_process_providers: default_post_process_providers(),

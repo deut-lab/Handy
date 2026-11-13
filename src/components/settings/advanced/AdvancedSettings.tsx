@@ -27,6 +27,7 @@ import { AirPodsMode } from "../AirPodsMode";
 import { FillerWordRemoval } from "../FillerWordRemoval";
 import { VadBackendSelector } from "../VadBackendSelector";
 import { TrayIconStyle } from "../voice/TrayIconStyle";
+import { AutoStopSilence } from "../voice/AutoStopSilence";
 
 export const AdvancedSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -58,6 +59,7 @@ export const AdvancedSettings: React.FC = () => {
         <FillerWordRemoval descriptionMode="tooltip" grouped={true} />
         <CustomWords descriptionMode="tooltip" grouped />
         <AppendTrailingSpace descriptionMode="tooltip" grouped={true} />
+        <AutoStopSilence descriptionMode="tooltip" grouped={true} />
       </SettingsGroup>
 
       <SettingsGroup title={t("settings.advanced.groups.history")}>
