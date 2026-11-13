@@ -80,7 +80,8 @@ fn overlay_dimensions(state: &str) -> (f64, f64) {
     if is_live_state(state) {
         (OVERLAY_STREAM_WIDTH, OVERLAY_STREAM_HEIGHT)
     } else {
-        (OVERLAY_WIDTH, OVERLAY_HEIGHT)
+        // Handy Voice: grown with the pill's size setting (voice/overlay_look.rs)
+        crate::voice::overlay_look::scale_window(OVERLAY_WIDTH, OVERLAY_HEIGHT)
     }
 }
 
@@ -515,6 +516,8 @@ fn show_overlay_state(app_handle: &AppHandle, state: &str) {
     if settings.overlay_style == OverlayStyle::None {
         return;
     }
+    // Handy Voice: the pill's size, for overlay_dimensions (voice/overlay_look.rs)
+    crate::voice::overlay_look::remember_size(settings.overlay_size);
     OVERLAY_SESSION_SHOWING.store(true, Ordering::SeqCst);
     OVERLAY_SESSION_LIVE.store(is_live_state(state), Ordering::SeqCst);
 

@@ -47,7 +47,7 @@ export interface OverlayLook {
   buttonStyle: OverlayButtonStyle;
   /** Transparency in percent, 0-100 in steps of 10. */
   opacity: number;
-  /** Size of the compact pill in percent, 80-110 in steps of 5. */
+  /** Size of the compact pill in percent, 50-150 in steps of 5. */
   size: number;
 }
 
@@ -75,7 +75,7 @@ const clampOpacity = (value: unknown): number => {
 const clampSize = (value: unknown): number => {
   const percent = typeof value === "number" ? value : Number(value);
   if (!Number.isFinite(percent)) return DEFAULT_LOOK.size;
-  return Math.min(110, Math.max(80, Math.round(percent / 5) * 5));
+  return Math.min(150, Math.max(50, Math.round(percent / 5) * 5));
 };
 
 export const lookFromSettings = (
