@@ -1,6 +1,8 @@
 # Handy Voice: follows Handy's releases and builds the fork for Windows and
 # macOS into a draft release. How it works, the secrets it needs, how to fix
 # a conflict and how to publish: .github/handy-voice/README.md
+# Secrets: TAURI_SIGNING_PRIVATE_KEY (the fork's updater key), optionally
+# HANDY_VOICE_TOKEN (see the README).
 name: "Handy Voice"
 
 on:
