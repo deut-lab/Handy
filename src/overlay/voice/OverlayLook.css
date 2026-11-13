@@ -36,11 +36,12 @@
   --vl-bg: #f7fafc;
   --vl-border: #c8d2da;
   --vl-text: #243743;
-  --vl-accent: #34816d; /* calm green, as the gray theme's */
-  --vl-icon: #127f78;
+  /* Muted greens: bars, mic and check. */
+  --vl-accent: #548377;
+  --vl-icon: #548377;
   --vl-muted: #5f7078;
   --vl-faint: #5f7078;
-  --vl-finish: #13914d;
+  --vl-finish: #498361;
   --vl-button: #ffffff8a;
   --vl-button-ring: #bfd0d9;
   --vl-hover: #d9e2e8;
@@ -166,17 +167,17 @@
   }
 }
 
-/* Compact pill (the Minimal overlay): 150px wide with its border, 40px high;
-   the status icon centered in a 24px slot, big 30px check and cross (easy to
-   hit) in a 64px column, and the five bars centered in the free space between
-   the two. */
+/* Compact pill (the Minimal overlay): 150px wide with its border, 42px high;
+   big 30px check and cross (easy to hit) in a 64px column, the status icon in
+   a 30px slot like a button, so it sits at the center of the pill's rounded
+   end just as the cross does at the other end, and the five bars between. */
 .vlook .scard.compact {
   --ov-rest-w: 148px;
   --ov-base-h: 40px;
 }
 .vlook .scard.compact .sbase:not(.snotice) {
   padding: 0 5px;
-  grid-template-columns: 24px minmax(0, 1fr) 64px;
+  grid-template-columns: 30px minmax(0, 1fr) 64px;
   column-gap: 2px;
 }
 .vlook .scard.compact .sbase-l {
@@ -203,9 +204,9 @@
   justify-self: center;
   gap: var(--vl-bar-gap, 2px);
   padding-right: 0;
-  /* 3.5px left of the middle: the mic glyph is narrower than its slot, so
-     this looks centered between the mic and the check. */
-  margin-right: 7px;
+  /* 5px left of the middle of their column: so the gaps to the mic glyph and
+     to the check's circle look the same. */
+  margin-right: 10px;
 }
 /* Whole screen pixels (OverlayLook.tsx), so every bar is equally wide. */
 .vlook .scard.compact .swave i {
@@ -215,24 +216,24 @@
   display: none;
 }
 
-/* Working pill as the fork's: the recording pill's width, icon slot and label
-   side by side, no cross. A longer label ("Loading model...") widens the pill
-   instead of being cut. */
+/* Working pill: the recording pill's width, no cross; the icon in the same
+   30px slot as the mic (the center of the rounded end) and the label centered
+   in the rest. A longer label ("Loading model...") widens the pill instead of
+   being cut. */
 .vlook .scard.compact.cworking {
   width: auto;
   min-width: var(--ov-rest-w);
 }
 .vlook .scard.compact.cworking .sbase:not(.snotice) {
-  grid-template-columns: 24px minmax(0, 1fr);
-  column-gap: 5px;
-  padding-right: 10px;
+  grid-template-columns: 30px minmax(0, 1fr);
+  column-gap: 0;
 }
 .vlook .scard.compact.cworking .sbase-r {
   display: none;
 }
 .vlook .scard.compact .swork-label {
-  justify-self: start;
-  padding: 0;
+  justify-self: center;
+  padding: 0 6px;
   font-size: 11px;
   font-weight: 600;
   color: var(--vl-text);
