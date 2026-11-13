@@ -84,7 +84,6 @@
   align-items: center;
   gap: var(--vl-bar-gap, 2px);
   height: 18px;
-  margin-right: 10px; /* as the pill's bars (OverlayLook.css) */
 }
 .vlp-bars i {
   width: var(--vl-bar-w, 4px);
