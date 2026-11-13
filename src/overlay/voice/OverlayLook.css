@@ -166,29 +166,55 @@
   }
 }
 
-/* Compact pill (the Minimal overlay) at the fork's size: 150px wide with its
-   border, 36px high, five bars centered between the status icon and the
-   buttons, check and cross 4px apart. The working pill keeps upstream's
-   width for the label. */
+/* Compact pill (the Minimal overlay) laid out as the fork's: 150px wide with
+   its border, 36px high; the status icon centered in a 24px slot (a button's
+   size), the check and cross in a 48px column, and the five bars centered in
+   the free space between the two. */
 .vlook .scard.compact {
   --ov-rest-w: 148px;
   --ov-base-h: 36px;
 }
 .vlook .scard.compact .sbase:not(.snotice) {
   padding: 0 6px;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: 24px minmax(0, 1fr) 48px;
+  column-gap: 2px;
+}
+.vlook .scard.compact .sbase-l {
+  padding-left: 0;
+  justify-self: stretch;
+  justify-content: center;
 }
 .vlook .scard.compact .sbase-r {
-  gap: 4px;
+  gap: 2px;
 }
 .vlook .scard.compact .swave {
   justify-self: center;
   gap: 2px;
   padding-right: 0;
 }
-.vlook .scard.compact .swork-label {
-  text-align: center;
-}
 .vlook .scard.compact .swave i:nth-child(n + 6) {
   display: none;
+}
+
+/* Working pill as the fork's: the recording pill's width, icon slot and label
+   side by side, no cross. A longer label ("Loading model...") widens the pill
+   instead of being cut. */
+.vlook .scard.compact.cworking {
+  width: auto;
+  min-width: var(--ov-rest-w);
+}
+.vlook .scard.compact.cworking .sbase:not(.snotice) {
+  grid-template-columns: 24px minmax(0, 1fr);
+  column-gap: 5px;
+  padding-right: 10px;
+}
+.vlook .scard.compact.cworking .sbase-r {
+  display: none;
+}
+.vlook .scard.compact .swork-label {
+  justify-self: start;
+  padding: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--vl-text);
 }
