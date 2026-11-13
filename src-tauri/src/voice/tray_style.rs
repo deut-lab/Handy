@@ -14,7 +14,8 @@
 //!
 //! The menu is upstream's without the version line, "Check for Updates",
 //! "Unload Model", the keyboard accelerators and the trailing "..." on
-//! Settings, as in the Handy Voice fork.
+//! Settings, as in the Handy Voice fork. The tooltip says "Handy Voice" and
+//! the version from the build ([`version_label`]).
 
 use crate::settings;
 use crate::tray::{self, AppTheme, TrayIconState};
@@ -116,9 +117,21 @@ pub fn simplify_menu(menu: &Menu<Wry>) -> tauri::Result<()> {
     Ok(())
 }
 
+/// The tray tooltip, for upstream's `tray::version_label`: "Handy Voice
+/// v0.10.0", with the version from the build; a build number ("0.10.0+1")
+/// shows as "0.10.0.1", as in About and the footer.
+pub fn version_label() -> String {
+    let version = env!("CARGO_PKG_VERSION").replace('+', ".");
+    if cfg!(debug_assertions) {
+        format!("Handy Voice v{version} (Dev)")
+    } else {
+        format!("Handy Voice v{version}")
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{style_icon_path as icon_path, TrayIconStyle};
+    use super::{style_icon_path as icon_path, version_label, TrayIconStyle};
     use crate::settings::get_default_settings;
     use crate::tray::{get_icon_path, AppTheme, TrayIconState};
     use std::path::Path;
@@ -224,5 +237,12 @@ mod tests {
                 icon_path(style, AppTheme::Dark, TrayIconState::Recording, false)
             );
         }
+    }
+
+    #[test]
+    fn tooltip_names_handy_voice_and_the_built_version() {
+        let label = version_label();
+        assert!(label.starts_with("Handy Voice v"));
+        assert!(label.contains(&env!("CARGO_PKG_VERSION").replace('+', ".")));
     }
 }
