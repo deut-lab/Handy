@@ -91,10 +91,12 @@ followed; another form opens an issue.
    `handy-voice`, tick **rebuild**.
 
 **The updater needs public release files.** It downloads `latest.json` and
-the installers without logging in, which does not work while this repository
-is private (GitHub answers 404). Either make the repository public (Actions
-minutes are then free as well), or publish the releases to a separate public
-repository and point `plugins.updater.endpoints` there, or update by hand.
+the installers without logging in, so this repository is public. The fork's
+history before Handy 0.10 lives in the private, archived `deut-lab/Handy-old`.
+
+The updater key is the fork's original one (its public half is the `pubkey`
+above), so copies of Handy Voice 0.8.x update to these releases by themselves.
+It has no password: `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` is not set.
 
 ## Running by hand
 
