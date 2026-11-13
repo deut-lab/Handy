@@ -988,5 +988,26 @@
     "learnMore": "How to fix",
     "recorderBlocked": "Can't record shortcuts right now — macOS Secure Input is blocking key events. Resolve the Secure Input warning first.",
     "dismiss": "Dismiss"
+  },
+  "voice": {
+    "soundTheme": {
+      "label": "Sound theme",
+      "description": "Choose the start and stop sound for recording feedback.",
+      "preview": "Preview start and stop sounds",
+      "options": {
+        "marimba": "Marimba",
+        "pop": "Pop",
+        "bell": "Bell",
+        "chime": "Chime",
+        "pluck": "Pluck",
+        "switcher": "Switcher",
+        "click": "Click",
+        "mouse": "Mouse",
+        "softSwitch": "Soft Switch",
+        "brightSwitch": "Bright Switch",
+        "minimal": "Minimal",
+        "custom": "Custom"
+      }
+    }
   }
 }

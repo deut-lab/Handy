@@ -631,6 +631,15 @@ pub fn change_sound_theme_setting(app: AppHandle, theme: String) -> Result<(), S
     let parsed = match theme.as_str() {
         "marimba" => SoundTheme::Marimba,
         "pop" => SoundTheme::Pop,
+        "bell" => SoundTheme::Bell,
+        "chime" => SoundTheme::Chime,
+        "pluck" => SoundTheme::Pluck,
+        "switcher" => SoundTheme::Switcher,
+        "click" => SoundTheme::Click,
+        "mouse" => SoundTheme::Mouse,
+        "soft_switch" => SoundTheme::SoftSwitch,
+        "bright_switch" => SoundTheme::BrightSwitch,
+        "minimal" => SoundTheme::Minimal,
         "custom" => SoundTheme::Custom,
         other => {
             warn!("Invalid sound theme '{}', defaulting to marimba", other);

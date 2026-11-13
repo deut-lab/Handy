@@ -988,5 +988,26 @@
     "learnMore": "So behebst du das",
     "recorderBlocked": "Tastenkürzel können gerade nicht aufgezeichnet werden — macOS Secure Input blockiert Tastenereignisse. Behebe zuerst die Secure-Input-Warnung.",
     "dismiss": "Ausblenden"
+  },
+  "voice": {
+    "soundTheme": {
+      "label": "Sound-Thema",
+      "description": "Wähle den Ton für Start und Ende der Aufnahme.",
+      "preview": "Start- und Endton anhören",
+      "options": {
+        "marimba": "Marimba",
+        "pop": "Pop",
+        "bell": "Glocke",
+        "chime": "Glockenspiel",
+        "pluck": "Zupfen",
+        "switcher": "Schalter",
+        "click": "Klick",
+        "mouse": "Maus",
+        "softSwitch": "Sanfter Schalter",
+        "brightSwitch": "Heller Schalter",
+        "minimal": "Minimal",
+        "custom": "Eigene Töne"
+      }
+    }
   }
 }

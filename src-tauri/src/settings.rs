@@ -286,6 +286,16 @@ impl ModelUnloadTimeout {
 pub enum SoundTheme {
     Marimba,
     Pop,
+    // Handy Voice themes (voice/sound_themes.rs)
+    Bell,
+    Chime,
+    Pluck,
+    Switcher,
+    Click,
+    Mouse,
+    SoftSwitch,
+    BrightSwitch,
+    Minimal,
     Custom,
 }
 
@@ -294,6 +304,15 @@ impl SoundTheme {
         match self {
             SoundTheme::Marimba => "marimba",
             SoundTheme::Pop => "pop",
+            SoundTheme::Bell => "bell",
+            SoundTheme::Chime => "chime",
+            SoundTheme::Pluck => "pluck",
+            SoundTheme::Switcher => "switcher",
+            SoundTheme::Click => "click",
+            SoundTheme::Mouse => "mouse",
+            SoundTheme::SoftSwitch => "soft_switch",
+            SoundTheme::BrightSwitch => "bright_switch",
+            SoundTheme::Minimal => "minimal",
             SoundTheme::Custom => "custom",
         }
     }
