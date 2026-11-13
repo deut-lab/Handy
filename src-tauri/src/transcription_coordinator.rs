@@ -202,8 +202,9 @@ enum Command {
     Cancel { recording_was_active: bool },
     ProcessingFinished,
     /// Handy Voice: end the recording as a stopping press would
-    /// (voice/silence_stop.rs).
-    Stop { source: &'static str },
+    /// (voice/silence_stop.rs); `submit: false` skips auto-submit once
+    /// (voice/insert_without_enter.rs).
+    Stop { source: &'static str, submit: bool },
 }
 
 /// Decide whether a key-up should be deferred (so auto-repeat can cancel it)
@@ -639,8 +640,12 @@ impl TranscriptionCoordinator {
                                 run_effect(&app, &mut state, effect);
                             }
                         }
-                        Command::Stop { source } => match state.on_stop_request(source) {
-                            Some(effect) => run_effect(&app, &mut state, effect),
+                        Command::Stop { source, submit } => match state.on_stop_request(source) {
+                            Some(effect) => {
+                                crate::voice::insert_without_enter::with_submit(submit, || {
+                                    run_effect(&app, &mut state, effect)
+                                })
+                            }
                             None => debug!("Ignoring stop from '{source}': not recording"),
                         },
                     }
@@ -735,9 +740,10 @@ impl TranscriptionCoordinator {
     }
 
     /// Handy Voice: stop the running recording as its shortcut would;
-    /// `source` stands in for the hotkey string.
-    pub fn request_stop(&self, source: &'static str) {
-        if self.tx.send(Command::Stop { source }).is_err() {
+    /// `source` stands in for the hotkey string, `submit: false` skips
+    /// auto-submit for this dictation.
+    pub fn request_stop(&self, source: &'static str, submit: bool) {
+        if self.tx.send(Command::Stop { source, submit }).is_err() {
             warn!("Transcription coordinator channel closed");
         }
     }

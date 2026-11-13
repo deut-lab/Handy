@@ -1,0 +1,25 @@
+/* Handy Voice: the insert button (✓) next to cancel (✕) while recording. */
+
+/* Room for both buttons. The right zone of the control row needs
+   22 + 10 + 22px, and both side zones stay equal so the waveform stays
+   centered (.sbase in RecordingOverlay.css): 54 + 68 + 54 + 2 x 10px padding.
+   The compact window (OVERLAY_WIDTH in overlay.rs) still fits the widest
+   pill. `html:root` outranks the `:root` defaults whatever the CSS order. */
+html:root {
+  --ov-rest-w: 196px;
+  --ov-pill-w: 196px;
+}
+
+/* Upstream's round button (.sx), in the success color instead of grey,
+   as in the Handy Voice fork. */
+.sx.sinsert {
+  color: var(--color-moss);
+}
+.sx.sinsert svg {
+  width: 10px;
+  height: 10px;
+}
+.sx.sinsert:hover {
+  background: var(--color-moss-wash);
+  color: var(--color-moss);
+}

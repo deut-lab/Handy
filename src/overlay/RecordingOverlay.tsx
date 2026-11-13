@@ -15,6 +15,7 @@ import i18n, { syncLanguageFromSettings } from "@/i18n";
 import { noticeDisplay } from "@/lib/notices";
 import type { ModelStateEvent } from "@/lib/types/events";
 import { getLanguageDirection } from "@/lib/utils/rtl";
+import { InsertButton } from "./voice/InsertButton";
 
 type OverlayState =
   | "recording"
@@ -320,6 +321,7 @@ const RecordingOverlay: React.FC = () => {
       {waveform}
       <div className="sbase-r">
         {showTimer && <span className="stimer">{fmtTime(elapsed)}</span>}
+        {showCancel && <InsertButton />}
         {showCancel && cancelBtn}
       </div>
     </div>
