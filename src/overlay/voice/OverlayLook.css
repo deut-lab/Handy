@@ -174,7 +174,8 @@
 .vlook .scard.compact {
   --ov-rest-w: 148px;
   --ov-base-h: 40px;
-  /* Size setting, 0.8-1.1 (OverlayLook.tsx). */
+  /* Size setting, 0.5-1.5 (OverlayLook.tsx); above 1 the window grows too
+     (overlay_look.rs). */
   zoom: var(--vl-size, 1);
 }
 .vlook .scard.compact .sbase:not(.snotice) {
