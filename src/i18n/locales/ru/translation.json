@@ -1060,6 +1060,9 @@
       "opacity": {
         "title": "Прозрачность"
       },
+      "size": {
+        "title": "Размер"
+      },
       "transcribingIcon": {
         "title": "Значок распознавания",
         "options": {

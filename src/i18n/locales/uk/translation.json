@@ -1060,6 +1060,9 @@
       "opacity": {
         "title": "Прозорість"
       },
+      "size": {
+        "title": "Розмір"
+      },
       "transcribingIcon": {
         "title": "Значок розпізнавання",
         "options": {

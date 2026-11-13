@@ -707,6 +707,7 @@ pub fn run(cli_args: CliArgs) {
             voice::overlay_look::change_overlay_transcribing_icon_setting,
             voice::overlay_look::change_overlay_button_style_setting,
             voice::overlay_look::change_overlay_opacity_setting,
+            voice::overlay_look::change_overlay_size_setting,
             shortcut::change_debug_mode_setting,
             shortcut::change_word_correction_threshold_setting,
             shortcut::change_extra_recording_buffer_setting,

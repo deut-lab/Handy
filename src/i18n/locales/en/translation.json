@@ -1060,6 +1060,9 @@
       "opacity": {
         "title": "Transparency"
       },
+      "size": {
+        "title": "Size"
+      },
       "transcribingIcon": {
         "title": "Transcribing icon",
         "options": {
