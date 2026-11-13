@@ -1068,7 +1068,8 @@ impl AudioRecordingManager {
                 Arc::clone(&self.on_levels),
                 Arc::clone(&self.on_audio),
                 ready_tx,
-            );
+            )
+            .with_silence_watch(crate::voice::silence_stop::watch(&self.app_handle));
 
             let recorder = self.recorder.lock().unwrap();
             let Some(microphone) = recorder.as_ref() else {
