@@ -693,6 +693,8 @@ impl ShortcutAction for TranscribeAction {
         let binding_id = binding_id.to_string(); // Clone binding_id for the async task
         let post_process = self.post_process;
         let cancel_generation = rm.cancel_generation();
+        // Handy Voice: false when the overlay's ✓ ended this recording.
+        let submit = crate::voice::insert_without_enter::submit_allowed();
 
         tauri::async_runtime::spawn(async move {
             let _guard = FinishGuard(ah.clone(), Arc::clone(&tm));
@@ -877,6 +879,8 @@ impl ShortcutAction for TranscribeAction {
                                         // UI while this paste ran.
                                         let owns_ui =
                                             || RECORDING_SESSION.load(Ordering::SeqCst) == session;
+                                        // Handy Voice: this thread pastes one dictation.
+                                        crate::voice::insert_without_enter::set_submit(submit);
                                         let (outcome, notice) =
                                             match utils::paste(final_text, ah_clone.clone()) {
                                                 Ok(()) => {

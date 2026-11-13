@@ -1023,6 +1023,9 @@
       "description": "Automatically stop recording after speech is followed by the selected number of silent seconds. Needs Voice Activity Detection.",
       "after": "after",
       "seconds": "sec."
+    },
+    "overlay": {
+      "insertWithoutSubmit": "Insert without submit"
     }
   }
 }

@@ -112,7 +112,7 @@ pub fn watch(app: &AppHandle) -> Option<SilenceWatch> {
         on_silence: Box::new(move || {
             info!("Auto-stop: {seconds} s of silence after speech, stopping the recording");
             if let Some(coordinator) = app.try_state::<TranscriptionCoordinator>() {
-                coordinator.request_stop("auto-stop-silence");
+                coordinator.request_stop("auto-stop-silence", true);
             }
         }),
     })

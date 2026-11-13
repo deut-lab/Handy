@@ -1023,6 +1023,9 @@
       "description": "Die Aufnahme automatisch beenden, wenn nach dem Sprechen die gewählte Anzahl Sekunden Stille vergangen ist. Benötigt die Sprachaktivitätserkennung (VAD).",
       "after": "nach",
       "seconds": "Sek."
+    },
+    "overlay": {
+      "insertWithoutSubmit": "Ohne Absenden einfügen"
     }
   }
 }
