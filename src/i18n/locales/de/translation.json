@@ -1008,6 +1008,15 @@
         "minimal": "Minimal",
         "custom": "Eigene Töne"
       }
+    },
+    "trayIconStyle": {
+      "title": "Taskleistensymbole",
+      "description": "Wähle, ob die Taskleiste die Originalsymbole, Statussymbole oder immer dasselbe Logo zeigt.",
+      "options": {
+        "original": "Original",
+        "states": "Status",
+        "logo": "Immer Logo"
+      }
     }
   }
 }

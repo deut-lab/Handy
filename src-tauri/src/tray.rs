@@ -382,7 +382,7 @@ fn compute_desired(app: &AppHandle, icon_state: TrayIconState) -> TrayDesired {
     };
 
     TrayDesired {
-        icon_path: get_icon_path(theme, icon_state, badge),
+        icon_path: crate::voice::tray_style::icon_path(&settings, theme, icon_state, badge),
         menu: MenuInputs {
             busy: icon_state.is_busy(),
             models_locked,
@@ -784,6 +784,7 @@ fn build_menu(app: &AppHandle, inputs: &MenuInputs) -> tauri::Result<(Menu<tauri
     if position > 2 {
         menu.insert(&separator()?, position)?;
     }
+    crate::voice::tray_style::simplify_menu(&menu)?;
 
     Ok((menu, tooltip))
 }
