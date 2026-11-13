@@ -1,0 +1,11 @@
+Handy Voice: origin of the extra sound themes
+
+switcher, click, mouse, soft_switch, bright_switch, minimal
+  Kenney "UI Audio" pack (UI SFX Set), CC0 - see kenney_ui_audio_license.txt
+  (fork commit f61f5a5f, files normalized in 830a1b2c).
+
+bell, chime, pluck
+  Origin unknown: added in fork commit e3fc876b ("Add more feedback sound
+  themes") without a source or license note. The files are plain 16-bit
+  44.1 kHz mono PCM without metadata, likely generated, but this is not
+  confirmed. Replace them or confirm their origin before redistributing.
