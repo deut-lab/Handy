@@ -195,6 +195,10 @@ const settingUpdaters: {
     commands.changeOverlayThemeSetting(value as NonNullable<typeof value>),
   overlay_icon_set: (value) =>
     commands.changeOverlayIconSetSetting(value as NonNullable<typeof value>),
+  overlay_transcribing_icon: (value) =>
+    commands.changeOverlayTranscribingIconSetting(
+      value as NonNullable<typeof value>,
+    ),
   overlay_button_style: (value) =>
     commands.changeOverlayButtonStyleSetting(
       value as NonNullable<typeof value>,

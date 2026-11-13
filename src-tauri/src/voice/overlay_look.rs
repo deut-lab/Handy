@@ -1,5 +1,5 @@
 //! Recording overlay look, as in the Handy Voice fork: color theme, icon set,
-//! button style and transparency.
+//! transcribing icon, button style and transparency.
 //!
 //! Only the settings live here. The overlay reads them each time it is shown
 //! (`src/overlay/voice/OverlayLook.tsx`), the picker is
@@ -10,6 +10,8 @@
 //!   or dark theme); `calm`, `gray` and `dark` are the fork's fixed palettes.
 //! - `overlay_icon_set`: `original` keeps Handy's dot, spinner and thin
 //!   buttons; `line` uses line icons (microphone, check, cross).
+//! - `overlay_transcribing_icon`: the line icon shown while transcribing,
+//!   named after its Lucide icon.
 //! - `overlay_button_style`: `circle` (filled round buttons) or `simple`.
 //! - `overlay_opacity`: transparency in percent, 0-100 in steps of 10. The
 //!   fork's first versions stored `solid` / `medium` / `light`.
@@ -35,6 +37,18 @@ pub enum OverlayIconSet {
     Original,
     #[default]
     Line,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum OverlayTranscribingIcon {
+    #[default]
+    ScanText,
+    SquareDashedText,
+    ScrollText,
+    TextCursorInput,
+    MessageSquareText,
+    TextInitial,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type, Default)]
@@ -102,6 +116,16 @@ pub fn change_overlay_icon_set_setting(
 
 #[tauri::command]
 #[specta::specta]
+pub fn change_overlay_transcribing_icon_setting(
+    app: AppHandle,
+    icon: OverlayTranscribingIcon,
+) -> Result<(), String> {
+    update(&app, |settings| settings.overlay_transcribing_icon = icon);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
 pub fn change_overlay_button_style_setting(
     app: AppHandle,
     button_style: OverlayButtonStyle,
@@ -127,6 +151,10 @@ mod tests {
         let settings = get_default_settings();
         assert_eq!(settings.overlay_theme, OverlayTheme::Calm);
         assert_eq!(settings.overlay_icon_set, OverlayIconSet::Line);
+        assert_eq!(
+            settings.overlay_transcribing_icon,
+            OverlayTranscribingIcon::ScanText
+        );
         assert_eq!(settings.overlay_button_style, OverlayButtonStyle::Circle);
         assert_eq!(settings.overlay_opacity, 30);
     }
@@ -147,6 +175,16 @@ mod tests {
         ] {
             assert_eq!(serde_json::to_value(icon_set).unwrap(), name);
         }
+        for (icon, name) in [
+            (OverlayTranscribingIcon::ScanText, "scan_text"),
+            (OverlayTranscribingIcon::SquareDashedText, "square_dashed_text"),
+            (OverlayTranscribingIcon::ScrollText, "scroll_text"),
+            (OverlayTranscribingIcon::TextCursorInput, "text_cursor_input"),
+            (OverlayTranscribingIcon::MessageSquareText, "message_square_text"),
+            (OverlayTranscribingIcon::TextInitial, "text_initial"),
+        ] {
+            assert_eq!(serde_json::to_value(icon).unwrap(), name);
+        }
         for (style, name) in [
             (OverlayButtonStyle::Simple, "simple"),
             (OverlayButtonStyle::Circle, "circle"),
@@ -163,11 +201,16 @@ mod tests {
             "overlay_icon_set": "line",
             "overlay_opacity": 10,
             "overlay_position": "bottom",
-            "overlay_theme": "gray"
+            "overlay_theme": "gray",
+            "overlay_transcribing_icon": "scan_text"
         });
         let settings: AppSettings = serde_json::from_value(stored).unwrap();
         assert_eq!(settings.overlay_theme, OverlayTheme::Gray);
         assert_eq!(settings.overlay_icon_set, OverlayIconSet::Line);
+        assert_eq!(
+            settings.overlay_transcribing_icon,
+            OverlayTranscribingIcon::ScanText
+        );
         assert_eq!(settings.overlay_button_style, OverlayButtonStyle::Circle);
         assert_eq!(settings.overlay_opacity, 10);
 
@@ -175,6 +218,7 @@ mod tests {
         let written = serde_json::to_value(&settings).unwrap();
         assert_eq!(written["overlay_theme"], "gray");
         assert_eq!(written["overlay_icon_set"], "line");
+        assert_eq!(written["overlay_transcribing_icon"], "scan_text");
         assert_eq!(written["overlay_button_style"], "circle");
         assert_eq!(written["overlay_opacity"], 10);
     }
