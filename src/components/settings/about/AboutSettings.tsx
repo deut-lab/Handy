@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { getVersion } from "@tauri-apps/api/app";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { SettingsGroup } from "../../ui/SettingsGroup";
 import { SettingContainer } from "../../ui/SettingContainer";
@@ -10,6 +9,7 @@ import { AppLanguageSelector } from "../AppLanguageSelector";
 import { ShowWhatsNewOnUpdate } from "../ShowWhatsNewOnUpdate";
 import { ThemeSelector } from "../ThemeSelector";
 import { LogDirectory } from "../debug";
+import { getAppLabel } from "../voice/appVersion";
 
 export const AboutSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -18,8 +18,7 @@ export const AboutSettings: React.FC = () => {
   useEffect(() => {
     const fetchVersion = async () => {
       try {
-        const appVersion = await getVersion();
-        setVersion(appVersion);
+        setVersion(await getAppLabel());
       } catch (error) {
         console.error("Failed to get app version:", error);
         setVersion("0.1.2");
@@ -47,8 +46,7 @@ export const AboutSettings: React.FC = () => {
           description={t("settings.about.version.description")}
           grouped={true}
         >
-          {/* eslint-disable-next-line i18next/no-literal-string */}
-          <span className="text-sm font-mono">v{version}</span>
+          <span className="text-sm font-mono">{version}</span>
         </SettingContainer>
 
         <ShowWhatsNewOnUpdate descriptionMode="tooltip" grouped={true} />

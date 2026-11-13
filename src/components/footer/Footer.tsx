@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { getVersion } from "@tauri-apps/api/app";
 
 import ModelSelector from "../model-selector";
 import UpdateChecker from "../update-checker";
+import { getAppLabel } from "../settings/voice/appVersion";
 import NoticeChip from "./NoticeChip";
 import TranscriptionStatus from "./TranscriptionStatus";
 
@@ -16,8 +16,7 @@ const Footer: React.FC<FooterProps> = ({ onShowHistory }) => {
   useEffect(() => {
     const fetchVersion = async () => {
       try {
-        const appVersion = await getVersion();
-        setVersion(appVersion);
+        setVersion(await getAppLabel());
       } catch (error) {
         console.error("Failed to get app version:", error);
         setVersion("0.1.2");
@@ -40,8 +39,7 @@ const Footer: React.FC<FooterProps> = ({ onShowHistory }) => {
           <div className="flex items-center gap-1">
             <UpdateChecker />
             <span>•</span>
-            {/* eslint-disable-next-line i18next/no-literal-string */}
-            <span>v{version}</span>
+            <span>{version}</span>
           </div>
           <NoticeChip />
         </div>
