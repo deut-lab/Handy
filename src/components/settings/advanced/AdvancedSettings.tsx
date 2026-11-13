@@ -28,6 +28,7 @@ import { FillerWordRemoval } from "../FillerWordRemoval";
 import { VadBackendSelector } from "../VadBackendSelector";
 import { TrayIconStyle } from "../voice/TrayIconStyle";
 import { AutoStopSilence } from "../voice/AutoStopSilence";
+import { OverlayLookPicker } from "../voice/OverlayLookPicker";
 
 export const AdvancedSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -42,6 +43,7 @@ export const AdvancedSettings: React.FC = () => {
         <ShowTrayIcon descriptionMode="tooltip" grouped={true} />
         <TrayIconStyle descriptionMode="tooltip" grouped={true} />
         <ShowOverlay descriptionMode="tooltip" grouped={true} />
+        <OverlayLookPicker descriptionMode="tooltip" grouped={true} />
         <ModelUnloadTimeoutSetting descriptionMode="tooltip" grouped={true} />
         <ExperimentalToggle descriptionMode="tooltip" grouped={true} />
       </SettingsGroup>

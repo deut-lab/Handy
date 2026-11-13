@@ -191,6 +191,16 @@ const settingUpdaters: {
     }
   },
   overlay_style: (value) => commands.changeOverlayStyleSetting(value as string),
+  overlay_theme: (value) =>
+    commands.changeOverlayThemeSetting(value as NonNullable<typeof value>),
+  overlay_icon_set: (value) =>
+    commands.changeOverlayIconSetSetting(value as NonNullable<typeof value>),
+  overlay_button_style: (value) =>
+    commands.changeOverlayButtonStyleSetting(
+      value as NonNullable<typeof value>,
+    ),
+  overlay_opacity: (value) =>
+    commands.changeOverlayOpacitySetting(value as number),
   vad_enabled: (value) => commands.changeVadEnabledSetting(value as boolean),
   long_form_chunking: (value) =>
     commands.changeLongFormChunkingSetting(value as boolean),

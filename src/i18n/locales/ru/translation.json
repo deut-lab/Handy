@@ -1026,6 +1026,40 @@
     },
     "overlay": {
       "insertWithoutSubmit": "Вставить без отправки"
+    },
+    "overlayLook": {
+      "title": "Вид плашки",
+      "description": "Цвета, значки, кнопки и прозрачность плашки записи.",
+      "states": {
+        "recording": "Запись",
+        "transcribing": "Распознавание"
+      },
+      "theme": {
+        "title": "Тема",
+        "options": {
+          "classic": "Оригинальная",
+          "calm": "Светлая",
+          "gray": "Серая",
+          "dark": "Тёмная"
+        }
+      },
+      "iconSet": {
+        "title": "Значки",
+        "options": {
+          "original": "Оригинальные",
+          "line": "Линейные"
+        }
+      },
+      "buttonStyle": {
+        "title": "Кнопки",
+        "options": {
+          "circle": "В кружках",
+          "simple": "Простые"
+        }
+      },
+      "opacity": {
+        "title": "Прозрачность"
+      }
     }
   }
 }

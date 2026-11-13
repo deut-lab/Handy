@@ -16,6 +16,7 @@ import { noticeDisplay } from "@/lib/notices";
 import type { ModelStateEvent } from "@/lib/types/events";
 import { getLanguageDirection } from "@/lib/utils/rtl";
 import { InsertButton } from "./voice/InsertButton";
+import { LookIcon, useOverlayLook } from "./voice/OverlayLook";
 
 type OverlayState =
   | "recording"
@@ -92,6 +93,7 @@ const RecordingOverlay: React.FC = () => {
   const capRef = useRef<HTMLDivElement>(null);
   const pinnedRef = useRef(true);
   const direction = getLanguageDirection(i18n.language);
+  const look = useOverlayLook();
 
   useEffect(() => {
     const setupEventListeners = async () => {
@@ -300,6 +302,7 @@ const RecordingOverlay: React.FC = () => {
       aria-label="cancel"
       onClick={() => commands.cancelOperation()}
     >
+      <LookIcon look={look} kind="cancel" />
       <svg viewBox="0 0 16 16" aria-hidden="true">
         <path
           d="M4 4 L12 12 M12 4 L4 12"
@@ -317,11 +320,12 @@ const RecordingOverlay: React.FC = () => {
     <div className="sbase">
       <div className="sbase-l">
         <span className={`sdot ${captureReady ? "ready" : "arming"}`} />
+        <LookIcon look={look} kind="recording" ready={captureReady} />
       </div>
       {waveform}
       <div className="sbase-r">
         {showTimer && <span className="stimer">{fmtTime(elapsed)}</span>}
-        {showCancel && <InsertButton />}
+        {showCancel && <InsertButton look={look} />}
         {showCancel && cancelBtn}
       </div>
     </div>
@@ -333,6 +337,7 @@ const RecordingOverlay: React.FC = () => {
     <div className="sbase">
       <div className="sbase-l">
         <span className="sspinner" />
+        <LookIcon look={look} kind="working" />
       </div>
       <span className="swork-label">{label}</span>
       <div className="sbase-r">{showCancel && cancelBtn}</div>
@@ -379,7 +384,11 @@ const RecordingOverlay: React.FC = () => {
     const collapsed = working && !hasText;
 
     return (
-      <div dir={direction} className={`ov-stage ${position}`}>
+      <div
+        dir={direction}
+        className={`ov-stage ${position} ${look.className}`}
+        style={look.style}
+      >
         {noticeProbe}
         <div
           key={session}
@@ -441,7 +450,8 @@ const RecordingOverlay: React.FC = () => {
   return (
     <div
       dir={direction}
-      className={`ov-stage ${position} ov-fade ${isVisible ? "show" : ""}`}
+      className={`ov-stage ${position} ov-fade ${isVisible ? "show" : ""} ${look.className}`}
+      style={look.style}
     >
       {noticeProbe}
       <div

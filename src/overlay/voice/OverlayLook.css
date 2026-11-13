@@ -1,0 +1,194 @@
+/* Handy Voice: the recording overlay's look (OverlayLook.tsx,
+   src-tauri/src/voice/overlay_look.rs).
+
+   `.vlook` holds the palette as --vl-* variables. The overlay maps them onto
+   its own tokens (RecordingOverlay.css, below); the preview in the settings
+   (OverlayLookPicker.tsx) reads them directly. */
+
+/* "Original" (classic): Handy's own colors from theme.css, so it follows the
+   app's light or dark theme. */
+.vlook {
+  --vl-bg: var(--color-background);
+  --vl-border: var(--color-line);
+  --vl-text: var(--color-text);
+  --vl-accent: var(--color-logo-primary); /* bars, dot, caret, spinner */
+  --vl-icon: var(--color-logo-primary); /* line status icons */
+  --vl-muted: var(--color-ink-2); /* cancel, labels, arming */
+  --vl-faint: var(--color-ink-3); /* timer */
+  --vl-finish: var(--color-moss); /* insert (check) */
+  --vl-button: var(--color-wash); /* round button fill */
+  --vl-button-ring: transparent;
+  --vl-hover: color-mix(in srgb, var(--color-logo-primary) 20%, transparent);
+  --vl-finish-hover: var(--color-moss-wash);
+  --vl-track: var(--color-wash); /* spinner track */
+  --vl-warning: var(--color-warning);
+  --vl-error: var(--color-error);
+  /* Transparency: OverlayLook.tsx sets --vl-alpha from overlay_opacity. */
+  --vl-alpha: 98%;
+  --vl-surface: color-mix(in srgb, var(--vl-bg) var(--vl-alpha), transparent);
+  --vl-btn-bg: var(--vl-button);
+  --vl-btn-ring: var(--vl-button-ring);
+}
+
+/* The fork's palettes: fixed colors, the same in the app's light and dark
+   theme, so the text colors come with them. */
+.vlook.vlook-calm {
+  --vl-bg: #f7fafc;
+  --vl-border: #c8d2da;
+  --vl-text: #243743;
+  --vl-accent: #18a572;
+  --vl-icon: #127f78;
+  --vl-muted: #5f7078;
+  --vl-faint: #5f7078;
+  --vl-finish: #13914d;
+  --vl-button: #ffffff8a;
+  --vl-button-ring: #bfd0d9;
+  --vl-hover: #d9e2e8;
+  --vl-finish-hover: #d9e2e8;
+  --vl-track: #5f707833;
+  --vl-warning: var(--light-color-warning);
+  --vl-error: var(--light-color-error);
+}
+
+.vlook.vlook-gray {
+  --vl-bg: #ebeef0;
+  --vl-border: #b8c0c6;
+  --vl-text: #2f363b;
+  --vl-accent: #34816d;
+  --vl-icon: #2f7669;
+  --vl-muted: #66737a;
+  --vl-faint: #66737a;
+  --vl-finish: #208853;
+  --vl-button: #ffffff96;
+  --vl-button-ring: #b0bbc2;
+  --vl-hover: #cbd3d8;
+  --vl-finish-hover: #cbd3d8;
+  --vl-track: #66737a33;
+  --vl-warning: var(--light-color-warning);
+  --vl-error: var(--light-color-error);
+}
+
+.vlook.vlook-dark {
+  --vl-bg: #1f2933;
+  --vl-border: #3a4a55;
+  --vl-text: #edf4f7;
+  --vl-accent: #74d7b4;
+  --vl-icon: #74d7b4;
+  --vl-muted: #c3d0d6;
+  --vl-faint: #9fb0b8;
+  --vl-finish: #78e39b;
+  --vl-button: #ffffff14;
+  --vl-button-ring: #6f8794;
+  --vl-hover: #d7e6ed24;
+  --vl-finish-hover: #d7e6ed24;
+  --vl-track: #c3d0d633;
+  --vl-warning: var(--dark-color-warning);
+  --vl-error: var(--dark-color-error);
+}
+
+.vlook.vlook-buttons-simple {
+  --vl-btn-bg: transparent;
+  --vl-btn-ring: transparent;
+}
+
+/* ---- The overlay ----
+   Mapped on the card, not on .ov-stage itself: there --color-text etc. would
+   refer to themselves through the --vl-* defaults. */
+.vlook .scard {
+  --s-surface: var(--vl-surface);
+  --s-border: var(--vl-border);
+  --s-accent: var(--vl-accent);
+  --s-accent-soft: color-mix(in srgb, var(--vl-accent) 20%, transparent);
+  --s-muted: var(--vl-muted);
+  --s-faint: var(--vl-faint);
+  --s-hair: var(--vl-track);
+  --color-text: var(--vl-text);
+  --color-moss: var(--vl-finish);
+  --color-moss-wash: var(--vl-finish-hover);
+  --color-warning: var(--vl-warning);
+  --color-error: var(--vl-error);
+}
+
+/* Buttons: circled (filled, with a ring) or simple (bare glyph). */
+.vlook .sx {
+  color: var(--vl-muted);
+  background: var(--vl-btn-bg);
+  box-shadow: inset 0 0 0 1px var(--vl-btn-ring);
+}
+.vlook .sx.sinsert {
+  color: var(--vl-finish);
+}
+.vlook .sx:hover {
+  background: var(--vl-hover);
+  color: var(--vl-text);
+}
+.vlook .sx.sinsert:hover {
+  background: var(--vl-finish-hover);
+  color: var(--vl-finish);
+}
+
+/* Line icons (LookIcon) in place of Handy's dot, spinner and thin glyphs. */
+.vlook.vlook-icons-line .sdot,
+.vlook.vlook-icons-line .sspinner,
+.vlook.vlook-icons-line .sx > svg {
+  display: none;
+}
+.vlook.vlook-icons-line .sx svg {
+  width: 14px;
+  height: 14px;
+}
+.vicon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+.vstatus {
+  color: var(--vl-icon);
+  transition:
+    color 180ms ease,
+    opacity 180ms ease;
+}
+.vstatus.arming {
+  color: var(--vl-muted);
+  opacity: 0.45;
+}
+.vstatus.working {
+  animation: vstatus-pulse 1.5s ease-in-out infinite;
+}
+@keyframes vstatus-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Compact pill (the Minimal overlay) at the fork's size: 150px wide with its
+   border, 36px high, five bars centered between the status icon and the
+   buttons, check and cross 4px apart. The working pill keeps upstream's
+   width for the label. */
+.vlook .scard.compact {
+  --ov-rest-w: 148px;
+  --ov-base-h: 36px;
+}
+.vlook .scard.compact .sbase:not(.snotice) {
+  padding: 0 6px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+.vlook .scard.compact .sbase-r {
+  gap: 4px;
+}
+.vlook .scard.compact .swave {
+  justify-self: center;
+  gap: 2px;
+  padding-right: 0;
+}
+.vlook .scard.compact .swork-label {
+  text-align: center;
+}
+.vlook .scard.compact .swave i:nth-child(n + 6) {
+  display: none;
+}

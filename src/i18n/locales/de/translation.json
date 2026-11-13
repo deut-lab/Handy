@@ -1026,6 +1026,40 @@
     },
     "overlay": {
       "insertWithoutSubmit": "Ohne Absenden einfügen"
+    },
+    "overlayLook": {
+      "title": "Aussehen der Aufnahmeleiste",
+      "description": "Farben, Symbole, Tasten und Transparenz der Aufnahmeleiste.",
+      "states": {
+        "recording": "Aufnahme",
+        "transcribing": "Erkennung"
+      },
+      "theme": {
+        "title": "Design",
+        "options": {
+          "classic": "Original",
+          "calm": "Hell",
+          "gray": "Grau",
+          "dark": "Dunkel"
+        }
+      },
+      "iconSet": {
+        "title": "Symbole",
+        "options": {
+          "original": "Original",
+          "line": "Linien"
+        }
+      },
+      "buttonStyle": {
+        "title": "Tasten",
+        "options": {
+          "circle": "Mit Kreis",
+          "simple": "Einfach"
+        }
+      },
+      "opacity": {
+        "title": "Transparenz"
+      }
     }
   }
 }

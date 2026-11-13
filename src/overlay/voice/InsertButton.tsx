@@ -3,9 +3,10 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { commands } from "@/bindings";
+import { LookIcon, type OverlayLook } from "./OverlayLook";
 import "./InsertButton.css";
 
-export const InsertButton: React.FC = () => {
+export const InsertButton: React.FC<{ look: OverlayLook }> = ({ look }) => {
   const { t } = useTranslation();
   const label = t("voice.overlay.insertWithoutSubmit");
 
@@ -16,6 +17,7 @@ export const InsertButton: React.FC = () => {
       title={label}
       onClick={() => commands.finishWithoutSubmit()}
     >
+      <LookIcon look={look} kind="finish" />
       <svg viewBox="0 0 16 16" aria-hidden="true">
         <path
           d="M3.5 8.5 L6.5 11.5 L12.5 4.5"
