@@ -209,6 +209,7 @@ const settingUpdaters: {
     ),
   overlay_opacity: (value) =>
     commands.changeOverlayOpacitySetting(value as number),
+  overlay_size: (value) => commands.changeOverlaySizeSetting(value as number),
   vad_enabled: (value) => commands.changeVadEnabledSetting(value as boolean),
   long_form_chunking: (value) =>
     commands.changeLongFormChunkingSetting(value as boolean),

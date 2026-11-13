@@ -496,6 +496,8 @@ pub struct AppSettings {
         deserialize_with = "crate::voice::overlay_look::deserialize_opacity"
     )]
     pub overlay_opacity: u8,
+    #[serde(default = "crate::voice::overlay_look::default_size")]
+    pub overlay_size: u8,
     #[serde(default = "default_debug_mode")]
     pub debug_mode: bool,
     #[serde(default = "default_log_level")]
@@ -1076,6 +1078,7 @@ pub fn get_default_settings() -> AppSettings {
         overlay_transcribing_icon: Default::default(),
         overlay_button_style: Default::default(),
         overlay_opacity: crate::voice::overlay_look::default_opacity(),
+        overlay_size: crate::voice::overlay_look::default_size(),
         debug_mode: false,
         log_level: default_log_level(),
         custom_words: Vec::new(),
