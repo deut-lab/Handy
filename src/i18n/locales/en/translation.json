@@ -990,6 +990,18 @@
     "dismiss": "Dismiss"
   },
   "voice": {
+    "about": {
+      "updatedVersion": {
+        "title": "Updated version",
+        "description": "Handy Voice is Handy with additions: stop after silence, insert without Enter, overlay look and size, icons, transparency, feedback sounds, start through a Windows task.",
+        "button": "Open my version"
+      },
+      "readyInstaller": {
+        "title": "Ready installer",
+        "description": "The latest ready release of the updated version.",
+        "button": "Download"
+      }
+    },
     "soundTheme": {
       "label": "Sound theme",
       "description": "Choose the start and stop sound for recording feedback.",
