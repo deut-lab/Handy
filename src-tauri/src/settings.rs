@@ -441,6 +441,11 @@ pub struct AppSettings {
     pub start_hidden: bool,
     #[serde(default = "default_autostart_enabled")]
     pub autostart_enabled: bool,
+    // Handy Voice (voice/windows_startup.rs)
+    #[serde(default = "crate::voice::windows_startup::default_enabled")]
+    pub windows_task_startup_enabled: bool,
+    #[serde(default = "crate::voice::windows_startup::default_admin")]
+    pub windows_task_startup_admin: bool,
     #[serde(default = "default_update_checks_enabled")]
     pub update_checks_enabled: bool,
     #[serde(default = "default_show_whats_new_on_update")]
@@ -1050,6 +1055,8 @@ pub fn get_default_settings() -> AppSettings {
         sound_theme: default_sound_theme(),
         start_hidden: default_start_hidden(),
         autostart_enabled: default_autostart_enabled(),
+        windows_task_startup_enabled: crate::voice::windows_startup::default_enabled(),
+        windows_task_startup_admin: crate::voice::windows_startup::default_admin(),
         update_checks_enabled: default_update_checks_enabled(),
         show_whats_new_on_update: default_show_whats_new_on_update(),
         whats_new_last_seen_version: default_whats_new_last_seen_version(),

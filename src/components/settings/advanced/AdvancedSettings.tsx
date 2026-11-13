@@ -29,6 +29,7 @@ import { VadBackendSelector } from "../VadBackendSelector";
 import { TrayIconStyle } from "../voice/TrayIconStyle";
 import { AutoStopSilence } from "../voice/AutoStopSilence";
 import { OverlayLookPicker } from "../voice/OverlayLookPicker";
+import { WindowsTaskStartup } from "../voice/WindowsTaskStartup";
 
 export const AdvancedSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -40,6 +41,7 @@ export const AdvancedSettings: React.FC = () => {
       <SettingsGroup title={t("settings.advanced.groups.app")}>
         <StartHidden descriptionMode="tooltip" grouped={true} />
         <AutostartToggle descriptionMode="tooltip" grouped={true} />
+        <WindowsTaskStartup descriptionMode="tooltip" grouped={true} />
         <ShowTrayIcon descriptionMode="tooltip" grouped={true} />
         <TrayIconStyle descriptionMode="tooltip" grouped={true} />
         <ShowOverlay descriptionMode="tooltip" grouped={true} />
