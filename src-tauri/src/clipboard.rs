@@ -901,7 +901,8 @@ fn sends_keys(paste_method: PasteMethod) -> bool {
 /// thread: it sleeps between steps (input injection hops via `with_enigo`).
 pub fn paste(text: String, app_handle: AppHandle) -> Result<PasteOutcome, String> {
     let _paste = PASTE_LOCK.lock().unwrap_or_else(PoisonError::into_inner);
-    let settings = get_settings(&app_handle);
+    // Handy Voice: no auto-submit after the overlay's ✓.
+    let settings = crate::voice::insert_without_enter::paste_settings(get_settings(&app_handle));
 
     // Windows drops the keystrokes Handy sends to an elevated window and may
     // not say so, so ask before pasting instead of trusting the result. The

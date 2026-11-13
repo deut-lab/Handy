@@ -594,6 +594,12 @@ async showMainWindowCommand() : Promise<Result<null, string>> {
 async cancelOperation() : Promise<void> {
     await TAURI_INVOKE("cancel_operation");
 },
+/**
+ * The overlay's ✓: stop, paste, no auto-submit this time.
+ */
+async finishWithoutSubmit() : Promise<void> {
+    await TAURI_INVOKE("finish_without_submit");
+},
 async isPortable() : Promise<boolean> {
     return await TAURI_INVOKE("is_portable");
 },
