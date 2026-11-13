@@ -15,6 +15,8 @@
 //! - `overlay_button_style`: `circle` (filled round buttons) or `simple`.
 //! - `overlay_opacity`: transparency in percent, 0-100 in steps of 10. The
 //!   fork's first versions stored `solid` / `medium` / `light`.
+//! - `overlay_size`: size of the compact pill in percent, 80-110 in steps of
+//!   5 (Handy Voice 0.10; larger would not fit the overlay window).
 
 use crate::settings;
 use serde::{de, Deserialize, Deserializer, Serialize};
@@ -91,6 +93,15 @@ where
     }
 }
 
+pub fn default_size() -> u8 {
+    100
+}
+
+/// 80-110 % in steps of 5: the pill must fit the 266x50 overlay window.
+fn normalize_size(percent: u64) -> u8 {
+    ((percent.clamp(80, 110) + 2) / 5 * 5) as u8
+}
+
 fn update(app: &AppHandle, change: impl FnOnce(&mut settings::AppSettings)) {
     let mut settings = settings::get_settings(app);
     change(&mut settings);
@@ -141,6 +152,13 @@ pub fn change_overlay_opacity_setting(app: AppHandle, opacity: u8) -> Result<(),
     Ok(())
 }
 
+#[tauri::command]
+#[specta::specta]
+pub fn change_overlay_size_setting(app: AppHandle, size: u8) -> Result<(), String> {
+    update(&app, |settings| settings.overlay_size = normalize_size(size.into()));
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -157,6 +175,17 @@ mod tests {
         );
         assert_eq!(settings.overlay_button_style, OverlayButtonStyle::Circle);
         assert_eq!(settings.overlay_opacity, 30);
+        assert_eq!(settings.overlay_size, 100);
+    }
+
+    #[test]
+    fn size_stays_in_the_window_in_steps_of_five() {
+        assert_eq!(normalize_size(0), 80);
+        assert_eq!(normalize_size(82), 80);
+        assert_eq!(normalize_size(83), 85);
+        assert_eq!(normalize_size(100), 100);
+        assert_eq!(normalize_size(110), 110);
+        assert_eq!(normalize_size(250), 110);
     }
 
     #[test]
@@ -228,6 +257,7 @@ mod tests {
         let settings: AppSettings = serde_json::from_value(serde_json::json!({})).unwrap();
         assert_eq!(settings.overlay_theme, OverlayTheme::Calm);
         assert_eq!(settings.overlay_opacity, default_opacity());
+        assert_eq!(settings.overlay_size, default_size());
     }
 
     #[test]

@@ -47,6 +47,8 @@ export interface OverlayLook {
   buttonStyle: OverlayButtonStyle;
   /** Transparency in percent, 0-100 in steps of 10. */
   opacity: number;
+  /** Size of the compact pill in percent, 80-110 in steps of 5. */
+  size: number;
 }
 
 export interface OverlayLookView extends OverlayLook {
@@ -61,12 +63,19 @@ export const DEFAULT_LOOK: OverlayLook = {
   transcribingIcon: "scan_text",
   buttonStyle: "circle",
   opacity: 30,
+  size: 100,
 };
 
 const clampOpacity = (value: unknown): number => {
   const percent = typeof value === "number" ? value : Number(value);
   if (!Number.isFinite(percent)) return DEFAULT_LOOK.opacity;
   return Math.min(100, Math.max(0, Math.round(percent / 10) * 10));
+};
+
+const clampSize = (value: unknown): number => {
+  const percent = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(percent)) return DEFAULT_LOOK.size;
+  return Math.min(110, Math.max(80, Math.round(percent / 5) * 5));
 };
 
 export const lookFromSettings = (
@@ -78,6 +87,7 @@ export const lookFromSettings = (
     settings?.overlay_transcribing_icon ?? DEFAULT_LOOK.transcribingIcon,
   buttonStyle: settings?.overlay_button_style ?? DEFAULT_LOOK.buttonStyle,
   opacity: clampOpacity(settings?.overlay_opacity ?? DEFAULT_LOOK.opacity),
+  size: clampSize(settings?.overlay_size ?? DEFAULT_LOOK.size),
 });
 
 /**
@@ -96,7 +106,9 @@ export const viewLook = (look: OverlayLook): OverlayLookView => ({
   className: `vlook vlook-${look.theme} vlook-icons-${look.iconSet} vlook-buttons-${look.buttonStyle}`,
   style: {
     "--vl-alpha": `${100 - look.opacity}%`,
-    ...barSizes(window.devicePixelRatio || 1),
+    // The pill is zoomed by its size, so its pixels are dpr * size.
+    "--vl-size": look.size / 100,
+    ...barSizes((window.devicePixelRatio || 1) * (look.size / 100)),
   } as React.CSSProperties,
 });
 
@@ -125,10 +137,10 @@ const useDevicePixelRatio = (): number => {
  * and gaps, only the start can still fall between two pixels, so the bars are
  * nudged by that fraction. Measured once per bar row and screen scale.
  */
-const useSnappedBars = (dpr: number) => {
-  const snapped = useRef<{ wave: Element | null; dpr: number }>({
+const useSnappedBars = (dpr: number, zoom: number) => {
+  const snapped = useRef<{ wave: Element | null; key: number }>({
     wave: null,
-    dpr: 0,
+    key: 0,
   });
 
   useLayoutEffect(() => {
@@ -136,11 +148,13 @@ const useSnappedBars = (dpr: number) => {
       ".vlook .scard.compact .swave",
     );
     if (!wave) return;
-    if (snapped.current.wave === wave && snapped.current.dpr === dpr) return;
+    const key = dpr * zoom;
+    if (snapped.current.wave === wave && snapped.current.key === key) return;
     wave.style.translate = "";
+    // In screen pixels; the shift is set in the zoomed pill's own pixels.
     const left = wave.getBoundingClientRect().left * dpr;
-    wave.style.translate = `${(Math.round(left) - left) / dpr}px 0`;
-    snapped.current = { wave, dpr };
+    wave.style.translate = `${(Math.round(left) - left) / key}px 0`;
+    snapped.current = { wave, key };
   });
 };
 
@@ -148,7 +162,7 @@ const useSnappedBars = (dpr: number) => {
 export const useOverlayLook = (): OverlayLookView => {
   const [look, setLook] = useState<OverlayLook>(DEFAULT_LOOK);
   const dpr = useDevicePixelRatio();
-  useSnappedBars(dpr);
+  useSnappedBars(dpr, look.size / 100);
 
   useEffect(() => {
     let active = true;

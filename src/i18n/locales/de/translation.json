@@ -1066,6 +1066,9 @@
       "opacity": {
         "title": "Transparenz"
       },
+      "size": {
+        "title": "Größe"
+      },
       "transcribingIcon": {
         "title": "Symbol beim Erkennen",
         "options": {

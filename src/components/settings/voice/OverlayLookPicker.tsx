@@ -156,6 +156,8 @@ export const OverlayLookPicker: React.FC<OverlayLookPickerProps> = React.memo(
     if (getSetting("overlay_style") === "none") return null;
 
     const look = lookFromSettings(settings);
+    // How far the size slider (80-110 %) is filled.
+    const sizeFill = ((look.size - 80) / 30) * 100;
 
     return (
       <SettingContainer
@@ -249,6 +251,33 @@ export const OverlayLookPicker: React.FC<OverlayLookPickerProps> = React.memo(
               />
               <span className="w-12 text-end text-sm font-medium tabular-nums text-text">
                 {look.opacity}%
+              </span>
+            </div>
+          </Section>
+
+          <Section title={t("voice.overlayLook.size.title")}>
+            <div className="flex items-center gap-3">
+              <input
+                type="range"
+                min={80}
+                max={110}
+                step={5}
+                value={look.size}
+                disabled={isUpdating("overlay_size")}
+                aria-label={t("voice.overlayLook.size.title")}
+                onChange={(event) =>
+                  updateSetting(
+                    "overlay_size",
+                    Number(event.currentTarget.value),
+                  )
+                }
+                className="h-2 flex-grow cursor-pointer appearance-none rounded-lg focus:outline-none focus:ring-2 focus:ring-logo-primary disabled:cursor-not-allowed disabled:opacity-50"
+                style={{
+                  background: `linear-gradient(to right, var(--color-background-ui) ${sizeFill}%, var(--color-line) ${sizeFill}%)`,
+                }}
+              />
+              <span className="w-12 text-end text-sm font-medium tabular-nums text-text">
+                {look.size}%
               </span>
             </div>
           </Section>
