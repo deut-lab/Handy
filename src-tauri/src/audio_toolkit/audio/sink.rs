@@ -92,6 +92,8 @@ pub struct CaptureSink {
     ready: Option<mpsc::Sender<()>>,
     samples: Vec<f32>,
     heard_sound: bool,
+    /// Handy Voice: auto-stop on silence (voice/silence_stop.rs).
+    silence_watch: Option<crate::voice::silence_stop::SilenceWatch>,
 }
 
 /// Spectrum window at 16 kHz: 32 ms, near the overlay's ~30 Hz refresh.
@@ -128,7 +130,17 @@ impl CaptureSink {
             ready: Some(ready),
             samples: Vec::new(),
             heard_sound: false,
+            silence_watch: None,
         }
+    }
+
+    /// Handy Voice: shows `watch` each frame's VAD verdict.
+    pub fn with_silence_watch(
+        mut self,
+        watch: Option<crate::voice::silence_stop::SilenceWatch>,
+    ) -> Self {
+        self.silence_watch = watch;
+        self
     }
 
     /// The detector, from a sink that never recorded (its start failed).
@@ -191,12 +203,15 @@ impl Sink for CaptureSink {
 
         // The detector needs whole frames, so the final chunk goes in with its
         // zero padding; at most one frame of silence reaches the recording.
-        match self
+        let frame = self
             .vad
             .detector
             .push_frame(chunk.samples)
-            .unwrap_or(VadFrame::Speech(chunk.samples))
-        {
+            .unwrap_or(VadFrame::Speech(chunk.samples));
+        if let Some(watch) = &mut self.silence_watch {
+            watch.observe(frame.is_speech(), chunk.valid_frames);
+        }
+        match frame {
             VadFrame::Speech(frame) => Self::emit(&mut self.samples, &self.on_audio, frame),
             VadFrame::Noise => {}
         }
