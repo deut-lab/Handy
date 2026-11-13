@@ -15,12 +15,14 @@
 //! - `overlay_button_style`: `circle` (filled round buttons) or `simple`.
 //! - `overlay_opacity`: transparency in percent, 0-100 in steps of 10. The
 //!   fork's first versions stored `solid` / `medium` / `light`.
-//! - `overlay_size`: size of the compact pill in percent, 80-110 in steps of
-//!   5 (Handy Voice 0.10; larger would not fit the overlay window).
+//! - `overlay_size`: size of the compact pill in percent, 50-150 in steps of
+//!   5 (Handy Voice 0.10). Above 100 % the overlay window grows with it
+//!   (`scale_window`, called from `overlay.rs`).
 
 use crate::settings;
 use serde::{de, Deserialize, Deserializer, Serialize};
 use specta::Type;
+use std::sync::atomic::{AtomicU8, Ordering};
 use tauri::AppHandle;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type, Default)]
@@ -97,9 +99,28 @@ pub fn default_size() -> u8 {
     100
 }
 
-/// 80-110 % in steps of 5: the pill must fit the 266x50 overlay window.
+/// 50-150 % in steps of 5.
 fn normalize_size(percent: u64) -> u8 {
-    ((percent.clamp(80, 110) + 2) / 5 * 5) as u8
+    ((percent.clamp(50, 150) + 2) / 5 * 5) as u8
+}
+
+/// The size the overlay was last shown with (`remember_size`).
+static OVERLAY_SIZE: AtomicU8 = AtomicU8::new(100);
+
+/// Called each time the overlay is shown, before its window is sized.
+pub fn remember_size(size: u8) {
+    OVERLAY_SIZE.store(normalize_size(size.into()), Ordering::Relaxed);
+}
+
+/// The compact overlay window, grown with a pill above 100 %. Up to 100 % the
+/// pill fits Handy's window as it is.
+pub fn scale_window(width: f64, height: f64) -> (f64, f64) {
+    window_for_size(width, height, OVERLAY_SIZE.load(Ordering::Relaxed))
+}
+
+fn window_for_size(width: f64, height: f64, size: u8) -> (f64, f64) {
+    let scale = (f64::from(size) / 100.0).max(1.0);
+    (width * scale, height * scale)
 }
 
 fn update(app: &AppHandle, change: impl FnOnce(&mut settings::AppSettings)) {
@@ -179,13 +200,20 @@ mod tests {
     }
 
     #[test]
-    fn size_stays_in_the_window_in_steps_of_five() {
-        assert_eq!(normalize_size(0), 80);
-        assert_eq!(normalize_size(82), 80);
-        assert_eq!(normalize_size(83), 85);
+    fn size_is_50_to_150_in_steps_of_five() {
+        assert_eq!(normalize_size(0), 50);
+        assert_eq!(normalize_size(52), 50);
+        assert_eq!(normalize_size(53), 55);
         assert_eq!(normalize_size(100), 100);
-        assert_eq!(normalize_size(110), 110);
-        assert_eq!(normalize_size(250), 110);
+        assert_eq!(normalize_size(150), 150);
+        assert_eq!(normalize_size(250), 150);
+    }
+
+    #[test]
+    fn the_window_grows_only_above_100_percent() {
+        assert_eq!(window_for_size(266.0, 50.0, 50), (266.0, 50.0));
+        assert_eq!(window_for_size(266.0, 50.0, 100), (266.0, 50.0));
+        assert_eq!(window_for_size(266.0, 50.0, 150), (399.0, 75.0));
     }
 
     #[test]

@@ -156,8 +156,8 @@ export const OverlayLookPicker: React.FC<OverlayLookPickerProps> = React.memo(
     if (getSetting("overlay_style") === "none") return null;
 
     const look = lookFromSettings(settings);
-    // How far the size slider (80-110 %) is filled.
-    const sizeFill = ((look.size - 80) / 30) * 100;
+    // How far the size slider (50-150 %) is filled.
+    const sizeFill = look.size - 50;
 
     return (
       <SettingContainer
@@ -259,8 +259,8 @@ export const OverlayLookPicker: React.FC<OverlayLookPickerProps> = React.memo(
             <div className="flex items-center gap-3">
               <input
                 type="range"
-                min={80}
-                max={110}
+                min={50}
+                max={150}
                 step={5}
                 value={look.size}
                 disabled={isUpdating("overlay_size")}
