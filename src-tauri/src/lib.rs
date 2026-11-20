@@ -763,6 +763,7 @@ pub fn run(cli_args: CliArgs) {
             shortcut::get_keyboard_implementation,
             shortcut::change_show_tray_icon_setting,
             voice::tray_style::change_tray_icon_style_setting,
+            voice::word_forms::update_word_entries,
             shortcut::change_transcribe_accelerator_setting,
             shortcut::change_transcribe_gpu_device,
             shortcut::get_available_accelerators,

@@ -1,0 +1,103 @@
+<title>Handy Voice</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one narrow column; a dark "taskbar" strip carries the tray icons as the page's signature detail. */
+:root{
+  --bg:#F2F4F8; --surface:#FFFFFF; --ink:#16202E; --muted:#56637A; --line:#D9DFEA;
+  --accent:#C2185B; --accent-soft:#FBE3EE; --bar:#1C2230; --bar-ink:#E9EDF5;
+  --display:"Unbounded","Segoe UI",system-ui,sans-serif;
+  --body:"Inter","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10141C; --surface:#181E29; --ink:#E8ECF4; --muted:#9AA6BC; --line:#2A3242;
+  --accent:#F48FB1; --accent-soft:#3A1F2C; --bar:#0B0E14; --bar-ink:#E9EDF5; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10141C; --surface:#181E29; --ink:#E8ECF4; --muted:#9AA6BC; --line:#2A3242;
+  --accent:#F48FB1; --accent-soft:#3A1F2C; --bar:#0B0E14; --bar-ink:#E9EDF5; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+h1,h2{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2.2rem,7vw,3.6rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.35rem;font-weight:500}
+p{margin:0}
+.lead{font-size:1.15rem;color:var(--muted);max-width:60ch}
+header{display:flex;flex-direction:column;gap:20px;padding-top:56px}
+.eyebrow{font:500 .78rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:999px;font-weight:600;text-decoration:none;
+  background:var(--accent);color:var(--surface)}
+.btn:focus-visible,.link:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.note{font-size:.9rem;color:var(--muted)}
+.link{color:var(--accent);font-weight:500}
+/* taskbar strip */
+.taskbar{background:var(--bar);color:var(--bar-ink);border-radius:14px;padding:18px 20px;display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.state{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.state img{width:32px;height:32px;image-rendering:auto}
+.state span{font-size:.82rem;opacity:.85}
+section{display:flex;flex-direction:column;gap:20px}
+.features{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.feat{background:var(--surface);padding:20px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.feat b{font-weight:600}
+.feat p{color:var(--muted);font-size:.95rem}
+ol.steps{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:10px}
+ol.steps li::marker{font-family:var(--mono);color:var(--accent)}
+kbd{font:500 .85em var(--mono);background:var(--accent-soft);padding:1px 6px;border-radius:6px}
+footer{border-top:1px solid var(--line);padding-top:20px;color:var(--muted);font-size:.9rem;display:flex;flex-direction:column;gap:6px}
+@media (max-width:560px){.features{grid-template-columns:1fr}.taskbar{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:16px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Диктовка для Windows · без интернета</span>
+    <h1>Handy Voice</h1>
+    <p class="lead">Говорите, а текст появляется там, где стоит курсор: в письме, чате, таблице. Распознавание идёт прямо на компьютере, звук никуда не уходит. Handy Voice построен на свободной программе Handy и доработан для ежедневной диктовки по-русски, по-украински и по-немецки.</p>
+    <div class="cta">
+      <a class="btn" href="https://github.com/deut-lab/Handy/releases" target="_blank" rel="noopener">Скачать с GitHub</a>
+      <span class="note">Windows 10 и 11, 64 бита. Версия 0.10.1 на основе Handy 0.10.1.</span>
+    </div>
+  </header>
+
+  <section aria-labelledby="tray">
+    <h2 id="tray">Что показывает значок у часов</h2>
+    <div class="taskbar" role="list">
+      <div class="state" role="listitem"><img alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAMrSURBVHhe7VkhsNQwED2JRH6JRCKRXyIQDAqJRCKRCGbAffkl8suPYAb55ZcnkUjkmbZJeqJ/X7p3v002x7U3c23Kvpmdm3aTXvZlN5tsVgqFQqFQKCZBURQXxphn/Lh8NE3zxBj33rj61tj6L0nTittUtr6rKvsJpHDzZaEs65eVqX8/Gp0StwFJ3G0Z8LMuGpsW8ojv3D1vYOYlA4+S3D0BMZ9ye5rhP/R7g5mm33VX9yhuk/WaUFr7MTSqMs5gseMmexTGvPLxH7bPORSsrX9FBgnG79CS0G8PUlidH8IZRTiwKglOkR0CSHLcK1hrn4eGHOPOUtjQuzeszgfGbC8jQ0z9gdVJSP2yzAZjDVEClAAlQAkY0292UAKUACVACRhjiBKgBCyEALEU5rZXrE6iqty7qF+OBLTlMGe6htBx+I7VSYCkbh9I4dwLVucFGnxU64NnsDoCCh8RafQMMrnJPIHCJQog/LiHNJuoCklt/S2RdfdRe8FrQJT0jUmA+NyXvtz2K7/2wCDDGfVG4R2Rg3j3dUDqJxVEvdCiyJ/zaP+PdcH/nR1S2SscMIqgUZsjxVp3zZ/xgJeEhIJAVp8fYsoSVnqpOnyErMPYR0ktajdlhmjjNhgQDZzVPcATpHCQBMXTTdM85a57wCPCtpN6AECD6NzytoLYZnUPCJnD3uDuUwZJ6wmeJaLOCqmMjQXtULoDoIdL+zWCQulQqvPpsb1K6/+Pq2+5yXTAwGkwkRd4Me7zqXd7vSwTyGw2SLi4kAYIgZsipofkbb+2EHnUXyYWQnpuPg+0uVwYaF/Wfg2gwcP1C7t9XZb2rQ8jGEwujY2P0K8vc3B9CYNyvnHy+38IMsGst8ZY3Gigifv+tFT2MCFYBFPZZZZgIm5CQ4YKQibLy9EdkMKwO0SOlwyUpD0wueshC2c2QPySd8R7B+O+nZoys8Fiyl5j8V8RgL26N7gjqRAI22UfEqfUAnaCXSR/Li/41V8waIxMfuQdAxxUJGPGSFYboC6G5P6UYAc4+Zl/LPxRGcdZHHRi+UIz+4PkZ+kXwLgN6gXZGq9QKBQKhWLmWK0eALygDXFihjlOAAAAAElFTkSuQmCC"><span>Ждёт</span></div>
+      <div class="state" role="listitem"><img alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAJKUlEQVR4nO1aW4hdZxVe6997n3Mmk5lJJ4nVpLm1GmO1SGlpHkSJIIVSiCBYvEERQVAfFBGhvgQFWx+sCL60D1WsPkikoi0Va9AY8EIfgqgRa3OZmGQml5k5Zeacvf/7v2Tts3eyMzNnPGcuMe2cD/bsvWf/1/Wvtf71f+sADDDAAAMM8NYBESFfsEEnHlXeo40qiCEi2gwbbOUFEcVE9BQRXSCiKSJ6hohG3vImQYXaE9G3aTF+Wi2z3isQLbjWXeplH4XaXyEiV1y+8ryzKCOWaiNezQCOHj3KkiVEDF0GGCGih/XHEADUACAfT/G/csKjADC5lOAQkVYsgOrkpJTvJIp2kgjbyVGLEnF5fmbmDCJmheRZSOXA1gPcdrf2w4KJi3LctFLTKNVpdrb1Xq3tDzKpXzfGukBE1jmSylzV2vwiTdPDCzpfLxO4g4iahd2H4irx7uqYV71THO2oPaSpOmydP8M9GOspzZSVSptM5lfes3UuS6V+cmKCGkc6fmJVQljo0fsUQLRgp7hMRD/qdwC5FOfm0oPWumluvdWWSmub92Qs+xwiH4jaqVJKm3wgUpovVuuvVZDTjwC67RTQ5yCwSc0xpd0f8smnUodApI2dlsr8pJ2pb7Qz+X1r3T8K4VhjXDDGTs3Ott63GiEspbo9CuBAUWbTgp2Cy7h+Os9XoJVln1DaaKmM1cYGrc3Fdls9Ui07OdncrY35HfeeZiq3h0zpZ4p24jUMckQfAti2oEzfGpDwXUr9XV51nhjf51OZq/epU1QrVJO3I0iNeUgbO5tJnUvbWnuC/Uc/kVkvQU4fAthKRLMrEgDdWAl0zr2Q27XSIZN66o12+/6qjZYTJKLRTOpfh8JJGuv+2cyy3b2aQY9Bzl2VyfUigEUaIHqSQCdoCFNTU0PewxiLrVaroRDiXALDl4s9/iZpIuK8QDjPswgh8AiGEh9xULKaIIfHi8UzXytp7yaIfisg3pgoCvAhtLo6EsRO8zziohKtV5CzUojVNjAyMgK3AOt2rhCwwSFgg0PABoeADQ4BGxxiNZUpALZaLdywAkDIo7Kue/Eyn96cAkjTHZ6jSCiiu0A4XqvVtiwV2x8/fjwGIer8zBUwL2FuO5MTy30sCU4ux/f9+1ETwRTPxRjrAekeiqK7ilCYT2x48uRJPu3hg4cOjVMI9zkfII4jDo2bTe8vFU3nZ4fbIXkRd//ENN4NQrM4DXoXwtmYY3sA36glw1LazwDACUQ0RVHLf1KlPllLkgeltmZ4qF5TJlzbs2XLG7eQKF25AIjyyZNsy4fjeu0R5cxLiPh7/oYkXvE+fDmJ4zsyZbwQ+DmltPUen3NOngeoj9fr8Big+Lp1ASKB6H2gEODFvD6il1LeHce1Lzjy569MJs/t24eq7PNWC2ARymNtlpkPlbSXNvbsnFLvKstIqZ/uUF3aZJnKeTCl7SVr3R+1sf8q3qmddshBpfRviWiY605MTDS0Ni+WZ9K0C13WJ9uz9sdhRLg3jqNtzHNGUXR3DOLRUkDGqCe1NscajVoioihi/g+IdkRR9AFEPJBmWoUQ/PCmRs0Yd84ifA0RU+5v/M6d9wPiB7W2BnM7gwfoSIc67+IPlvMRq/YfotsH78MF5ku8D4kQyF7rUPEpGh0dbdbrtY9nyjwVCZjdPNxo1OsJBiJI4giGN9UbcRyRsfaXxoTDI/X634mowZxCTPYgIm72IfDgESD8B7+ZJ1a6mYAujr2+cjQunyWsNajQCinlPdrYM0obL5V2zvtWu509XmWI+LnVkh+23n9HGfszqfSrWpuXrfXfa2XZp08V9FhJpzXb7fdb609bl9PonEqwaao+WpRZ5I8qLNOzS6j3b1ZpJt0psbJjZcwTXKjVlpopb+99M8vUE5fm5rYurHP0KEVZlu2emZlZxNKwAObT9GPGutOd9rKOb9DmWLPZHOvGE1aouM3MAbLL4GpE9DIRvaNPAfROilLB/7WI7lRa/6UYtCq4PTLGvpZK/a25ObW/1Wq9bXp6eqRMmDAuX748PD8/vy3Lsl3tTD+utD1hjM2YROU8gvOBHeuMlPJQPykqItpFRPuq4+xDAMwiz1R4xZwW7+pEyv06Tc1DSYI/TpL4AGd92Fbr9XoiBICzfsZ5dxEBThPhNRB4FYLfihht9yHsSZJolxC4K4oioZQJIQQ7vKlRt863fPBfGarXf9hLXFCsNPuIPACpagv7DRYAAJwFAL6Xq1qWOYCI/y7qPQsAny+DU+g5F9Bq3WeM+1Up0jRTLk+BKU1FMmgRnO9shZwu47QZvzOMdX/jtBq3W9WaXlBoplhFaqxqSmyGx3oWwtWrVzdnmX4sk+bn1jpZTpJNginyQiiW71Jpr40lVvU8YWqdlVL9KZXmS80s21Nt9/+UHGVT2svPPScoKinlhrXwgAvmU0KIg7EQoyHQeKCwlW1cCMHnnnYUiWshkLTWnYoieF5r/erY2NjswvZWK4BeTaBM03czpf+JwiPHC9RxhL343Fz7s8ZYzgo7Dnvb7fTpqamp7a/PzIyWW2BFDdfsRFjRgPFlNOA95XgXjD1/7zlPVwQpbPHVX4W0+NtcZl4DRIsIdS4URcm5HTt2TC8Y7HoegqrBUrmq/M6TzJaYy3WiIu63J57E9DSNzM+rXYg2CiEodP5eSIQgYo6EIAS/l7dIIZBXH1ukryLiTQJZCxTqz4Jlp/ZCxcNDMflXAIATqvyrkNWxM1Q4LSntw9a5vzrnJ7Wxk9b6i4b3dGWCVIaUMqS1nTPWXTLGThrrJp33pzNlvlqNINcKvQRLy555oMdOymdr/UtJEj0qlXGREDEB5acYJojYMrh47gixc87goKNRr0XG2gnp/Ue2DA2dW5MV6T7WXazZiDhRjn25Y3bcR9t5Q8qYJuclkySO4+i6YPOEZWl0VfhQxPOAc5Fz7UKYa37urwRLFyvvpe/qPinovYN81fgXYQCCbW0vAHlAgUC8AeJwvrciXgGk2QiEoM4RNxKRaAaMn99Uwz+vN/FRqvt6adh1FD85GSquBp8H2u3224lo7MKFC+X/h/hcUInZ39QUeg6ezJEOgdEz1sP5rRVwJZWWWcmu9n1b8H0DDDDAAAMMMMAAAwwAJf4L0mEG6rgFmdgAAAAASUVORK5CYII="><span>Слушает</span></div>
+      <div class="state" role="listitem"><img alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIfSURBVHhe7ZixTsMwEIY7MnZkZGLmERgZ2GFkREyMjGzwBixI8AYsSGysDAysSEggnoChiX12h3AOVjF1AKv22Y50n/SrVVKd3a9JevaEYRiGYZhoPrpuKuV8O3UamO8CwKYdpk6EgBMJukseqRbvhVTPXdet2SHrQUq58WPSpIHH6iT0l+rgZGkCoO+qkpBbgElVEgYFKH2D9+9pXPS1V9dJNRIGBUh1YE+vTMiVVYWEkgJMikvIKkDqd+8YpqiEnAJaqY/w9Wn5uEkxCXmvAHX+1RnqF+8cBhuy++wSSAU4nWBoBOhXWyIPVAKEUPte3cC0Wh/ZMvRQCZgptefVDQzKu7Bl6KESYBCgZl7tgJiHpS1BD6UAfKBNhdCX+IvetvgAxLoDHSMsOka8/5OOHwSlgBBKj88CWAALYAFBE0ixado0zbott6A/FzA+GSETSLlpin91V7ZsT/UCKDZNGyl3bPn6BTRKbXnnI2PWCbZ8/QIMEtSD95kVg7fAm3me2NLjEGDW6OYYZqCVDQ/2+IfulzeMQgAlLIAFjETAqo3QUPPj0n8uYHwyQiYQ2wgtNz8u1QtI1Qi5zY9L9QJSNUJu8+NSvQBDbCO03Py4jEJATCM01Py4jEIAJSyABbAAFlByfBbAAoYmoOZn/fEMaQGOvfGLCygdFpBRAMWub2x+WziRkXLXNzZ/LZzISLXrG5v/Fk4MwzAMwzDfTCaf5NmcWJdSSqcAAAAASUVORK5CYII="><span>Распознаёт</span></div>
+      <div class="state" role="listitem"><img alt="" src="data:image/png;base64,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"><span>Нужно внимание</span></div>
+    </div>
+    <p class="note">Оранжевый микрофон значит, что что-то не так: например, текст не дошёл до окна. Щелчок по значку открывает короткое меню.</p>
+  </section>
+
+  <section aria-labelledby="diff">
+    <h2 id="diff">Чем отличается от Handy</h2>
+    <div class="features">
+      <div class="feat"><b>Словарь с формами слов</b><p>Своя вкладка «Словарь»: язык, слово и его падежи. Handy исправляет похожие на слух слова, в том числе русские и немецкие с умлаутами, и не обрезает верные окончания.</p></div>
+      <div class="feat"><b>Знаки препинания не теряются</b><p>Иногда модель выдаёт сплошной текст без точек и запятых. Handy Voice замечает это и распознаёт кусок ещё раз, пока знаки не вернутся.</p></div>
+      <div class="feat"><b>Остановка после тишины</b><p>Запись заканчивается сама, если вы замолчали. Паузу можно настроить.</p></div>
+      <div class="feat"><b>Вставка без Enter</b><p>Галочка на окошке записи вставляет текст, но не отправляет сообщение.</p></div>
+      <div class="feat"><b>Запуск вместе с Windows</b><p>Один выбор: не запускать, обычный запуск или с правами администратора. Последний нужен, чтобы текст вставлялся и в окна, открытые от имени администратора.</p></div>
+      <div class="feat"><b>Окошко записи и звуки</b><p>Вид и размер окошка от 50 до 150 %, несколько наборов звуков начала и конца записи.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="install">
+    <h2 id="install">Установка</h2>
+    <ol class="steps">
+      <li>Скачайте файл <kbd>Handy Voice_0.10.1_x64-setup.exe</kbd> со страницы выпусков.</li>
+      <li>Запустите его. Если Handy Voice уже стоит, закройте его: установщик поставит новую версию поверх, настройки сохранятся.</li>
+      <li>При первом запуске выберите модель распознавания. Для русского и немецкого подходит Parakeet Ultra.</li>
+      <li>Нажмите сочетание клавиш для записи, скажите фразу и отпустите: текст появится под курсором.</li>
+    </ol>
+  </section>
+
+  <footer>
+    <p>Handy Voice основан на <a class="link" href="https://github.com/cjpais/Handy" target="_blank" rel="noopener">Handy</a> (лицензия MIT) и следует его новым версиям.</p>
+    <p>Исходный код: <a class="link" href="https://github.com/deut-lab/Handy/tree/handy-voice" target="_blank" rel="noopener">github.com/deut-lab/Handy</a></p>
+  </footer>
+</div>

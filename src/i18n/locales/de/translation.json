@@ -19,7 +19,8 @@
     "postProcessing": "Nachbearbeitung",
     "history": "Verlauf",
     "debug": "Debug",
-    "about": "Info"
+    "about": "Info",
+    "dictionary": "Wörterbuch"
   },
   "onboarding": {
     "customModelDescription": "Nicht offiziell unterstützt",
@@ -1029,7 +1030,7 @@
     },
     "trayIconStyle": {
       "title": "Taskleistensymbole",
-      "description": "Was das Symbol im Infobereich zeigt. Von links nach rechts: bereit, hört zu (Mikrofon mit Schallwellen), erkennt, Fehler oder Hinweis (oranges „!“).",
+      "description": "Was das Symbol im Infobereich zeigt. Von links nach rechts: bereit, hört zu (Mikrofon mit Pegelbalken), erkennt, Fehler oder Hinweis (oranges Mikrofon).",
       "options": {
         "original": "Original",
         "states": "Status",
@@ -1110,6 +1111,28 @@
     },
     "appVersion": {
       "build": "Build {{n}}"
+    },
+    "dictionary": {
+      "title": "Wörterbuch mit Wortformen",
+      "description": "Handy ersetzt ähnlich klingende Wörter durch Wörter aus dem Wörterbuch. Tragen Sie ein Wort und alle seine Formen durch Kommas getrennt ein: Fälle, Mehrzahl. Dann wird eine richtige Form nicht durch die Grundform ersetzt.",
+      "language": "Sprache",
+      "word": "Wort",
+      "forms": "Formen",
+      "wordPlaceholder": "Verein",
+      "formsPlaceholder": "Vereins, Vereine, Vereinen",
+      "add": "Hinzufügen",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "edit": "Bearbeiten",
+      "remove": "Löschen",
+      "empty": "Noch keine Wörter.",
+      "allWordsTitle": "Alle Wörter für die Korrektur",
+      "languages": {
+        "ru": "Russisch",
+        "uk": "Ukrainisch",
+        "de": "Deutsch",
+        "en": "Englisch"
+      }
     }
   }
 }

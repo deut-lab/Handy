@@ -12,3 +12,4 @@ pub mod silence_stop;
 mod sound_themes;
 pub mod tray_style;
 pub mod windows_startup;
+pub mod word_forms;

@@ -19,7 +19,8 @@
     "postProcessing": "Post Process",
     "history": "History",
     "debug": "Debug",
-    "about": "About"
+    "about": "About",
+    "dictionary": "Dictionary"
   },
   "onboarding": {
     "customModelDescription": "Not officially supported",
@@ -1029,7 +1030,7 @@
     },
     "trayIconStyle": {
       "title": "Tray icons",
-      "description": "What the system tray icon shows. Left to right: waiting, listening (microphone with sound waves), transcribing, error or warning (orange \"!\").",
+      "description": "What the system tray icon shows. Left to right: waiting, listening (microphone with level bars), transcribing, error or warning (orange microphone).",
       "options": {
         "original": "Original",
         "states": "States",
@@ -1110,6 +1111,28 @@
     },
     "appVersion": {
       "build": "build {{n}}"
+    },
+    "dictionary": {
+      "title": "Dictionary with word forms",
+      "description": "Handy replaces words that sound alike with words from the dictionary. Add a word and all its forms, separated by commas: cases, plural. A correct form is then not replaced by the base form.",
+      "language": "Language",
+      "word": "Word",
+      "forms": "Forms",
+      "wordPlaceholder": "Verein",
+      "formsPlaceholder": "Vereins, Vereine",
+      "add": "Add",
+      "save": "Save",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "remove": "Delete",
+      "empty": "No words yet.",
+      "allWordsTitle": "All words used for correction",
+      "languages": {
+        "ru": "Russian",
+        "uk": "Ukrainian",
+        "de": "German",
+        "en": "English"
+      }
     }
   }
 }

@@ -21,30 +21,34 @@ interface StyleView {
   icons: Record<TrayState, React.ReactNode>;
 }
 
-// Microphone with sound waves, as the tray shows it while listening.
+// Microphone with level bars, as the tray shows it while listening.
 const MicWaves: React.FC = () => (
   <span className="flex items-center">
-    <Mic size={14} strokeWidth={2.2} />
+    <Mic size={13} strokeWidth={2.2} />
     <svg
-      width="7"
-      height="14"
-      viewBox="0 0 7 14"
+      width="10"
+      height="16"
+      viewBox="0 0 10 16"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.8"
+      strokeWidth="2.2"
       strokeLinecap="round"
       aria-hidden="true"
     >
-      <path d="M1 4.5a3.5 3.5 0 0 1 0 5" />
-      <path d="M3.5 2a7 7 0 0 1 0 10" />
+      <path d="M1.5 5.5v5" />
+      <path d="M5 2v12" />
+      <path d="M8.5 4v8" />
     </svg>
   </span>
 );
 
 // Mark drawn over the icon as in the tray: an orange "!" while something
-// needs attention.
-const Mark: React.FC<{ state: TrayState }> = ({ state }) => {
-  if (state === "attention") {
+// needs attention (upstream icons only; the others turn the microphone orange).
+const Mark: React.FC<{ state: TrayState; badge: boolean }> = ({
+  state,
+  badge,
+}) => {
+  if (badge && state === "attention") {
     return (
       <span className="absolute -bottom-0.5 -end-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold leading-none text-white ring-2 ring-background">
         !
@@ -59,7 +63,8 @@ const IconBox: React.FC<{
   active: boolean;
   state: TrayState;
   label: string;
-}> = ({ children, active, state, label }) => (
+  badge: boolean;
+}> = ({ children, active, state, label, badge }) => (
   <span className="flex w-16 flex-col items-center gap-1" title={label}>
     <span
       className={`relative flex h-8 w-8 items-center justify-center rounded-full border transition-colors ${
@@ -69,7 +74,7 @@ const IconBox: React.FC<{
       }`}
     >
       {children}
-      <Mark state={state} />
+      <Mark state={state} badge={badge} />
     </span>
     <span className="text-[11px] leading-tight text-ink-2">{label}</span>
   </span>
@@ -114,6 +119,7 @@ const StyleCard: React.FC<{
           active={selected}
           state={state}
           label={labels[state]}
+          badge={view.value === "original"}
         >
           {view.icons[state]}
         </IconBox>
@@ -139,6 +145,9 @@ export const TrayIconStyle: React.FC<TrayIconStyleProps> = React.memo(
     };
     const mic = <Mic size={17} strokeWidth={2.2} />;
     const hand = <Hand size={17} strokeWidth={2.2} />;
+    const orangeMic = (
+      <Mic size={17} strokeWidth={2.2} className="text-amber-500" />
+    );
 
     const views: StyleView[] = [
       {
@@ -148,7 +157,7 @@ export const TrayIconStyle: React.FC<TrayIconStyleProps> = React.memo(
           idle: mic,
           recording: <MicWaves />,
           transcribing: <FileText size={17} strokeWidth={2.2} />,
-          attention: mic,
+          attention: orangeMic,
         },
       },
       {
@@ -164,7 +173,12 @@ export const TrayIconStyle: React.FC<TrayIconStyleProps> = React.memo(
       {
         value: "logo",
         name: t("voice.trayIconStyle.options.logo"),
-        icons: { idle: mic, recording: mic, transcribing: mic, attention: mic },
+        icons: {
+          idle: mic,
+          recording: mic,
+          transcribing: mic,
+          attention: orangeMic,
+        },
       },
     ];
 
