@@ -43,7 +43,7 @@ const MicWaves: React.FC = () => (
 );
 
 // Mark drawn over the icon as in the tray: an orange "!" while something
-// needs attention (upstream icons only; the others turn the microphone orange).
+// needs attention.
 const Mark: React.FC<{ state: TrayState; badge: boolean }> = ({
   state,
   badge,
@@ -119,7 +119,7 @@ const StyleCard: React.FC<{
           active={selected}
           state={state}
           label={labels[state]}
-          badge={view.value === "original"}
+          badge
         >
           {view.icons[state]}
         </IconBox>
@@ -145,9 +145,6 @@ export const TrayIconStyle: React.FC<TrayIconStyleProps> = React.memo(
     };
     const mic = <Mic size={17} strokeWidth={2.2} />;
     const hand = <Hand size={17} strokeWidth={2.2} />;
-    const orangeMic = (
-      <Mic size={17} strokeWidth={2.2} className="text-amber-500" />
-    );
 
     const views: StyleView[] = [
       {
@@ -157,7 +154,7 @@ export const TrayIconStyle: React.FC<TrayIconStyleProps> = React.memo(
           idle: mic,
           recording: <MicWaves />,
           transcribing: <FileText size={17} strokeWidth={2.2} />,
-          attention: orangeMic,
+          attention: mic,
         },
       },
       {
@@ -177,7 +174,7 @@ export const TrayIconStyle: React.FC<TrayIconStyleProps> = React.memo(
           idle: mic,
           recording: mic,
           transcribing: mic,
-          attention: orangeMic,
+          attention: mic,
         },
       },
     ];

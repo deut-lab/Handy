@@ -1030,7 +1030,7 @@
     },
     "trayIconStyle": {
       "title": "Tray icons",
-      "description": "What the system tray icon shows. Left to right: waiting, listening (microphone with level bars), transcribing, error or warning (orange microphone).",
+      "description": "What the system tray icon shows. Left to right: waiting, listening (microphone with level bars), transcribing, error or warning (orange \"!\").",
       "options": {
         "original": "Original",
         "states": "States",
