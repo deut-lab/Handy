@@ -118,7 +118,16 @@ pub fn run() -> i32 {
                         injected_backend_error()
                     } else {
                         match session.run(&pcm, &options) {
-                            Ok(transcript) => Response::Transcript(transcript),
+                            Ok(transcript) => Response::Transcript(
+                                crate::voice::punctuation_retry::retry(
+                                    &pcm,
+                                    crate::audio_toolkit::constants::WHISPER_SAMPLE_RATE as usize,
+                                    &transcript.text,
+                                    |t: &transcribe_cpp::Transcript| t.text.as_str(),
+                                    |audio| session.run(audio, &options),
+                                )
+                                .unwrap_or(transcript),
+                            ),
                             Err(e) => run_error(e),
                         }
                     }

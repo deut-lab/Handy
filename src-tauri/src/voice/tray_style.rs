@@ -2,7 +2,7 @@
 //!
 //! Styles (setting `tray_icon_style`):
 //! - `states` (default): a neutral microphone that changes with the state:
-//!   idle (plain microphone), recording (red dot), transcribing (page) and
+//!   idle (plain microphone), recording (microphone with sound waves), transcribing (page) and
 //!   attention (orange "!"), `resources/tray_state_*.png`;
 //! - `original`: upstream Handy's icons;
 //! - `logo`: one fixed icon whatever the state.

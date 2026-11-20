@@ -21,14 +21,29 @@ interface StyleView {
   icons: Record<TrayState, React.ReactNode>;
 }
 
-// Marks drawn over the icon as in the tray: a red dot while recording, an
-// orange "!" while something needs attention.
+// Microphone with sound waves, as the tray shows it while listening.
+const MicWaves: React.FC = () => (
+  <span className="flex items-center">
+    <Mic size={14} strokeWidth={2.2} />
+    <svg
+      width="7"
+      height="14"
+      viewBox="0 0 7 14"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <path d="M1 4.5a3.5 3.5 0 0 1 0 5" />
+      <path d="M3.5 2a7 7 0 0 1 0 10" />
+    </svg>
+  </span>
+);
+
+// Mark drawn over the icon as in the tray: an orange "!" while something
+// needs attention.
 const Mark: React.FC<{ state: TrayState }> = ({ state }) => {
-  if (state === "recording") {
-    return (
-      <span className="absolute -end-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-red-600 ring-2 ring-background" />
-    );
-  }
   if (state === "attention") {
     return (
       <span className="absolute -bottom-0.5 -end-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold leading-none text-white ring-2 ring-background">
@@ -131,7 +146,7 @@ export const TrayIconStyle: React.FC<TrayIconStyleProps> = React.memo(
         name: t("voice.trayIconStyle.options.states"),
         icons: {
           idle: mic,
-          recording: mic,
+          recording: <MicWaves />,
           transcribing: <FileText size={17} strokeWidth={2.2} />,
           attention: mic,
         },

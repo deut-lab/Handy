@@ -1029,7 +1029,7 @@
     },
     "trayIconStyle": {
       "title": "Taskleistensymbole",
-      "description": "Was das Symbol im Infobereich zeigt. Von links nach rechts: bereit, hört zu (roter Punkt), erkennt, Fehler oder Hinweis (oranges „!“).",
+      "description": "Was das Symbol im Infobereich zeigt. Von links nach rechts: bereit, hört zu (Mikrofon mit Schallwellen), erkennt, Fehler oder Hinweis (oranges „!“).",
       "options": {
         "original": "Original",
         "states": "Status",

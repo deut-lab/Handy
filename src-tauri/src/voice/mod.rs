@@ -7,6 +7,7 @@
 pub mod default_settings;
 pub mod insert_without_enter;
 pub mod overlay_look;
+pub mod punctuation_retry;
 pub mod silence_stop;
 mod sound_themes;
 pub mod tray_style;

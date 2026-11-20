@@ -55,8 +55,32 @@ fn build_custom_word_match_keys(word: &str, word_index: usize) -> Vec<CustomWord
     keys
 }
 
+/// Fuzzy matching works for scripts written with spaces between words:
+/// Latin (with umlauts and other accented letters), Cyrillic and Greek.
+/// CJK and other scripts without word spacing stay excluded.
 fn is_supported_fuzzy_key(key: &str) -> bool {
-    !key.is_empty() && key.chars().all(|c| c.is_ascii_alphanumeric())
+    !key.is_empty() && key.chars().all(is_spaced_script_char)
+}
+
+fn is_spaced_script_char(c: char) -> bool {
+    c.is_ascii_alphanumeric()
+        || (c.is_alphabetic()
+            && matches!(c as u32,
+                0x00C0..=0x024F   // Latin-1 supplement and Latin Extended-A/B
+                | 0x0370..=0x03FF // Greek
+                | 0x0400..=0x052F // Cyrillic and Cyrillic supplement
+                | 0x1E00..=0x1EFF // Latin Extended Additional
+            ))
+}
+
+/// An inflected form of a custom word (the word plus an ending, as in
+/// "ферайна" for "Ферайн") is already correct and must not be cut back to
+/// the dictionary form. Applies only to non-ASCII keys, where words change
+/// their endings; English keys keep upstream behaviour.
+fn is_inflection_of(candidate: &str, key: &str) -> bool {
+    !key.is_ascii()
+        && candidate.chars().count() > key.chars().count()
+        && candidate.starts_with(key)
 }
 
 fn supports_soundex(key: &str) -> bool {
@@ -90,6 +114,9 @@ fn find_best_match<'a>(
     let mut best_score = f64::MAX;
 
     for custom_word_key in custom_word_match_keys {
+        if is_inflection_of(candidate, &custom_word_key.key) {
+            continue;
+        }
         // Skip if lengths are too different (optimization + prevents over-matching)
         // Use percentage-based check: max 25% length difference (prevents n-grams from
         // matching significantly shorter custom words, e.g., "openaigpt" vs "openai")
@@ -883,5 +910,43 @@ mod tests {
         let custom_words = vec!["你号".to_string()];
         let result = apply_custom_words(text, &custom_words, 1.0);
         assert_eq!(result, text);
+    }
+
+    #[test]
+    fn test_apply_custom_words_fixes_cyrillic_word() {
+        let custom_words = vec!["Ферайн".to_string(), "нестыковки".to_string()];
+        let result = apply_custom_words("В фирайне есть нестыкавки.", &custom_words, 0.18);
+        // "фирайне" is a case form, not in the list; it stays as heard.
+        assert_eq!(result, "В фирайне есть нестыковки.");
+        let result = apply_custom_words("Это Фирайн.", &custom_words, 0.18);
+        assert_eq!(result, "Это Ферайн.");
+    }
+
+    #[test]
+    fn test_apply_custom_words_keeps_cyrillic_inflection() {
+        let custom_words = vec!["Ферайн".to_string()];
+        let result = apply_custom_words("для Ферайна и Ферайну", &custom_words, 0.18);
+        assert_eq!(result, "для Ферайна и Ферайну");
+    }
+
+    #[test]
+    fn test_apply_custom_words_prefers_listed_case_form() {
+        let custom_words = vec!["Ферайн".to_string(), "Ферайну".to_string()];
+        let result = apply_custom_words("помочь фераину", &custom_words, 0.18);
+        assert_eq!(result, "помочь Ферайну");
+    }
+
+    #[test]
+    fn test_apply_custom_words_fixes_german_umlaut_word() {
+        let custom_words = vec!["Übungsleiter".to_string()];
+        let result = apply_custom_words("der Ubungsleiter kommt", &custom_words, 0.18);
+        assert_eq!(result, "der Übungsleiter kommt");
+    }
+
+    #[test]
+    fn test_apply_custom_words_leaves_ordinary_cyrillic_words() {
+        let custom_words = vec!["Ферайн".to_string()];
+        let text = "Сегодня хороший день, приходите в кафе.";
+        assert_eq!(apply_custom_words(text, &custom_words, 0.18), text);
     }
 }
