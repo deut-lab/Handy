@@ -1023,11 +1023,17 @@
     },
     "trayIconStyle": {
       "title": "Taskleistensymbole",
-      "description": "Wähle, ob die Taskleiste die Originalsymbole, Statussymbole oder immer dasselbe Logo zeigt.",
+      "description": "Was das Symbol im Infobereich zeigt. Von links nach rechts: bereit, hört zu (roter Punkt), erkennt, Fehler oder Hinweis (oranges „!“).",
       "options": {
         "original": "Original",
         "states": "Status",
         "logo": "Immer Logo"
+      },
+      "states": {
+        "idle": "Bereit",
+        "recording": "Hört zu",
+        "transcribing": "Erkennt",
+        "attention": "Fehler"
       }
     },
     "autoStopSilence": {
@@ -1087,13 +1093,14 @@
         }
       }
     },
-    "windowsTaskStartup": {
-      "label": "Über Windows-Aufgabe starten",
-      "description": "Zuverlässiger Start bei der Windows-Anmeldung: eine Windows-Aufgabe statt des normalen Autostart-Eintrags."
-    },
-    "windowsTaskStartupAdmin": {
-      "label": "Mit Administratorrechten",
-      "description": "Die Windows-Aufgabe startet Handy Voice mit Administratorrechten, damit das Diktieren auch in Fenstern funktioniert, die als Administrator laufen. Beim Ändern fragt Windows eventuell nach Administratorrechten."
+    "startupMode": {
+      "title": "Mit Windows starten",
+      "description": "Wie Handy Voice bei der Windows-Anmeldung startet. „Mit Administratorrechten“ ist nötig, damit Diktate auch in Fenster gelangen, die als Administrator laufen; Windows kann bei der Auswahl eine Bestätigung verlangen.",
+      "options": {
+        "off": "Nicht starten",
+        "regular": "Normal",
+        "admin": "Mit Administratorrechten"
+      }
     },
     "appVersion": {
       "build": "Build {{n}}"

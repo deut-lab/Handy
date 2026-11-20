@@ -1,16 +1,18 @@
 //! Tray icon styles and the short tray menu.
 //!
 //! Styles (setting `tray_icon_style`):
-//! - `states` (default): a neutral microphone that changes with the state
-//!   (idle, recording, transcribing), `resources/tray_state_*.png`;
+//! - `states` (default): a neutral microphone that changes with the state:
+//!   idle (plain microphone), recording (red dot), transcribing (page) and
+//!   attention (orange "!"), `resources/tray_state_*.png`;
 //! - `original`: upstream Handy's icons;
 //! - `logo`: one fixed icon whatever the state.
 //!
 //! Which variant (light icon for a dark taskbar, dark icon for a light one,
 //! colored on Linux) comes from upstream's `tray::get_current_theme`, which
 //! already follows the Windows taskbar theme (`SystemUsesLightTheme`). While
-//! something needs attention (a notice, macOS Secure Input) the idle icon is
-//! upstream's warning badge in every style, so the warning is never hidden.
+//! something needs attention (an error, a notice, macOS Secure Input) the idle
+//! icon is the attention icon in every style (upstream's warning hand in
+//! `original`), so the warning is never hidden.
 //!
 //! The menu is upstream's without the version line, "Check for Updates",
 //! "Unload Model", the keyboard accelerators and the trailing "..." on
@@ -50,8 +52,15 @@ fn style_icon_path(
     state: TrayIconState,
     badge: bool,
 ) -> &'static str {
-    if style == TrayIconStyle::Original || (badge && state == TrayIconState::Idle) {
+    if style == TrayIconStyle::Original {
         return tray::get_icon_path(theme, state, badge);
+    }
+    if badge && state == TrayIconState::Idle {
+        return match theme {
+            AppTheme::Dark => "resources/tray_state_attention.png",
+            AppTheme::Light => "resources/tray_state_attention_dark.png",
+            AppTheme::Colored => "resources/tray_state_attention_color.png",
+        };
     }
     let state = match style {
         TrayIconStyle::Logo => TrayIconState::Idle,
@@ -225,11 +234,19 @@ mod tests {
     }
 
     #[test]
-    fn the_warning_badge_shows_in_every_style() {
+    fn the_attention_icon_shows_in_every_style() {
+        assert_eq!(
+            icon_path(TrayIconStyle::Original, AppTheme::Dark, TrayIconState::Idle, true),
+            get_icon_path(AppTheme::Dark, TrayIconState::Idle, true)
+        );
         for style in [TrayIconStyle::States, TrayIconStyle::Logo] {
             assert_eq!(
                 icon_path(style, AppTheme::Dark, TrayIconState::Idle, true),
-                get_icon_path(AppTheme::Dark, TrayIconState::Idle, true)
+                "resources/tray_state_attention.png"
+            );
+            assert_eq!(
+                icon_path(style, AppTheme::Light, TrayIconState::Idle, true),
+                "resources/tray_state_attention_dark.png"
             );
             // Busy states keep the style's own icon, as upstream does.
             assert_eq!(
