@@ -101,6 +101,18 @@ async changeWindowsTaskStartupAdminSetting(enabled: boolean) : Promise<Result<nu
     else return { status: "error", error: e  as any };
 }
 },
+/**
+ * Sets autostart and the Windows task together, with one task change (so at
+ * most one UAC prompt).
+ */
+async changeStartupMode(mode: StartupMode) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_startup_mode", { mode }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async changeTranslateToEnglishSetting(enabled: boolean) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_translate_to_english_setting", { enabled }) };
@@ -1587,6 +1599,10 @@ export type SoundTheme = "marimba" | "pop" | "bell" | "chime" | "pluck" | "switc
 /**
  * Phase of the streaming overlay card, emitted to drive its UI state.
  */
+/**
+ * How the app starts when the user signs in.
+ */
+export type StartupMode = "off" | "regular" | "admin"
 export type StreamPhase = 
 /**
  * Receiving audio / live text (or waiting for the stream to begin). Rust

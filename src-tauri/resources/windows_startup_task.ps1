@@ -7,7 +7,8 @@
 #   -Mode sync    Make the task match the settings. On: create it, or point it
 #                 at -ExePath with the asked rights. Off: remove it. A task that
 #                 already matches is left alone, and a task the user disabled in
-#                 Task Scheduler stays disabled. -Enabled / -Admin (1 or 0) win
+#                 Task Scheduler stays disabled, except with -Elevate (a change
+#                 the user made in the app turns it back on). -Enabled / -Admin (1 or 0) win
 #                 over the values read from -SettingsPath (only read, never
 #                 written); without either, both are on (Handy Voice defaults).
 #   -Mode remove  Remove the task.
@@ -45,9 +46,11 @@ function Get-TaskExe($Task) {
 }
 
 # Runs this script again with administrator rights (UAC) and returns its exit code.
+# -Elevate goes along: it also marks a change the user made (see -Mode sync).
 function Invoke-Elevated {
   $Arguments = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "`"$PSCommandPath`"",
-    "-Mode", $Mode, "-Enabled", $Enabled, "-Admin", $Admin, "-TaskName", "`"$TaskName`"")
+    "-Mode", $Mode, "-Enabled", $Enabled, "-Admin", $Admin, "-TaskName", "`"$TaskName`"",
+    "-Elevate")
   if ($ExePath) { $Arguments += @("-ExePath", "`"$ExePath`"") }
   if ($WorkingDirectory) { $Arguments += @("-WorkingDirectory", "`"$WorkingDirectory`"") }
   $Process = Start-Process -FilePath "powershell.exe" -ArgumentList $Arguments `
@@ -97,6 +100,7 @@ if ($Mode -eq "remove" -or $Enabled -eq 0) {
       (Get-TaskExe $Task) -eq $ExePath -and
       @($Task.Actions)[0].WorkingDirectory -eq $WorkingDirectory -and
       [string]$Task.Principal.RunLevel -eq $RunLevel -and
+      ($Task.Settings.Enabled -or -not $Elevate) -and
       $Task.Settings.ExecutionTimeLimit -eq "PT0S" -and
       $Task.Settings.Priority -eq 5) {
     Write-Output "Startup task is up to date"
@@ -121,7 +125,7 @@ if ($Mode -eq "remove" -or $Enabled -eq 0) {
     # priority (the default runs it below normal).
     $Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries `
       -ExecutionTimeLimit ([TimeSpan]::Zero) -Priority 5
-    if ($null -ne $Task -and -not $Task.Settings.Enabled) { $Settings.Enabled = $false }
+    if ($null -ne $Task -and -not $Task.Settings.Enabled -and -not $Elevate) { $Settings.Enabled = $false }
     $Principal = New-ScheduledTaskPrincipal -UserId $User -LogonType Interactive -RunLevel $RunLevel
     Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Trigger -Settings $Settings `
       -Principal $Principal -Description $Description -Force | Out-Null

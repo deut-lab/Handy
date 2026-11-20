@@ -703,6 +703,7 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_autostart_setting,
             voice::windows_startup::change_windows_task_startup_setting,
             voice::windows_startup::change_windows_task_startup_admin_setting,
+            voice::windows_startup::change_startup_mode,
             shortcut::change_translate_to_english_setting,
             shortcut::change_selected_language_setting,
             shortcut::change_spoken_languages_setting,

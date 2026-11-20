@@ -5,7 +5,6 @@ import { ModelUnloadTimeoutSetting } from "../ModelUnloadTimeout";
 import { CustomWords } from "../CustomWords";
 import { SettingsGroup } from "../../ui/SettingsGroup";
 import { StartHidden } from "../StartHidden";
-import { AutostartToggle } from "../AutostartToggle";
 import { ShowTrayIcon } from "../ShowTrayIcon";
 import { PasteMethodSetting } from "../PasteMethod";
 import { TypingToolSetting } from "../TypingTool";
@@ -29,7 +28,7 @@ import { VadBackendSelector } from "../VadBackendSelector";
 import { TrayIconStyle } from "../voice/TrayIconStyle";
 import { AutoStopSilence } from "../voice/AutoStopSilence";
 import { OverlayLookPicker } from "../voice/OverlayLookPicker";
-import { WindowsTaskStartup } from "../voice/WindowsTaskStartup";
+import { StartupMode } from "../voice/StartupMode";
 
 export const AdvancedSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -40,8 +39,7 @@ export const AdvancedSettings: React.FC = () => {
     <div className="max-w-3xl w-full mx-auto space-y-6">
       <SettingsGroup title={t("settings.advanced.groups.app")}>
         <StartHidden descriptionMode="tooltip" grouped={true} />
-        <AutostartToggle descriptionMode="tooltip" grouped={true} />
-        <WindowsTaskStartup descriptionMode="tooltip" grouped={true} />
+        <StartupMode descriptionMode="tooltip" grouped={true} />
         <ShowTrayIcon descriptionMode="tooltip" grouped={true} />
         <TrayIconStyle descriptionMode="tooltip" grouped={true} />
         <ShowOverlay descriptionMode="tooltip" grouped={true} />

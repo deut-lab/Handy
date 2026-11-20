@@ -11,33 +11,62 @@ interface TrayIconStyleProps {
   grouped?: boolean;
 }
 
+// The four tray states, in the order the icons are shown.
+const STATES = ["idle", "recording", "transcribing", "attention"] as const;
+type TrayState = (typeof STATES)[number];
+
 interface StyleView {
   value: TrayIconStyleValue;
   name: string;
-  icons: React.ReactNode[];
+  icons: Record<TrayState, React.ReactNode>;
 }
 
-const IconBox: React.FC<{ children: React.ReactNode; active: boolean }> = ({
-  children,
-  active,
-}) => (
-  <span
-    className={`flex h-8 w-8 items-center justify-center rounded-full border transition-colors ${
-      active
-        ? "border-logo-primary bg-logo-primary/15 text-text"
-        : "border-line-strong bg-wash text-ink-2"
-    }`}
-  >
-    {children}
+// Marks drawn over the icon as in the tray: a red dot while recording, an
+// orange "!" while something needs attention.
+const Mark: React.FC<{ state: TrayState }> = ({ state }) => {
+  if (state === "recording") {
+    return (
+      <span className="absolute -end-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-red-600 ring-2 ring-background" />
+    );
+  }
+  if (state === "attention") {
+    return (
+      <span className="absolute -bottom-0.5 -end-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold leading-none text-white ring-2 ring-background">
+        !
+      </span>
+    );
+  }
+  return null;
+};
+
+const IconBox: React.FC<{
+  children: React.ReactNode;
+  active: boolean;
+  state: TrayState;
+  label: string;
+}> = ({ children, active, state, label }) => (
+  <span className="flex w-16 flex-col items-center gap-1" title={label}>
+    <span
+      className={`relative flex h-8 w-8 items-center justify-center rounded-full border transition-colors ${
+        active
+          ? "border-logo-primary bg-logo-primary/15 text-text"
+          : "border-line-strong bg-wash text-ink-2"
+      }`}
+    >
+      {children}
+      <Mark state={state} />
+    </span>
+    <span className="text-[11px] leading-tight text-ink-2">{label}</span>
   </span>
 );
 
 const StyleCard: React.FC<{
   view: StyleView;
+  labels: Record<TrayState, string>;
   selected: boolean;
   disabled: boolean;
   onSelect: () => void;
-}> = ({ view, selected, disabled, onSelect }) => (
+}> = ({ view, labels, selected, disabled, onSelect }) => (
   <button
     type="button"
     aria-pressed={selected}
@@ -64,9 +93,14 @@ const StyleCard: React.FC<{
       </span>
     </div>
     <div className="flex items-center justify-center gap-2">
-      {view.icons.map((icon, index) => (
-        <IconBox key={index} active={selected}>
-          {icon}
+      {STATES.map((state) => (
+        <IconBox
+          key={state}
+          active={selected}
+          state={state}
+          label={labels[state]}
+        >
+          {view.icons[state]}
         </IconBox>
       ))}
     </div>
@@ -82,33 +116,40 @@ export const TrayIconStyle: React.FC<TrayIconStyleProps> = React.memo(
       "states") as TrayIconStyleValue;
     const disabled = isUpdating("tray_icon_style");
 
+    const labels: Record<TrayState, string> = {
+      idle: t("voice.trayIconStyle.states.idle"),
+      recording: t("voice.trayIconStyle.states.recording"),
+      transcribing: t("voice.trayIconStyle.states.transcribing"),
+      attention: t("voice.trayIconStyle.states.attention"),
+    };
+    const mic = <Mic size={17} strokeWidth={2.2} />;
+    const hand = <Hand size={17} strokeWidth={2.2} />;
+
     const views: StyleView[] = [
       {
         value: "states",
         name: t("voice.trayIconStyle.options.states"),
-        icons: [
-          <Mic key="idle" size={17} strokeWidth={2.2} />,
-          <Mic key="recording" size={17} strokeWidth={2.8} />,
-          <FileText key="transcribing" size={17} strokeWidth={2.2} />,
-        ],
+        icons: {
+          idle: mic,
+          recording: mic,
+          transcribing: <FileText size={17} strokeWidth={2.2} />,
+          attention: mic,
+        },
       },
       {
         value: "original",
         name: t("voice.trayIconStyle.options.original"),
-        icons: [
-          <Hand key="idle" size={17} strokeWidth={2.2} />,
-          <Ear key="recording" size={17} strokeWidth={2.2} />,
-          <Brain key="transcribing" size={17} strokeWidth={2.2} />,
-        ],
+        icons: {
+          idle: hand,
+          recording: <Ear size={17} strokeWidth={2.2} />,
+          transcribing: <Brain size={17} strokeWidth={2.2} />,
+          attention: hand,
+        },
       },
       {
         value: "logo",
         name: t("voice.trayIconStyle.options.logo"),
-        icons: [
-          <Mic key="idle" size={17} strokeWidth={2.2} />,
-          <Mic key="recording" size={17} strokeWidth={2.2} />,
-          <Mic key="transcribing" size={17} strokeWidth={2.2} />,
-        ],
+        icons: { idle: mic, recording: mic, transcribing: mic, attention: mic },
       },
     ];
 
@@ -120,11 +161,12 @@ export const TrayIconStyle: React.FC<TrayIconStyleProps> = React.memo(
         grouped={grouped}
         layout="stacked"
       >
-        <div className="grid gap-3 md:grid-cols-3">
+        <div className="grid gap-3">
           {views.map((view) => (
             <StyleCard
               key={view.value}
               view={view}
+              labels={labels}
               selected={selectedStyle === view.value}
               disabled={disabled}
               onSelect={() => updateSetting("tray_icon_style", view.value)}

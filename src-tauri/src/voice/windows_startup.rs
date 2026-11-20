@@ -11,15 +11,69 @@
 //! installer uses too (`nsis/voice_hooks.nsh`). Its name and the exe path are
 //! the fork's, so an install over the fork updates the user's task in place.
 //!
+//! The settings page shows one choice for all of this, [`StartupMode`]
+//! (`change_startup_mode`): off, regular (upstream's autostart) or with
+//! administrator rights (this task, upstream's autostart off so a second,
+//! regular copy never starts first). The single switches stay for the store.
+//!
 //! At start (hook in `lib.rs`) the task is brought in line with the settings
 //! in the background, without any prompt: a task that already matches is left
 //! alone, and one the user disabled in Task Scheduler stays disabled. A change
-//! of the switches may ask for administrator rights (UAC). Dev builds leave
+//! made in the app may ask for administrator rights (UAC) and turns a disabled
+//! task back on, so the app and Windows agree again. Dev builds leave
 //! the task alone, so they never point it at a dev exe. Nothing happens on
 //! other systems.
 
 use crate::settings;
-use tauri::AppHandle;
+use serde::{Deserialize, Serialize};
+use specta::Type;
+use tauri::{AppHandle, Emitter};
+
+/// How the app starts when the user signs in.
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
+#[serde(rename_all = "snake_case")]
+pub enum StartupMode {
+    Off,
+    Regular,
+    Admin,
+}
+
+/// (upstream autostart, Windows task, task with administrator rights)
+fn startup_flags(mode: StartupMode) -> (bool, bool, bool) {
+    match mode {
+        StartupMode::Off => (false, false, false),
+        StartupMode::Admin if cfg!(target_os = "windows") => (false, true, true),
+        // Without Windows there is no task: "with rights" starts as usual.
+        StartupMode::Regular | StartupMode::Admin => (true, false, false),
+    }
+}
+
+/// Sets autostart and the Windows task together, with one task change (so at
+/// most one UAC prompt).
+#[tauri::command]
+#[specta::specta]
+pub fn change_startup_mode(app: AppHandle, mode: StartupMode) -> Result<(), String> {
+    let (autostart, task, admin) = startup_flags(mode);
+    let mut settings = settings::get_settings(&app);
+    settings.autostart_enabled = autostart;
+    settings.windows_task_startup_enabled = task;
+    if task {
+        settings.windows_task_startup_admin = admin;
+    }
+    settings::write_settings(&app, settings);
+    crate::autostart::apply_autostart(&app, autostart);
+    sync_in_background(app.clone(), true);
+    for (setting, value) in [
+        ("autostart_enabled", autostart),
+        ("windows_task_startup_enabled", task),
+    ] {
+        let _ = app.emit(
+            "settings-changed",
+            serde_json::json!({ "setting": setting, "value": value }),
+        );
+    }
+    Ok(())
+}
 
 pub fn default_enabled() -> bool {
     cfg!(target_os = "windows")
@@ -177,6 +231,42 @@ mod imp {
             args.push("-Elevate".into());
         }
         args
+    }
+}
+
+#[cfg(test)]
+mod mode_tests {
+    use super::{startup_flags, StartupMode};
+
+    #[test]
+    fn off_turns_everything_off() {
+        assert_eq!(startup_flags(StartupMode::Off), (false, false, false));
+    }
+
+    #[test]
+    fn regular_uses_upstream_autostart_only() {
+        assert_eq!(startup_flags(StartupMode::Regular), (true, false, false));
+    }
+
+    #[test]
+    fn admin_uses_the_task_alone_on_windows() {
+        let expected = if cfg!(target_os = "windows") {
+            (false, true, true)
+        } else {
+            (true, false, false)
+        };
+        assert_eq!(startup_flags(StartupMode::Admin), expected);
+    }
+
+    #[test]
+    fn store_names_are_stable() {
+        for (mode, name) in [
+            (StartupMode::Off, "off"),
+            (StartupMode::Regular, "regular"),
+            (StartupMode::Admin, "admin"),
+        ] {
+            assert_eq!(serde_json::to_value(mode).unwrap(), name);
+        }
     }
 }
 

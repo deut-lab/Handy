@@ -1029,11 +1029,17 @@
     },
     "trayIconStyle": {
       "title": "Tray icons",
-      "description": "Choose whether the system tray uses original icons, state icons, or one fixed logo.",
+      "description": "What the system tray icon shows. Left to right: waiting, listening (red dot), transcribing, error or warning (orange \"!\").",
       "options": {
         "original": "Original",
         "states": "States",
         "logo": "Always logo"
+      },
+      "states": {
+        "idle": "Waiting",
+        "recording": "Listening",
+        "transcribing": "Transcribing",
+        "attention": "Error"
       }
     },
     "autoStopSilence": {
@@ -1093,13 +1099,14 @@
         }
       }
     },
-    "windowsTaskStartup": {
-      "label": "Start with a Windows task",
-      "description": "Reliable start when you sign in to Windows: a Windows task instead of the regular startup entry."
-    },
-    "windowsTaskStartupAdmin": {
-      "label": "With administrator rights",
-      "description": "The Windows task starts Handy Voice with administrator rights, so dictation also works in windows started as administrator. Changing this may ask for administrator rights."
+    "startupMode": {
+      "title": "Start with Windows",
+      "description": "How Handy Voice starts when you sign in to Windows. \"With administrator rights\" lets dictation reach windows that run as administrator; Windows may ask you to confirm the choice.",
+      "options": {
+        "off": "Don't start",
+        "regular": "Regular",
+        "admin": "With administrator rights"
+      }
     },
     "appVersion": {
       "build": "build {{n}}"
