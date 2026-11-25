@@ -7,7 +7,7 @@ use log::info;
 use transcribe_cpp::Transcript;
 
 use super::{RunSetup, TranscriptionManager};
-use crate::audio_toolkit::chunking::Chunker;
+use crate::audio_toolkit::chunking::{ChunkSizes, Chunker};
 use crate::engine_supervisor::{CancelMark, EngineError, LoadedInfo};
 use crate::language_detection::Plan;
 use crate::managers::audio::create_detector;
@@ -63,6 +63,7 @@ impl<'a> ChunkedDecode<'a> {
         setup: ChunkSetup,
         model_id: &str,
         backend: VadBackend,
+        sizes: ChunkSizes,
     ) -> Self {
         // The VAD is only loaded if the audio turns out long enough to cut.
         let app_handle = tm.app_handle.clone();
@@ -71,7 +72,10 @@ impl<'a> ChunkedDecode<'a> {
             mark,
             setup,
             model_id: model_id.to_string(),
-            chunker: Chunker::new(Box::new(move || create_detector(backend, &app_handle))),
+            chunker: Chunker::with_sizes(
+                Box::new(move || create_detector(backend, &app_handle)),
+                sizes,
+            ),
             transcripts: Vec::new(),
             failure: None,
         }
@@ -85,8 +89,9 @@ impl<'a> ChunkedDecode<'a> {
         audio: Vec<f32>,
         model_id: &str,
         backend: VadBackend,
+        sizes: ChunkSizes,
     ) -> Result<(Vec<Transcript>, RunSetup), EngineError> {
-        let mut decode = Self::new(tm, mark, setup, model_id, backend);
+        let mut decode = Self::new(tm, mark, setup, model_id, backend, sizes);
         decode.push(audio);
         decode.finish()
     }

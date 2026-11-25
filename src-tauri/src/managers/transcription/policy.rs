@@ -1,6 +1,7 @@
 //! How audio is decoded: the one place the model's traits and the settings
 //! choose between streaming, long-form chunking and a single run.
 
+use crate::audio_toolkit::chunking::ChunkSizes;
 use crate::engine_supervisor::LoadedInfo;
 
 /// What a model can do that decides how its audio is decoded.
@@ -18,8 +19,28 @@ impl ModelTraits {
     pub fn of(info: &LoadedInfo) -> Self {
         Self {
             streaming: info.capabilities.supports_streaming,
-            long_form: info.supports_long_form,
+            // Handy Voice: Parakeet takes long audio in one run, but loses
+            // punctuation on it, so its long audio is chunked too.
+            long_form: info.supports_long_form && !punctuates_per_run(info),
         }
+    }
+}
+
+/// Handy Voice: Parakeet decides for a whole run whether to write
+/// punctuation and capitals, and on runs of a minute or more it drops them
+/// for long stretches. On recorded Russian dictations of 1.5-3.5 min the
+/// longest stretch without a mark fell from 100-160 words in one run to
+/// 40-60 with 30 s chunks and 9-20 with 15 s chunks.
+fn punctuates_per_run(info: &LoadedInfo) -> bool {
+    info.arch.to_ascii_lowercase().contains("parakeet")
+}
+
+/// How long the chunks of a chunked decode are for the loaded model.
+pub fn chunk_sizes(info: &LoadedInfo) -> ChunkSizes {
+    if punctuates_per_run(info) {
+        ChunkSizes::SHORT
+    } else {
+        ChunkSizes::LONG
     }
 }
 

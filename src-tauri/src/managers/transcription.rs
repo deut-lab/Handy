@@ -1187,6 +1187,7 @@ impl TranscriptionManager {
                     audio,
                     &active_model,
                     settings.vad_backend,
+                    policy::chunk_sizes(&info),
                 )
                 .map_err(engine_error)?,
                 BatchDecode::Whole => {

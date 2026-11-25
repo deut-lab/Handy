@@ -124,6 +124,7 @@ pub fn run() -> i32 {
                                     crate::audio_toolkit::constants::WHISPER_SAMPLE_RATE as usize,
                                     &transcript.text,
                                     |t: &transcribe_cpp::Transcript| t.text.as_str(),
+                                    join_halves,
                                     |audio| session.run(audio, &options),
                                 )
                                 .unwrap_or(transcript),
@@ -523,4 +524,16 @@ fn take_stdout_for_protocol() -> io::Result<File> {
         }
         Ok(File::from_raw_handle(handle as _))
     }
+}
+
+/// Handy Voice: two halves' transcripts as one, for the punctuation retry.
+/// Timestamps stay the first half's; Handy does not use them.
+fn join_halves(
+    mut first: transcribe_cpp::Transcript,
+    second: transcribe_cpp::Transcript,
+) -> transcribe_cpp::Transcript {
+    use crate::audio_toolkit::chunking::join_transcripts;
+    first.text = join_transcripts(&[first.text.as_str(), second.text.as_str()]);
+    first.raw_text = join_transcripts(&[first.raw_text.as_str(), second.raw_text.as_str()]);
+    first
 }

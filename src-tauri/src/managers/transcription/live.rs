@@ -71,6 +71,7 @@ impl<'a> LiveSession<'a> {
                     })),
                     model_id,
                     backend,
+                    super::policy::chunk_sizes(info),
                 )))
             }
         };
